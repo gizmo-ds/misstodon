@@ -1,0 +1,12 @@
+[server]
+bind_address = "[::]:3000"
+#tls_cert_file = "cert/localhost.pem"
+#tls_key_file = "cert/localhost-key.pem"
+
+[logger]
+level = 0
+console_writer = true
+request_logger = true
+filename = "logs/misstodon.jsonl"
+max_age = 7
+max_backups = 10
