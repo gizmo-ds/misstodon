@@ -5,7 +5,7 @@ type MkUser struct {
 	Username       string         `json:"username"`
 	Name           string         `json:"name"`
 	Location       *string        `json:"location"`
-	Description    string         `json:"description"`
+	Description    *string        `json:"description"`
 	IsBot          bool           `json:"isBot"`
 	IsLocked       bool           `json:"isLocked"`
 	CreatedAt      string         `json:"createdAt"`

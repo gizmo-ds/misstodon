@@ -44,16 +44,7 @@ func Lookup(server string, acct string) (models.Account, error) {
 	if err != nil {
 		return info, err
 	}
-	_lastStatusAt := serverInfo.UpdatedAt
-	if _lastStatusAt != nil {
-		lastStatusAt, err := time.Parse(time.RFC3339, *_lastStatusAt)
-		if err != nil {
-			return info, err
-		}
-		t := lastStatusAt.Format("2006-01-02")
-		_lastStatusAt = &t
-	}
-	return models.Account{
+	info = models.Account{
 		ID:             serverInfo.ID,
 		Username:       serverInfo.Username,
 		Acct:           username + "@" + _host,
@@ -61,8 +52,6 @@ func Lookup(server string, acct string) (models.Account, error) {
 		Locked:         serverInfo.IsLocked,
 		Bot:            serverInfo.IsBot,
 		CreatedAt:      createdAt.Format("2006-01-02"),
-		LastStatusAt:   _lastStatusAt,
-		Note:           utils.MfmToHtml(serverInfo.Description),
 		Url:            "https://" + _host + "/@" + username,
 		Avatar:         serverInfo.AvatarUrl,
 		AvatarStatic:   serverInfo.AvatarUrl,
@@ -73,5 +62,18 @@ func Lookup(server string, acct string) (models.Account, error) {
 		StatusesCount:  serverInfo.NotesCount,
 		Emojis:         []models.CustomEmoji{},
 		Fields:         serverInfo.Fields,
-	}, nil
+	}
+	_lastStatusAt := serverInfo.UpdatedAt
+	if serverInfo.UpdatedAt != nil {
+		lastStatusAt, err := time.Parse(time.RFC3339, *_lastStatusAt)
+		if err != nil {
+			return info, err
+		}
+		t := lastStatusAt.Format("2006-01-02")
+		info.LastStatusAt = &t
+	}
+	if serverInfo.Description != nil {
+		info.Note = utils.MfmToHtml(*serverInfo.Description)
+	}
+	return info, nil
 }
