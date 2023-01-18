@@ -5,18 +5,27 @@ import (
 
 	"github.com/gizmo-ds/misstodon/internal/utils"
 	"github.com/gizmo-ds/misstodon/models"
+	"github.com/pkg/errors"
+)
+
+var (
+	ErrNotFound      = errors.New("not found")
+	ErrAcctIsInvalid = errors.New("acct format is invalid")
 )
 
 func Lookup(server string, acct string) (models.Account, error) {
 	var host *string
+	var info models.Account
 	username, _host := utils.AcctInfo(acct)
+	if username == "" {
+		return info, ErrAcctIsInvalid
+	}
 	if _host == "" {
 		_host = server
 	}
 	if _host != server {
 		host = &_host
 	}
-	var info models.Account
 	var serverInfo models.MkUser
 	resp, err := client.R().
 		SetBody(map[string]any{
@@ -29,7 +38,7 @@ func Lookup(server string, acct string) (models.Account, error) {
 		return info, err
 	}
 	if resp.StatusCode() != 200 {
-		return info, err
+		return info, ErrNotFound
 	}
 	createdAt, err := time.Parse(time.RFC3339, serverInfo.CreatedAt)
 	if err != nil {
