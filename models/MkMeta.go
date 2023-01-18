@@ -8,9 +8,9 @@ type MkMeta struct {
 	URI                      string      `json:"uri"`
 	Description              string      `json:"description"`
 	Langs                    []string    `json:"langs"`
-	TosURL                   interface{} `json:"tosUrl"`
-	RepositoryURL            string      `json:"repositoryUrl"`
-	FeedbackURL              string      `json:"feedbackUrl"`
+	TosUrl                   interface{} `json:"tosUrl"`
+	RepositoryUrl            string      `json:"repositoryUrl"`
+	FeedbackUrl              string      `json:"feedbackUrl"`
 	DisableRegistration      bool        `json:"disableRegistration"`
 	EmailRequiredForSignup   bool        `json:"emailRequiredForSignup"`
 	EnableHCaptcha           bool        `json:"enableHcaptcha"`
@@ -21,12 +21,12 @@ type MkMeta struct {
 	TurnstileSiteKey         interface{} `json:"turnstileSiteKey"`
 	SwPublicKey              string      `json:"swPublickey"`
 	ThemeColor               string      `json:"themeColor"`
-	MascotImageURL           string      `json:"mascotImageUrl"`
-	BannerURL                string      `json:"bannerUrl"`
-	ErrorImageURL            string      `json:"errorImageUrl"`
-	IconURL                  string      `json:"iconUrl"`
-	BackgroundImageURL       string      `json:"backgroundImageUrl"`
-	LogoImageURL             interface{} `json:"logoImageUrl"`
+	MascotImageUrl           string      `json:"mascotImageUrl"`
+	BannerUrl                string      `json:"bannerUrl"`
+	ErrorImageUrl            string      `json:"errorImageUrl"`
+	IconUrl                  string      `json:"iconUrl"`
+	BackgroundImageUrl       string      `json:"backgroundImageUrl"`
+	LogoImageUrl             interface{} `json:"logoImageUrl"`
 	MaxNoteTextLength        int         `json:"maxNoteTextLength"`
 	EnableEmail              bool        `json:"enableEmail"`
 	EnableTwitterIntegration bool        `json:"enableTwitterIntegration"`

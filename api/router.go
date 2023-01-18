@@ -20,10 +20,12 @@ func Router(e *echo.Echo) {
 
 	wellknownApi := e.Group("/.well-known", echomiddleware.CORS())
 	wellknownApi.GET("/nodeinfo", wellknown.NodeInfo)
+	wellknownApi.GET("/webfinger", wellknown.WebFinger)
 
 	e.GET("/nodeinfo/2.0", nodeinfo.NodeInfo, echomiddleware.CORS())
 
 	v1Api := e.Group("/api/v1", echomiddleware.CORS())
 	v1Api.GET("/instance", v1.Instance)
 	v1Api.GET("/accounts/verify_credentials", v1.AccountsVerifyCredentials)
+	v1Api.GET("/accounts/lookup", v1.AccountsLookup)
 }

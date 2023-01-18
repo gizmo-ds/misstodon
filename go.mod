@@ -5,12 +5,14 @@ go 1.19
 require (
 	github.com/BurntSushi/toml v1.2.1
 	github.com/go-resty/resty/v2 v2.7.0
+	github.com/joho/godotenv v1.4.0
 	github.com/labstack/echo/v4 v4.10.0
 	github.com/pkg/errors v0.9.1
 	github.com/rs/xid v1.4.0
 	github.com/rs/zerolog v1.28.0
 	github.com/stretchr/testify v1.8.1
 	github.com/urfave/cli/v2 v2.23.7
+	github.com/yuin/goldmark v1.5.3
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
 )
 

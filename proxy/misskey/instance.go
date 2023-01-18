@@ -64,7 +64,7 @@ func Instance(server, version string) (models.Instance, error) {
 		ShortDescription: serverInfo.Description,
 		Email:            serverInfo.MaintainerEmail,
 		Version:          version,
-		Thumbnail:        serverInfo.BannerURL,
+		Thumbnail:        serverInfo.BannerUrl,
 		Registrations:    !serverInfo.DisableRegistration,
 		InvitesEnabled:   serverInfo.Policies.CanInvite,
 		Rules:            []models.InstanceRule{},

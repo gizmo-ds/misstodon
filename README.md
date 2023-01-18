@@ -8,11 +8,12 @@
 
 | Status             | API                               |
 | ------------------ | --------------------------------- |
+| :white_check_mark: | /.well-known/webfinger            |
 | :white_check_mark: | /.well-known/nodeinfo             |
 | :white_check_mark: | /nodeinfo/2.0                     |
 | :white_check_mark: | `v1` /instance                    |
+| :white_check_mark: | `v1` /accounts/lookup             |
 | :construction:     | `v1` /accounts/verify_credentials |
-| :x:                | `v1` /accounts/lookup             |
 | :x:                | `v1` /accounts/<user_id>/statuses |
 | :x:                | `v1` /notifications               |
 | :x:                | `v1` /streaming                   |
