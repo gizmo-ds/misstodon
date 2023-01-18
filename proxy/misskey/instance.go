@@ -50,6 +50,9 @@ func Instance(server, version string) (models.Instance, error) {
 		}).
 		SetResult(&serverInfo).
 		Post("https://" + server + "/api/meta")
+	if err != nil {
+		return info, err
+	}
 	serverUrl, err := url.Parse(serverInfo.URI)
 	if err != nil {
 		return info, err
