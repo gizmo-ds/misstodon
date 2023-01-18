@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/gizmo-ds/misstodon/internal/global"
 	"github.com/gizmo-ds/misstodon/models"
 	"github.com/pkg/errors"
 )
@@ -42,8 +41,8 @@ var SupportedMimeTypes = []string{
 	"audio/vnd.wave",
 }
 
-func Instance(server string) (models.V1Instance, error) {
-	var info models.V1Instance
+func Instance(server, version string) (models.Instance, error) {
+	var info models.Instance
 	var serverInfo models.MkMeta
 	resp, err := client.R().
 		SetBody(map[string]any{
@@ -58,17 +57,17 @@ func Instance(server string) (models.V1Instance, error) {
 	if resp.StatusCode() != http.StatusOK {
 		return info, errors.New("Failed to get instance info")
 	}
-	info = models.V1Instance{
+	info = models.Instance{
 		Uri:              serverUrl.Host,
 		Title:            serverInfo.Name,
 		Description:      serverInfo.Description,
 		ShortDescription: serverInfo.Description,
 		Email:            serverInfo.MaintainerEmail,
-		Version:          global.AppVersion,
+		Version:          version,
 		Thumbnail:        serverInfo.BannerURL,
 		Registrations:    !serverInfo.DisableRegistration,
 		InvitesEnabled:   serverInfo.Policies.CanInvite,
-		Rules:            []models.V1InstanceRule{},
+		Rules:            []models.InstanceRule{},
 		Languages:        serverInfo.Langs,
 	}
 	//TODO: 需要先实现 `/streaming`

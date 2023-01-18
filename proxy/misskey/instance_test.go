@@ -10,7 +10,7 @@ import (
 
 func TestInstance(t *testing.T) {
 	server := os.Getenv("TEST_SERVER")
-	info, err := misskey.Instance(server)
+	info, err := misskey.Instance(server, "development")
 	assert.NoError(t, err)
 	assert.Equal(t, server, info.Uri)
 }

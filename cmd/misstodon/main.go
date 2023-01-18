@@ -7,6 +7,8 @@ import (
 	"github.com/gizmo-ds/misstodon/cmd/misstodon/commands"
 	"github.com/gizmo-ds/misstodon/cmd/misstodon/logger"
 	"github.com/gizmo-ds/misstodon/internal/global"
+	"github.com/gizmo-ds/misstodon/proxy/misskey"
+	"github.com/go-resty/resty/v2"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
@@ -35,6 +37,8 @@ func main() {
 				log.Fatal().Stack().Err(errors.WithStack(err)).Msg("Failed to load config")
 			}
 			logger.Init()
+			misskey.SetClient(resty.New().
+				SetHeader("User-Agent", "misstodon/"+global.AppVersion))
 			return nil
 		},
 		Commands: []*cli.Command{

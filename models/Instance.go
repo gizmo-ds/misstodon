@@ -1,14 +1,14 @@
 package models
 
 type (
-	V1Instance struct {
-		Uri              string         `json:"uri"`
-		Title            string         `json:"title"`
-		ShortDescription string         `json:"short_description"`
-		Description      string         `json:"description"`
-		Email            string         `json:"email"`
-		Version          string         `json:"version"`
-		Urls             V1InstanceUrls `json:"urls"`
+	Instance struct {
+		Uri              string       `json:"uri"`
+		Title            string       `json:"title"`
+		ShortDescription string       `json:"short_description"`
+		Description      string       `json:"description"`
+		Email            string       `json:"email"`
+		Version          string       `json:"version"`
+		Urls             InstanceUrls `json:"urls"`
 		Stats            struct {
 			UserCount   int `json:"user_count"`
 			StatusCount int `json:"status_count"`
@@ -29,13 +29,13 @@ type (
 				SupportedMimeTypes []string `json:"supported_mime_types"`
 			} `json:"media_attachments"`
 		} `json:"configuration"`
-		ContactAccount V1Account        `json:"contact_account"`
-		Rules          []V1InstanceRule `json:"rules"`
+		ContactAccount Account        `json:"contact_account"`
+		Rules          []InstanceRule `json:"rules"`
 	}
-	V1InstanceUrls struct {
+	InstanceUrls struct {
 		StreamingApi string `json:"streaming_api"`
 	}
-	V1InstanceRule struct {
+	InstanceRule struct {
 		ID   string `json:"id"`
 		Text string `json:"text"`
 	}
