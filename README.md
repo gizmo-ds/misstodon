@@ -14,7 +14,7 @@
 | :white_check_mark: | `v1` /instance                    |
 | :white_check_mark: | `v1` /accounts/lookup             |
 | :construction:     | `v1` /accounts/verify_credentials |
-| :x:                | `v1` /accounts/<user_id>/statuses |
+| :construction:     | `v1` /accounts/<user_id>/statuses |
 | :x:                | `v1` /notifications               |
 | :x:                | `v1` /streaming                   |
 | :x:                | `v2` /search                      |

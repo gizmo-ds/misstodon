@@ -3,6 +3,8 @@
 cert/
 logs/
 build/
+node_modules/
 
 /config.toml
 /.env
+/internal/mfm/out.js

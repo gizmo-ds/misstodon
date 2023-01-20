@@ -1,8 +1,11 @@
 .idea
 .github
 .vscode
+cert/
 logs/
 build/
+node_modules/
 
 Dockerfile
 docker-compose.yml
+/internal/mfm/out.js

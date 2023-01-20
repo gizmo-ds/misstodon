@@ -1,0 +1,15 @@
+{
+  "name": "misstodon",
+  "scripts": {
+    "build": "esbuild internal/mfm/parse.ts --bundle --format=esm --platform=node --target=es2017 --minify --outfile=internal/mfm/out.js"
+  },
+  "private": true,
+  "author": "Gizmo",
+  "license": "AGPL-3.0",
+  "devDependencies": {
+    "esbuild": "^0.17.3"
+  },
+  "dependencies": {
+    "mfm-js": "^0.23.3"
+  }
+}

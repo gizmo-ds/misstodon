@@ -3,6 +3,7 @@ package misskey
 import (
 	"time"
 
+	"github.com/gizmo-ds/misstodon/internal/mfm"
 	"github.com/gizmo-ds/misstodon/internal/utils"
 	"github.com/gizmo-ds/misstodon/models"
 	"github.com/pkg/errors"
@@ -73,7 +74,18 @@ func Lookup(server string, acct string) (models.Account, error) {
 		info.LastStatusAt = &t
 	}
 	if serverInfo.Description != nil {
-		info.Note = utils.MfmToHtml(*serverInfo.Description)
+		info.Note, err = mfm.ToHtml(*serverInfo.Description)
+		if err != nil {
+			return info, err
+		}
 	}
 	return info, nil
+}
+
+func AccountsStatuses(
+	server, accountID string,
+	limit int,
+	pinnedOnly, onlyMedia, onlyPublic, excludeReplies, excludeReblogs bool,
+	maxID, minID string) {
+
 }
