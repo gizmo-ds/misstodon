@@ -14,7 +14,7 @@ COPY . /misstodon
 ENV CGO_ENABLED=0
 COPY --from=mfm-builder /misstodon/internal/mfm/out.js /misstodon/internal/mfm/out.js
 RUN go build -trimpath -tags timetzdata \
-    -ldflags "-s -w -X github.com/gizmo-ds/misstodon/internal/global.AppVersion=$(git describe --tags --always --dirty)" \
+    -ldflags "-s -w -X github.com/gizmo-ds/misstodon/internal/global.AppVersion=$(git describe --tags --always)" \
     -o misstodon \
     cmd/misstodon/main.go
 
