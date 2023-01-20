@@ -101,3 +101,7 @@ func Instance(server, version string) (models.Instance, error) {
 	info.Stats.DomainCount = serverStats.Instances
 	return info, err
 }
+
+func InstancePeers(server string) ([]string, error) {
+	return nil, nil
+}

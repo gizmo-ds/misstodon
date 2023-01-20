@@ -25,7 +25,11 @@ func Router(e *echo.Echo) {
 	e.GET("/nodeinfo/2.0", nodeinfo.NodeInfo, echomiddleware.CORS())
 
 	v1Api := e.Group("/api/v1", echomiddleware.CORS())
-	v1Api.GET("/instance", v1.Instance)
-	v1Api.GET("/accounts/verify_credentials", v1.AccountsVerifyCredentials)
-	v1Api.GET("/accounts/lookup", v1.AccountsLookup)
+	v1.InstanceRouter(v1Api)
+	v1.AccountsRouter(v1Api)
+
+	paramServerApi := e.Group("/:proxyServer")
+	paramServerV1Api := paramServerApi.Group("/api/v1", echomiddleware.CORS())
+	v1.InstanceRouter(paramServerV1Api)
+	v1.AccountsRouter(paramServerV1Api)
 }
