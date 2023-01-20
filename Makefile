@@ -2,7 +2,7 @@ NAME=misstodon
 OUTDIR=build
 PKGNAME=github.com/gizmo-ds/misstodon
 MAIN=cmd/misstodon/main.go
-VERSION=$(shell git describe --tags --always --dirty)
+VERSION=$(shell git describe --tags --always)
 FLAGS+=-trimpath
 FLAGS+=-tags timetzdata
 FLAGS+=-ldflags "-s -w -X $(PKGNAME)/internal/global.AppVersion=$(VERSION)"
