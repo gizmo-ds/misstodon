@@ -20,23 +20,22 @@ var DefaultMfmOption = Option{
 }
 
 var vm = goja.New()
+var parseText func(string) string
 
 func init() {
 	_, err := vm.RunString(script)
 	if err != nil {
 		log.Fatal().Err(err).Msg("Failed to run mfm.js")
 	}
+	if err = vm.ExportTo(vm.Get("parse"), &parseText); err != nil {
+		log.Fatal().Err(err).Msg("Failed to export parse function")
+	}
 }
 
 // Parse parses MFM to nodes.
 func Parse(text string) ([]mfmNode, error) {
-	var parseText func(string) string
-	err := vm.ExportTo(vm.Get("parse"), &parseText)
-	if err != nil {
-		return nil, err
-	}
 	var nodes []mfmNode
-	err = json.Unmarshal([]byte(parseText(text)), &nodes)
+	err := json.Unmarshal([]byte(parseText(text)), &nodes)
 	return nodes, err
 }
 
@@ -46,8 +45,7 @@ func ToHtml(text string, option ...Option) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	s, err := toHtml(nodes, option...)
-	return s, err
+	return toHtml(nodes, option...)
 }
 
 func toHtml(nodes []mfmNode, option ...Option) (string, error) {
@@ -66,7 +64,7 @@ func toHtml(nodes []mfmNode, option ...Option) (string, error) {
 		return "", err
 	}
 	h := buf.String()
-	// NOTE: mfm.js的br标签不符合XHTML 1.1，需要手动修复
+	// NOTE: misskey的br标签不符合XHTML 1.1，需要替换为<br>
 	h = strings.ReplaceAll(h, "<br/>", "<br>")
 	return h, nil
 }
