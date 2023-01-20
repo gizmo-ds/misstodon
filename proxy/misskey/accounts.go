@@ -86,6 +86,29 @@ func AccountsStatuses(
 	server, accountID string,
 	limit int,
 	pinnedOnly, onlyMedia, onlyPublic, excludeReplies, excludeReblogs bool,
-	maxID, minID string) {
-
+	maxID, minID string) ([]models.Status, error) {
+	var notes []models.MkNote
+	r := map[string]any{
+		"userId":         accountID,
+		"limit":          limit,
+		"includeReplies": !excludeReplies,
+	}
+	if onlyMedia {
+		r["fileType"] = SupportedMimeTypes
+	}
+	resp, err := client.R().
+		SetBody(r).
+		SetResult(&notes).
+		Post("https://" + server + "/api/users/notes")
+	if err != nil {
+		return nil, errors.WithStack(err)
+	}
+	if resp.StatusCode() != 200 {
+		return nil, errors.New("failed to get statuses")
+	}
+	var statuses []models.Status
+	for _, note := range notes {
+		statuses = append(statuses, note.ToStatus(server))
+	}
+	return statuses, nil
 }
