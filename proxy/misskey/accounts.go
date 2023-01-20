@@ -74,7 +74,7 @@ func Lookup(server string, acct string) (models.Account, error) {
 		info.LastStatusAt = &t
 	}
 	if serverInfo.Description != nil {
-		info.Note, err = mfm.ToHtml(*serverInfo.Description)
+		info.Note, err = mfm.ToHtml(*serverInfo.Description, mfm.Option{Url: "https://" + server})
 		if err != nil {
 			return info, err
 		}
