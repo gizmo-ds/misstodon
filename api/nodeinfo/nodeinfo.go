@@ -23,6 +23,7 @@ func NodeInfo(c echo.Context) error {
 			Inbound:  []string{},
 			Outbound: []string{},
 		},
+		Metadata: struct{}{},
 	}
 	if server != "" {
 		info, err = misskey.NodeInfo(
