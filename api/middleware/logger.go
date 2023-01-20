@@ -8,14 +8,16 @@ import (
 
 var Logger = middleware.RequestLoggerWithConfig(
 	middleware.RequestLoggerConfig{
-		LogMethod: true,
-		LogURI:    true,
-		LogStatus: true,
+		LogMethod:  true,
+		LogURI:     true,
+		LogStatus:  true,
+		LogLatency: true,
 		LogValuesFunc: func(c echo.Context, v middleware.RequestLoggerValues) error {
 			log.Info().
 				Str("method", v.Method).
 				Str("uri", v.URI).
 				Int("status", v.Status).
+				Str("latency", v.Latency.String()).
 				Msg("Request")
 			return nil
 		},
