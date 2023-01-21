@@ -4,6 +4,7 @@ import (
 	"os"
 
 	"github.com/BurntSushi/toml"
+	"github.com/gizmo-ds/misstodon/internal/database"
 )
 
 type config struct {
@@ -21,6 +22,14 @@ type config struct {
 		MaxAge        int    `toml:"max_age"`
 		MaxBackups    int    `toml:"max_backups"`
 	} `toml:"logger"`
+	Database struct {
+		Type     database.DbType `toml:"type"`
+		Address  string          `toml:"address"`
+		Port     int             `toml:"port"`
+		User     string          `toml:"user"`
+		Password string          `toml:"password"`
+		Database string          `toml:"database"`
+	} `toml:"database"`
 }
 
 var Config config

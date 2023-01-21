@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/gizmo-ds/misstodon/api"
+	"github.com/gizmo-ds/misstodon/internal/database"
 	"github.com/gizmo-ds/misstodon/internal/global"
 	"github.com/labstack/echo/v4"
 	"github.com/rs/zerolog/log"
@@ -22,6 +23,11 @@ var Start = &cli.Command{
 		return nil
 	},
 	Action: func(c *cli.Context) error {
+		global.DB = database.NewDatabase(
+			global.Config.Database.Type,
+			global.Config.Database.Address)
+		defer global.DB.Close()
+
 		e := echo.New()
 		e.HidePort, e.HideBanner = true, true
 		api.Router(e)

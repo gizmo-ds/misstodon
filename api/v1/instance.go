@@ -30,5 +30,8 @@ func InstancePeers(c echo.Context) error {
 	if err != nil {
 		return err
 	}
+	if len(peers) == 0 {
+		return c.JSON(http.StatusOK, []string{})
+	}
 	return c.JSON(http.StatusOK, peers)
 }

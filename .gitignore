@@ -8,3 +8,4 @@ node_modules/
 /config.toml
 /.env
 /internal/mfm/out.js
+/data.db

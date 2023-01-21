@@ -18,3 +18,6 @@
 | :x:                | `v1` /notifications               |
 | :x:                | `v1` /streaming                   |
 | :x:                | `v2` /search                      |
+| :white_check_mark: | `v1` /apps                        |
+| :white_check_mark: | /oauth/authorize                  |
+| :construction:     | /oauth/token                      |

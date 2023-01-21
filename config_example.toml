@@ -10,3 +10,7 @@ request_logger = true
 filename = "logs/misstodon.jsonl"
 max_age = 7
 max_backups = 10
+
+[database]
+type = "buntdb"
+address = "data.db"
