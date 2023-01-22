@@ -9,6 +9,17 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+func Router(e any) {
+	var group *echo.Group
+	switch e.(type) {
+	case *echo.Echo:
+		group = e.(*echo.Echo).Group("/nodeinfo")
+	case *echo.Group:
+		group = e.(*echo.Group).Group("/nodeinfo")
+	}
+	group.GET("/2.0", NodeInfo)
+}
+
 func NodeInfo(c echo.Context) error {
 	server := c.Get("server").(string)
 	var err error

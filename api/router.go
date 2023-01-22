@@ -19,22 +19,23 @@ func Router(e *echo.Echo) {
 		e.Use(middleware.Logger)
 	}
 
-	wellknownApi := e.Group("/.well-known", echomiddleware.CORS())
-	wellknownApi.GET("/nodeinfo", wellknown.NodeInfo)
-	wellknownApi.GET("/webfinger", wellknown.WebFinger)
-
-	e.GET("/nodeinfo/2.0", nodeinfo.NodeInfo, echomiddleware.CORS())
-
-	v1Api := e.Group("/api/v1", echomiddleware.CORS())
-	oauth.Router(e)
-	v1.InstanceRouter(v1Api)
-	v1.AccountsRouter(v1Api)
-	v1.ApplicationRouter(v1Api)
-
-	paramServerApi := e.Group("/:proxyServer")
-	paramServerV1Api := paramServerApi.Group("/api/v1", echomiddleware.CORS())
-	oauth.Router(paramServerApi)
-	v1.InstanceRouter(paramServerV1Api)
-	v1.AccountsRouter(paramServerV1Api)
-	v1.ApplicationRouter(paramServerV1Api)
+	{
+		wellknown.Router(e)
+		nodeinfo.Router(e)
+		v1Api := e.Group("/api/v1", echomiddleware.CORS())
+		oauth.Router(e)
+		v1.InstanceRouter(v1Api)
+		v1.AccountsRouter(v1Api)
+		v1.ApplicationRouter(v1Api)
+	}
+	{
+		paramServerApi := e.Group("/:proxyServer")
+		wellknown.Router(paramServerApi)
+		nodeinfo.Router(paramServerApi)
+		v1Api := paramServerApi.Group("/api/v1", echomiddleware.CORS())
+		oauth.Router(paramServerApi)
+		v1.InstanceRouter(v1Api)
+		v1.AccountsRouter(v1Api)
+		v1.ApplicationRouter(v1Api)
+	}
 }
