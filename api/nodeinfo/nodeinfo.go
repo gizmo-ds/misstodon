@@ -7,15 +7,16 @@ import (
 	"github.com/gizmo-ds/misstodon/models"
 	"github.com/gizmo-ds/misstodon/proxy/misskey"
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 )
 
 func Router(e any) {
 	var group *echo.Group
 	switch e.(type) {
 	case *echo.Echo:
-		group = e.(*echo.Echo).Group("/nodeinfo")
+		group = e.(*echo.Echo).Group("/nodeinfo", middleware.CORS())
 	case *echo.Group:
-		group = e.(*echo.Group).Group("/nodeinfo")
+		group = e.(*echo.Group).Group("/nodeinfo", middleware.CORS())
 	}
 	group.GET("/2.0", NodeInfo)
 }
