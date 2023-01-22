@@ -4,6 +4,7 @@ import (
 	"github.com/gizmo-ds/misstodon/api/httperror"
 	"github.com/gizmo-ds/misstodon/api/middleware"
 	"github.com/gizmo-ds/misstodon/api/nodeinfo"
+	"github.com/gizmo-ds/misstodon/api/oauth"
 	v1 "github.com/gizmo-ds/misstodon/api/v1"
 	"github.com/gizmo-ds/misstodon/api/wellknown"
 	"github.com/gizmo-ds/misstodon/internal/global"
@@ -25,11 +26,15 @@ func Router(e *echo.Echo) {
 	e.GET("/nodeinfo/2.0", nodeinfo.NodeInfo, echomiddleware.CORS())
 
 	v1Api := e.Group("/api/v1", echomiddleware.CORS())
+	oauth.Router(e)
 	v1.InstanceRouter(v1Api)
 	v1.AccountsRouter(v1Api)
+	v1.ApplicationRouter(v1Api)
 
 	paramServerApi := e.Group("/:proxyServer")
 	paramServerV1Api := paramServerApi.Group("/api/v1", echomiddleware.CORS())
+	oauth.Router(paramServerApi)
 	v1.InstanceRouter(paramServerV1Api)
 	v1.AccountsRouter(paramServerV1Api)
+	v1.ApplicationRouter(paramServerV1Api)
 }

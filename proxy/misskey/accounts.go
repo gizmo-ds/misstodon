@@ -1,9 +1,6 @@
 package misskey
 
 import (
-	"time"
-
-	"github.com/gizmo-ds/misstodon/internal/mfm"
 	"github.com/gizmo-ds/misstodon/internal/utils"
 	"github.com/gizmo-ds/misstodon/models"
 	"github.com/pkg/errors"
@@ -36,50 +33,12 @@ func Lookup(server string, acct string) (models.Account, error) {
 		SetResult(&serverInfo).
 		Post("https://" + server + "/api/users/show")
 	if err != nil {
-		return info, err
+		return info, errors.WithStack(err)
 	}
 	if resp.StatusCode() != 200 {
 		return info, ErrNotFound
 	}
-	createdAt, err := time.Parse(time.RFC3339, serverInfo.CreatedAt)
-	if err != nil {
-		return info, err
-	}
-	info = models.Account{
-		ID:             serverInfo.ID,
-		Username:       serverInfo.Username,
-		Acct:           username + "@" + _host,
-		DisplayName:    serverInfo.Name,
-		Locked:         serverInfo.IsLocked,
-		Bot:            serverInfo.IsBot,
-		CreatedAt:      createdAt.Format("2006-01-02"),
-		Url:            "https://" + _host + "/@" + username,
-		Avatar:         serverInfo.AvatarUrl,
-		AvatarStatic:   serverInfo.AvatarUrl,
-		Header:         serverInfo.BannerUrl,
-		HeaderStatic:   serverInfo.BannerUrl,
-		FollowersCount: serverInfo.FollowersCount,
-		FollowingCount: serverInfo.FollowingCount,
-		StatusesCount:  serverInfo.NotesCount,
-		Emojis:         []models.CustomEmoji{},
-		Fields:         serverInfo.Fields,
-	}
-	_lastStatusAt := serverInfo.UpdatedAt
-	if serverInfo.UpdatedAt != nil {
-		lastStatusAt, err := time.Parse(time.RFC3339, *_lastStatusAt)
-		if err != nil {
-			return info, err
-		}
-		t := lastStatusAt.Format("2006-01-02")
-		info.LastStatusAt = &t
-	}
-	if serverInfo.Description != nil {
-		info.Note, err = mfm.ToHtml(*serverInfo.Description, mfm.Option{Url: "https://" + server})
-		if err != nil {
-			return info, err
-		}
-	}
-	return info, nil
+	return serverInfo.ToAccount(acct, server)
 }
 
 func AccountsStatuses(
@@ -111,4 +70,22 @@ func AccountsStatuses(
 		statuses = append(statuses, note.ToStatus(server))
 	}
 	return statuses, nil
+}
+
+func VerifyCredentials(server, accessToken string) (models.Account, error) {
+	var info models.Account
+	var serverInfo models.MkUser
+	resp, err := client.R().
+		SetBody(map[string]any{
+			"i": accessToken,
+		}).
+		SetResult(&serverInfo).
+		Post("https://" + server + "/api/i")
+	if err != nil {
+		return info, errors.WithStack(err)
+	}
+	if resp.StatusCode() != 200 {
+		return info, errors.New("failed to verify credentials")
+	}
+	return serverInfo.ToAccount(serverInfo.Username+"@"+server, server)
 }

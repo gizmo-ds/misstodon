@@ -11,13 +11,19 @@
 | :white_check_mark: | /.well-known/webfinger            |
 | :white_check_mark: | /.well-known/nodeinfo             |
 | :white_check_mark: | /nodeinfo/2.0                     |
+| :white_check_mark: | /oauth/authorize                  |
+| :white_check_mark: | /oauth/token                      |
 | :white_check_mark: | `v1` /instance                    |
 | :white_check_mark: | `v1` /accounts/lookup             |
-| :construction:     | `v1` /accounts/verify_credentials |
+| :white_check_mark: | `v1` /accounts/verify_credentials |
 | :construction:     | `v1` /accounts/<user_id>/statuses |
 | :x:                | `v1` /notifications               |
 | :x:                | `v1` /streaming                   |
 | :x:                | `v2` /search                      |
 | :white_check_mark: | `v1` /apps                        |
-| :white_check_mark: | /oauth/authorize                  |
-| :construction:     | /oauth/token                      |
+| :x:                | `v1` /accounts/relationships      |
+| :construction:     | `v1` /timelines/home              |
+| :construction:     | `v1` /timelines/public            |
+| :question:         | `v1` /conversations               |
+| :construction:     | `v1` /favourites                  |
+| :x:                | `v1` /trends/statuses             |

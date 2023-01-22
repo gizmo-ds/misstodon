@@ -17,3 +17,15 @@ func StrEvaluation(str ...string) (v string, ok bool) {
 	}
 	return
 }
+
+func Unique[T string](list []T) []T {
+	var result []T
+	t := make(map[T]struct{})
+	for _, e := range list {
+		t[e] = struct{}{}
+	}
+	for e := range t {
+		result = append(result, e)
+	}
+	return result
+}

@@ -42,13 +42,12 @@ type MkNote struct {
 func (n *MkNote) ToStatus(server string) Status {
 	s := Status{
 		ID:        n.ID,
-		Url:       n.Url,
+		Url:       "https://" + server + "/notes/" + n.ID,
+		Uri:       "https://" + server + "/notes/" + n.ID,
 		Tags:      []StatusTag{},
 		CreatedAt: n.CreatedAt,
 		Content:   n.Text,
-	}
-	if n.Uri != nil {
-		s.Uri = *n.Uri
+		Emojis:    []struct{}{},
 	}
 	if content, err := mfm.ToHtml(n.Text, mfm.Option{Url: "https://" + server}); err == nil {
 		s.Content = content
