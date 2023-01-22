@@ -8,8 +8,8 @@ import (
 )
 
 type config struct {
-	ServerBind string `toml:"server_bind"`
-	Server     struct {
+	Server struct {
+		Url         string `toml:"url"`
 		BindAddress string `toml:"bind_address"`
 		TlsCertFile string `toml:"tls_cert_file"`
 		TlsKeyFile  string `toml:"tls_key_file"`

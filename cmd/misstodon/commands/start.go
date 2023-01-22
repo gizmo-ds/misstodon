@@ -7,6 +7,7 @@ import (
 	"github.com/gizmo-ds/misstodon/api"
 	"github.com/gizmo-ds/misstodon/internal/database"
 	"github.com/gizmo-ds/misstodon/internal/global"
+	"github.com/gizmo-ds/misstodon/internal/utils"
 	"github.com/labstack/echo/v4"
 	"github.com/rs/zerolog/log"
 	"github.com/urfave/cli/v2"
@@ -22,22 +23,38 @@ var Start = &cli.Command{
 		fmt.Printf("\n%s  \033[1;31;40m%s\033[0m\n\n", banner, global.AppVersion)
 		return nil
 	},
+	Flags: []cli.Flag{
+		&cli.StringFlag{
+			Name:    "bind",
+			Aliases: []string{"b"},
+			Usage:   "bind address",
+		},
+		&cli.StringFlag{
+			Name:  "url",
+			Usage: "url of the server, used for generating links, " + `e.g. "https://example.com"`,
+		},
+	},
 	Action: func(c *cli.Context) error {
 		global.DB = database.NewDatabase(
 			global.Config.Database.Type,
 			global.Config.Database.Address)
 		defer global.DB.Close()
 
+		if c.String("url") != "" {
+			global.Config.Server.Url = c.String("url")
+		}
+		bindAddress, _ := utils.StrEvaluation(c.String("bind"), global.Config.Server.BindAddress)
+
 		e := echo.New()
 		e.HidePort, e.HideBanner = true, true
 		api.Router(e)
-		l := log.Info().Str("address", global.Config.Server.BindAddress)
+		logStart := log.Info().Str("address", bindAddress)
 		if global.Config.Server.TlsCertFile != "" && global.Config.Server.TlsKeyFile != "" {
-			l.Msg("Starting server with TLS")
-			return e.StartTLS(global.Config.Server.BindAddress,
+			logStart.Msg("Starting server with TLS")
+			return e.StartTLS(bindAddress,
 				global.Config.Server.TlsCertFile, global.Config.Server.TlsKeyFile)
 		}
-		l.Msg("Starting server")
-		return e.Start(global.Config.Server.BindAddress)
+		logStart.Msg("Starting server")
+		return e.Start(bindAddress)
 	},
 }
