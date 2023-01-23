@@ -72,9 +72,10 @@ func AccountsStatuses(
 	return statuses, nil
 }
 
-func VerifyCredentials(server, accessToken string) (models.Account, error) {
-	var info models.Account
+func VerifyCredentials(server, accessToken string) (models.CredentialAccount, error) {
+	var account models.Account
 	var serverInfo models.MkUser
+	var info models.CredentialAccount
 	resp, err := client.R().
 		SetBody(map[string]any{
 			"i": accessToken,
@@ -87,5 +88,12 @@ func VerifyCredentials(server, accessToken string) (models.Account, error) {
 	if resp.StatusCode() != 200 {
 		return info, errors.New("failed to verify credentials")
 	}
-	return serverInfo.ToAccount(server)
+	account, err = serverInfo.ToAccount(server)
+	if err != nil {
+		return info, err
+	}
+	info.Account = account
+	info.Source.Note = info.Account.Note
+	info.Source.Fields = info.Account.Fields
+	return info, nil
 }

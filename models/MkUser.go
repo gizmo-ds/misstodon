@@ -61,14 +61,7 @@ func (u *MkUser) ToAccount(server string) (Account, error) {
 		StatusesCount:  u.NotesCount,
 		Emojis:         []CustomEmoji{},
 		Fields:         append([]AccountField{}, u.Fields...),
-	}
-	if u.CreatedAt != "" {
-		createdAt, err := time.Parse(time.RFC3339, u.CreatedAt)
-		if err != nil {
-			err = errors.WithStack(err)
-			return info, err
-		}
-		info.CreatedAt = createdAt.Format("2006-01-02")
+		CreatedAt:      u.CreatedAt,
 	}
 	if info.DisplayName == "" {
 		info.DisplayName = info.Username

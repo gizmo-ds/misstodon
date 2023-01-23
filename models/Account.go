@@ -1,5 +1,18 @@
 package models
 
+type PostPrivacy = string
+
+const (
+	// PostPrivacyPublic Public post
+	PostPrivacyPublic PostPrivacy = "public"
+	// PostPrivacyUnlisted Unlisted post
+	PostPrivacyUnlisted PostPrivacy = "unlisted"
+	// PostPrivacyPrivate Followers-only post
+	PostPrivacyPrivate PostPrivacy = "private"
+	// PostPrivacyDirect Direct post
+	PostPrivacyDirect PostPrivacy = "direct"
+)
+
 type Account struct {
 	ID             string         `json:"id"`
 	Username       string         `json:"username"`
@@ -33,10 +46,24 @@ type AccountField struct {
 	VerifiedAt *string `json:"verified_at,omitempty"`
 }
 
-func (a Account) SetLastStatusAt(t string) {
-	a.LastStatusAt = &t
-}
-
-func (f *AccountField) SetVerifiedAt(t string) {
-	f.VerifiedAt = &t
+type CredentialAccount struct {
+	Account
+	Source struct {
+		Privacy             PostPrivacy `json:"privacy"`
+		Sensitive           bool        `json:"sensitive"`
+		Language            string      `json:"language"`
+		Note                string      `json:"note"`
+		Fields              []AccountField
+		FollowRequestsCount int `json:"follow_requests_count"`
+	} `json:"source"`
+	Role struct {
+		Id          string `json:"id"`
+		Name        string `json:"name"`
+		Color       string `json:"color"`
+		Position    int    `json:"position"`
+		Permissions int    `json:"permissions"`
+		Highlighted bool   `json:"highlighted"`
+		CreatedAt   string `json:"created_at"`
+		UpdatedAt   string `json:"updated_at"`
+	} `json:"role,omitempty"`
 }

@@ -16,6 +16,7 @@
 | :white_check_mark: | `v1` /instance                     |
 | :white_check_mark: | `v1` /accounts/lookup              |
 | :white_check_mark: | `v1` /accounts/verify_credentials  |
+| :x:                | `v1` /accounts/update_credentials  |
 | :construction:     | `v1` /accounts/<user_id>/statuses  |
 | :x:                | `v1` /accounts/<user_id>/following |
 | :x:                | `v1` /accounts/<user_id>/followers |

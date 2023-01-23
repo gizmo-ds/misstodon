@@ -14,6 +14,7 @@ var Logger = middleware.RequestLoggerWithConfig(
 		LogLatency: true,
 		LogValuesFunc: func(c echo.Context, v middleware.RequestLoggerValues) error {
 			log.Info().
+				Str("proxy-server", c.Get("server").(string)).
 				Str("method", v.Method).
 				Str("uri", v.URI).
 				Int("status", v.Status).
