@@ -93,7 +93,9 @@ func VerifyCredentials(server, accessToken string) (models.CredentialAccount, er
 		return info, err
 	}
 	info.Account = account
-	info.Source.Note = info.Account.Note
+	if serverInfo.Description != nil {
+		info.Source.Note = *serverInfo.Description
+	}
 	info.Source.Fields = info.Account.Fields
 	return info, nil
 }
