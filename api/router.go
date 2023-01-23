@@ -18,22 +18,14 @@ func Router(e *echo.Echo) {
 	if global.Config.Logger.RequestLogger {
 		e.Use(middleware.Logger)
 	}
-
-	{
-		wellknown.Router(e)
-		nodeinfo.Router(e)
-		v1Api := e.Group("/api/v1", echomiddleware.CORS())
-		oauth.Router(e)
-		v1.InstanceRouter(v1Api)
-		v1.AccountsRouter(v1Api)
-		v1.ApplicationRouter(v1Api)
-	}
-	{
-		paramServerApi := e.Group("/:proxyServer")
-		wellknown.Router(paramServerApi)
-		nodeinfo.Router(paramServerApi)
-		v1Api := paramServerApi.Group("/api/v1", echomiddleware.CORS())
-		oauth.Router(paramServerApi)
+	for _, group := range []*echo.Group{
+		e.Group(""),
+		e.Group("/:proxyServer"),
+	} {
+		wellknown.Router(group)
+		nodeinfo.Router(group)
+		v1Api := group.Group("/api/v1", echomiddleware.CORS())
+		oauth.Router(group)
 		v1.InstanceRouter(v1Api)
 		v1.AccountsRouter(v1Api)
 		v1.ApplicationRouter(v1Api)

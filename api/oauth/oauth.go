@@ -11,20 +11,15 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-func Router(e any) {
-	var group *echo.Group
-	switch e.(type) {
-	case *echo.Echo:
-		group = e.(*echo.Echo).Group("/oauth")
-	case *echo.Group:
-		group = e.(*echo.Group).Group("/oauth")
-	}
-	group.GET("/authorize", Authorize)
-	group.POST("/token", Token)
-	group.GET("/redirect", Redirect)
+func Router(e *echo.Group) {
+	group := e.Group("/oauth")
+	group.GET("/authorize", AuthorizeHandler)
+	group.POST("/token", TokenHandler)
+	// NOTE: This is not a standard endpoint
+	group.GET("/redirect", RedirectHandler)
 }
 
-func Redirect(c echo.Context) error {
+func RedirectHandler(c echo.Context) error {
 	redirectUris := c.QueryParam("redirect_uris")
 	server := c.QueryParam("server")
 	token := c.QueryParam("token")
@@ -53,7 +48,7 @@ func Redirect(c echo.Context) error {
 	return c.Redirect(http.StatusFound, u.String())
 }
 
-func Token(c echo.Context) error {
+func TokenHandler(c echo.Context) error {
 	var params struct {
 		GrantType    string `json:"grant_type"`
 		ClientID     string `json:"client_id"`
@@ -86,7 +81,7 @@ func Token(c echo.Context) error {
 	})
 }
 
-func Authorize(c echo.Context) error {
+func AuthorizeHandler(c echo.Context) error {
 	var params struct {
 		ClientID     string `query:"client_id"`
 		RedirectUri  string `query:"redirect_uri"`

@@ -10,14 +10,8 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 )
 
-func Router(e any) {
-	var group *echo.Group
-	switch e.(type) {
-	case *echo.Echo:
-		group = e.(*echo.Echo).Group("/nodeinfo", middleware.CORS())
-	case *echo.Group:
-		group = e.(*echo.Group).Group("/nodeinfo", middleware.CORS())
-	}
+func Router(e *echo.Group) {
+	group := e.Group("/nodeinfo", middleware.CORS())
 	group.GET("/2.0", NodeInfo)
 }
 

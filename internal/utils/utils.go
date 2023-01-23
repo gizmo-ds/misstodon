@@ -1,6 +1,8 @@
 package utils
 
-func Contains[T string](list []T, item T) bool {
+import "strings"
+
+func Contains[T comparable](list []T, item T) bool {
 	for _, i := range list {
 		if i == item {
 			return true
@@ -18,7 +20,7 @@ func StrEvaluation(str ...string) (v string, ok bool) {
 	return
 }
 
-func Unique[T string](list []T) []T {
+func Unique[T comparable](list []T) []T {
 	var result []T
 	t := make(map[T]struct{})
 	for _, e := range list {
@@ -28,4 +30,22 @@ func Unique[T string](list []T) []T {
 		result = append(result, e)
 	}
 	return result
+}
+
+func AcctInfo(acct string) (username, host string) {
+	_acct := acct
+	if strings.Contains(_acct, "acct:") {
+		_acct = strings.TrimPrefix(_acct, "acct:")
+	}
+	if _acct[0] == '@' {
+		_acct = _acct[1:]
+	}
+	if !strings.Contains(_acct, "@") {
+		username = _acct
+	} else {
+		arr := strings.Split(_acct, "@")
+		username = arr[0]
+		host = arr[1]
+	}
+	return
 }
