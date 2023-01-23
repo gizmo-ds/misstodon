@@ -1,3 +1,6 @@
+[proxy]
+#fallback_server = "example.com"
+
 [server]
 url = "https://example.com"
 bind_address = "[::]:3000"

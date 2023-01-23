@@ -14,7 +14,8 @@ func SetContextData(next echo.HandlerFunc) echo.HandlerFunc {
 		proxyServer, ok := utils.StrEvaluation(
 			c.Param("proxyServer"),
 			c.QueryParam("server"),
-			c.Request().Header.Get("x-proxy-server"))
+			c.Request().Header.Get("x-proxy-server"),
+			global.Config.Proxy.FallbackServer)
 		if !ok {
 			if !utils.Contains([]string{
 				"/.well-known/nodeinfo",

@@ -8,6 +8,9 @@ import (
 )
 
 type config struct {
+	Proxy struct {
+		FallbackServer string `toml:"fallback_server"`
+	} `toml:"proxy"`
 	Server struct {
 		Url         string `toml:"url"`
 		BindAddress string `toml:"bind_address"`

@@ -5,7 +5,7 @@ import (
 	"github.com/gizmo-ds/misstodon/api/middleware"
 	"github.com/gizmo-ds/misstodon/api/nodeinfo"
 	"github.com/gizmo-ds/misstodon/api/oauth"
-	v1 "github.com/gizmo-ds/misstodon/api/v1"
+	"github.com/gizmo-ds/misstodon/api/v1"
 	"github.com/gizmo-ds/misstodon/api/wellknown"
 	"github.com/gizmo-ds/misstodon/internal/global"
 	"github.com/labstack/echo/v4"
