@@ -4,23 +4,19 @@ import (
 	"time"
 
 	"github.com/gizmo-ds/misstodon/internal/mfm"
-	"github.com/gizmo-ds/misstodon/internal/utils"
 	"github.com/pkg/errors"
-)
-
-var (
-	ErrAcctIsInvalid = errors.New("acct format is invalid")
 )
 
 type MkUser struct {
 	ID             string         `json:"id"`
 	Username       string         `json:"username"`
 	Name           string         `json:"name"`
+	Host           *string        `json:"host,omitempty"`
 	Location       *string        `json:"location"`
 	Description    *string        `json:"description"`
 	IsBot          bool           `json:"isBot"`
 	IsLocked       bool           `json:"isLocked"`
-	CreatedAt      string         `json:"createdAt"`
+	CreatedAt      string         `json:"createdAt,omitempty"`
 	UpdatedAt      *string        `json:"updatedAt"`
 	FollowersCount int            `json:"followersCount"`
 	FollowingCount int            `json:"followingCount"`
@@ -29,6 +25,7 @@ type MkUser struct {
 	BannerUrl      string         `json:"bannerUrl"`
 	Fields         []AccountField `json:"fields"`
 	Instance       MkInstance     `json:"instance"`
+	Mentions       []string       `json:"mentions"`
 }
 
 type MkInstance struct {
@@ -40,29 +37,21 @@ type MkInstance struct {
 	FaviconUrl      string `json:"faviconUrl"`
 }
 
-func (u *MkUser) ToAccount(acct, server string) (Account, error) {
+func (u *MkUser) ToAccount(server string) (Account, error) {
 	var info Account
-	username, _host := utils.AcctInfo(acct)
-	if username == "" {
-		return info, errors.WithStack(ErrAcctIsInvalid)
-	}
-	if _host == "" {
-		_host = server
-	}
-	createdAt, err := time.Parse(time.RFC3339, u.CreatedAt)
-	if err != nil {
-		err = errors.WithStack(err)
-		return info, err
+	var err error
+	host := server
+	if u.Host != nil {
+		host = *u.Host
 	}
 	info = Account{
 		ID:             u.ID,
 		Username:       u.Username,
-		Acct:           username + "@" + _host,
+		Acct:           u.Username + "@" + host,
 		DisplayName:    u.Name,
 		Locked:         u.IsLocked,
 		Bot:            u.IsBot,
-		CreatedAt:      createdAt.Format("2006-01-02"),
-		Url:            "https://" + _host + "/@" + username,
+		Url:            "https://" + host + "/@" + u.Username,
 		Avatar:         u.AvatarUrl,
 		AvatarStatic:   u.AvatarUrl,
 		Header:         u.BannerUrl,
@@ -71,7 +60,18 @@ func (u *MkUser) ToAccount(acct, server string) (Account, error) {
 		FollowingCount: u.FollowingCount,
 		StatusesCount:  u.NotesCount,
 		Emojis:         []CustomEmoji{},
-		Fields:         u.Fields,
+		Fields:         append([]AccountField{}, u.Fields...),
+	}
+	if u.CreatedAt != "" {
+		createdAt, err := time.Parse(time.RFC3339, u.CreatedAt)
+		if err != nil {
+			err = errors.WithStack(err)
+			return info, err
+		}
+		info.CreatedAt = createdAt.Format("2006-01-02")
+	}
+	if info.DisplayName == "" {
+		info.DisplayName = info.Username
 	}
 	_lastStatusAt := u.UpdatedAt
 	if _lastStatusAt != nil {
@@ -83,7 +83,7 @@ func (u *MkUser) ToAccount(acct, server string) (Account, error) {
 		info.LastStatusAt = &t
 	}
 	if u.Description != nil {
-		info.Note, err = mfm.ToHtml(*u.Description, mfm.Option{Url: "https://" + _host})
+		info.Note, err = mfm.ToHtml(*u.Description, mfm.Option{Url: "https://" + host})
 		if err != nil {
 			return info, errors.WithStack(err)
 		}

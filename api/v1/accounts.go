@@ -2,9 +2,9 @@ package v1
 
 import (
 	"net/http"
-	"strings"
 
 	"github.com/gizmo-ds/misstodon/api/httperror"
+	"github.com/gizmo-ds/misstodon/internal/utils"
 	"github.com/gizmo-ds/misstodon/proxy/misskey"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -19,18 +19,12 @@ func AccountsRouter(e *echo.Group) {
 }
 
 func AccountsVerifyCredentialsHandler(c echo.Context) error {
-	auth := c.Request().Header.Get("Authorization")
-	if auth == "" {
-		return c.JSON(http.StatusUnauthorized, httperror.ServerError{
-			Error: "Authorization header is required",
-		})
-	}
-	if !strings.Contains(auth, "Bearer") {
+	accessToken, err := utils.GetHeaderToken(c.Request().Header)
+	if err != nil {
 		return c.JSON(http.StatusBadRequest, httperror.ServerError{
-			Error: "Authorization header must be Bearer",
+			Error: err.Error(),
 		})
 	}
-	accessToken := auth[7:]
 	server := c.Get("server").(string)
 	info, err := misskey.VerifyCredentials(server, accessToken)
 	if err != nil {

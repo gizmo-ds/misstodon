@@ -29,5 +29,6 @@ func Router(e *echo.Echo) {
 		v1.InstanceRouter(v1Api)
 		v1.AccountsRouter(v1Api)
 		v1.ApplicationRouter(v1Api)
+		v1.StatusesRouter(v1Api)
 	}
 }

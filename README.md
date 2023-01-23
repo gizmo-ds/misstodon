@@ -19,6 +19,7 @@
 | :construction:     | `v1` /accounts/<user_id>/statuses  |
 | :x:                | `v1` /accounts/<user_id>/following |
 | :x:                | `v1` /accounts/<user_id>/followers |
+| :construction:     | `v1` /statuses/<status_id>         |
 | :construction:     | `v1` /statuses/<status_id>/context |
 | :x:                | `v1` /notifications                |
 | :x:                | `v1` /streaming                    |

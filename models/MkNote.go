@@ -2,6 +2,7 @@ package models
 
 import (
 	"github.com/gizmo-ds/misstodon/internal/mfm"
+	"github.com/gizmo-ds/misstodon/internal/utils"
 )
 
 type MkNoteVisibility = string
@@ -17,18 +18,17 @@ type MkNote struct {
 	ID           string           `json:"id"`
 	CreatedAt    string           `json:"createdAt"`
 	ReplyID      *string          `json:"replyId"`
-	Reply        *MkNote          `json:"reply"`
-	RepostID     *string          `json:"repostId"`
-	Repost       *MkNote          `json:"repost"`
 	ThreadId     *string          `json:"threadId"`
-	Text         string           `json:"text"`
+	Text         *string          `json:"text"`
 	Name         *string          `json:"name"`
 	Cw           *string          `json:"cw"`
 	UserId       string           `json:"userId"`
 	User         *MkUser          `json:"user"`
 	LocalOnly    bool             `json:"localOnly"`
-	RenoteId     *string          `json:"renoteId"`
-	RenoteCount  int              `json:"renoteCount"`
+	Reply        *MkNote          `json:"reply"`
+	ReNote       *MkNote          `json:"renote"`
+	ReNoteId     *string          `json:"renoteId"`
+	ReNoteCount  int              `json:"renoteCount"`
 	RepliesCount int              `json:"repliesCount"`
 	Reactions    map[string]int   `json:"reactions"`
 	Visibility   MkNoteVisibility `json:"visibility"`
@@ -41,16 +41,35 @@ type MkNote struct {
 
 func (n *MkNote) ToStatus(server string) Status {
 	s := Status{
-		ID:        n.ID,
-		Url:       "https://" + server + "/notes/" + n.ID,
-		Uri:       "https://" + server + "/notes/" + n.ID,
-		Tags:      []StatusTag{},
-		CreatedAt: n.CreatedAt,
-		Content:   n.Text,
-		Emojis:    []struct{}{},
+		ID:               n.ID,
+		Url:              "https://" + server + "/notes/" + n.ID,
+		Uri:              "https://" + server + "/notes/" + n.ID,
+		Tags:             []StatusTag{},
+		CreatedAt:        n.CreatedAt,
+		Emojis:           []struct{}{},
+		MediaAttachments: []MediaAttachment{},
+		Mentions:         []StatusMention{},
+		ReBlogsCount:     n.ReNoteCount,
 	}
-	if content, err := mfm.ToHtml(n.Text, mfm.Option{Url: "https://" + server}); err == nil {
-		s.Content = content
+	s.FavouritesCount = func() int {
+		var count int
+		for _, r := range n.Reactions {
+			count += r
+		}
+		return count
+	}()
+	if n.Text != nil {
+		s.Content = *n.Text
+		if content, err := mfm.ToHtml(*n.Text, mfm.Option{Url: "https://" + server}); err == nil {
+			s.Content = content
+		}
+		utils.GetMentions(*n.Text)
+	}
+	if n.User != nil {
+		a, err := n.User.ToAccount(server)
+		if err == nil {
+			s.Account = a
+		}
 	}
 	switch n.Visibility {
 	case MkNoteVisibilityPublic, MkNoteVisibilityHome, MkNoteVisibilitySpecif:
@@ -61,7 +80,22 @@ func (n *MkNote) ToStatus(server string) Status {
 		s.Visibility = StatusVisibilityPrivate
 	}
 	for _, file := range n.Files {
+		if file.IsSensitive {
+			s.Sensitive = true
+		}
+		// NOTE: Misskey does not return width and height of media files.
+		if file.Properties.Width <= 0 && file.Properties.Height <= 0 {
+			file.Properties.Width = 1920
+			file.Properties.Height = 1080
+		}
 		s.MediaAttachments = append(s.MediaAttachments, file.ToMediaAttachment())
+	}
+	if n.Cw != nil {
+		s.SpoilerText = *n.Cw
+	}
+	if n.ReNote != nil {
+		re := n.ReNote.ToStatus(server)
+		s.ReBlog = &re
 	}
 	return s
 }

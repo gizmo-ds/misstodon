@@ -49,3 +49,13 @@ func AcctInfo(acct string) (username, host string) {
 	}
 	return
 }
+
+func GetMentions(text string) []string {
+	var result []string
+	for _, s := range strings.Split(text, " ") {
+		if strings.HasPrefix(s, "@") {
+			result = append(result, s)
+		}
+	}
+	return result
+}
