@@ -13,12 +13,12 @@ import (
 
 func AccountsRouter(e *echo.Group) {
 	group := e.Group("/accounts", middleware.CORS())
-	group.GET("/verify_credentials", AccountsVerifyCredentials)
-	group.GET("/lookup", AccountsLookup)
-	group.GET("/:accountID/statuses", AccountsStatuses)
+	group.GET("/verify_credentials", AccountsVerifyCredentialsHandler)
+	group.GET("/lookup", AccountsLookupHandler)
+	group.GET("/:accountID/statuses", AccountsStatusesHandler)
 }
 
-func AccountsVerifyCredentials(c echo.Context) error {
+func AccountsVerifyCredentialsHandler(c echo.Context) error {
 	auth := c.Request().Header.Get("Authorization")
 	if auth == "" {
 		return c.JSON(http.StatusUnauthorized, httperror.ServerError{
@@ -39,7 +39,7 @@ func AccountsVerifyCredentials(c echo.Context) error {
 	return c.JSON(http.StatusOK, info)
 }
 
-func AccountsLookup(c echo.Context) error {
+func AccountsLookupHandler(c echo.Context) error {
 	acct := c.QueryParam("acct")
 	if acct == "" {
 		return c.JSON(http.StatusBadRequest, httperror.ServerError{
@@ -62,7 +62,7 @@ func AccountsLookup(c echo.Context) error {
 	return c.JSON(http.StatusOK, info)
 }
 
-func AccountsStatuses(c echo.Context) error {
+func AccountsStatusesHandler(c echo.Context) error {
 	accountID := c.Param("accountID")
 	limit := 30
 	pinnedOnly := false

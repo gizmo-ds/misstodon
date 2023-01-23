@@ -38,7 +38,7 @@ func Lookup(server string, acct string) (models.Account, error) {
 	if resp.StatusCode() != 200 {
 		return info, ErrNotFound
 	}
-	return serverInfo.ToAccount(acct, server)
+	return serverInfo.ToAccount(server)
 }
 
 func AccountsStatuses(
@@ -87,5 +87,5 @@ func VerifyCredentials(server, accessToken string) (models.Account, error) {
 	if resp.StatusCode() != 200 {
 		return info, errors.New("failed to verify credentials")
 	}
-	return serverInfo.ToAccount(serverInfo.Username+"@"+server, server)
+	return serverInfo.ToAccount(server)
 }

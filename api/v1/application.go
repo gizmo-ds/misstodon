@@ -12,10 +12,10 @@ import (
 
 func ApplicationRouter(e *echo.Group) {
 	group := e.Group("/apps")
-	group.POST("", ApplicationCreate)
+	group.POST("", ApplicationCreateHandler)
 }
 
-func ApplicationCreate(c echo.Context) error {
+func ApplicationCreateHandler(c echo.Context) error {
 	var params struct {
 		ClientName   string `json:"client_name"`
 		WebSite      string `json:"website"`

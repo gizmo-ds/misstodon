@@ -11,11 +11,11 @@ import (
 
 func InstanceRouter(e *echo.Group) {
 	group := e.Group("/instance", middleware.CORS())
-	group.GET("", Instance)
-	group.GET("/peers", InstancePeers)
+	group.GET("", InstanceHandler)
+	group.GET("/peers", InstancePeersHandler)
 }
 
-func Instance(c echo.Context) error {
+func InstanceHandler(c echo.Context) error {
 	info, err := misskey.Instance(
 		c.Get("server").(string),
 		global.AppVersion)
@@ -25,7 +25,7 @@ func Instance(c echo.Context) error {
 	return c.JSON(http.StatusOK, info)
 }
 
-func InstancePeers(c echo.Context) error {
+func InstancePeersHandler(c echo.Context) error {
 	peers, err := misskey.InstancePeers(c.Get("server").(string))
 	if err != nil {
 		return err

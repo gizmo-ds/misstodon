@@ -12,10 +12,10 @@ import (
 
 func Router(e *echo.Group) {
 	group := e.Group("/nodeinfo", middleware.CORS())
-	group.GET("/2.0", NodeInfo)
+	group.GET("/2.0", InfoHandler)
 }
 
-func NodeInfo(c echo.Context) error {
+func InfoHandler(c echo.Context) error {
 	server := c.Get("server").(string)
 	var err error
 	info := models.NodeInfo{
