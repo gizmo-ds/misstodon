@@ -12,6 +12,7 @@ require (
 	github.com/rs/xid v1.4.0
 	github.com/rs/zerolog v1.28.0
 	github.com/stretchr/testify v1.8.1
+	github.com/tidwall/buntdb v1.2.10
 	github.com/urfave/cli/v2 v2.23.7
 	golang.org/x/net v0.4.0
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
@@ -29,7 +30,6 @@ require (
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/tidwall/btree v1.6.0 // indirect
-	github.com/tidwall/buntdb v1.2.10 // indirect
 	github.com/tidwall/gjson v1.14.4 // indirect
 	github.com/tidwall/grect v0.1.4 // indirect
 	github.com/tidwall/match v1.1.1 // indirect

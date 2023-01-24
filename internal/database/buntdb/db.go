@@ -1,6 +1,8 @@
 package buntdb
 
 import (
+	"os"
+	"path/filepath"
 	"time"
 
 	"github.com/tidwall/buntdb"
@@ -11,6 +13,11 @@ type Database struct {
 }
 
 func NewDatabase(address string) *Database {
+	if _, err := os.Stat(filepath.Dir(address)); os.IsNotExist(err) {
+		if err = os.MkdirAll(filepath.Dir(address), 0755); err != nil {
+			panic(err)
+		}
+	}
 	db, err := buntdb.Open(address)
 	if err != nil {
 		panic(err)

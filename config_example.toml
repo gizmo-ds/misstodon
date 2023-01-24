@@ -17,4 +17,4 @@ max_backups = 10
 
 [database]
 type = "buntdb"
-address = "data.db"
+address = "data/data.db"
