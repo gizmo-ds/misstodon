@@ -2,7 +2,6 @@ package database
 
 import (
 	"github.com/gizmo-ds/misstodon/internal/database/buntdb"
-	"github.com/gizmo-ds/misstodon/internal/database/memory"
 )
 
 type DbType = string
@@ -23,7 +22,7 @@ func NewDatabase(dbType, address string) Database {
 	case DbTypeBuntDb:
 		return buntdb.NewDatabase(address)
 	case DbTypeMemory:
-		return memory.NewDatabase()
+		return buntdb.NewDatabase(":memory:")
 	default:
 		panic("unknown database type")
 	}
