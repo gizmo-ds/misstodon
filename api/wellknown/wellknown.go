@@ -4,18 +4,18 @@ import (
 	"net/http"
 
 	"github.com/gizmo-ds/misstodon/api/httperror"
+	"github.com/gizmo-ds/misstodon/api/middleware"
 	"github.com/gizmo-ds/misstodon/proxy/misskey"
 	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
 )
 
 func Router(e *echo.Group) {
 	group := e.Group("/.well-known", middleware.CORS())
-	group.GET("/nodeinfo", NodeInfo)
-	group.GET("/webfinger", WebFinger)
+	group.GET("/nodeinfo", NodeInfoHandler)
+	group.GET("/webfinger", WebFingerHandler)
 }
 
-func NodeInfo(c echo.Context) error {
+func NodeInfoHandler(c echo.Context) error {
 	server := c.Get("server").(string)
 	href := "https://" + c.Request().Host + "/nodeinfo/2.0"
 	if server != "" {
@@ -31,7 +31,7 @@ func NodeInfo(c echo.Context) error {
 	})
 }
 
-func WebFinger(c echo.Context) error {
+func WebFingerHandler(c echo.Context) error {
 	resource := c.QueryParam("resource")
 	if resource == "" {
 		return c.JSON(http.StatusBadRequest, httperror.ServerError{
