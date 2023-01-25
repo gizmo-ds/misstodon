@@ -6,11 +6,10 @@ import (
 	"github.com/gizmo-ds/misstodon/internal/global"
 	"github.com/gizmo-ds/misstodon/proxy/misskey"
 	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
 )
 
 func InstanceRouter(e *echo.Group) {
-	group := e.Group("/instance", middleware.CORS())
+	group := e.Group("/instance")
 	group.GET("", InstanceHandler)
 	group.GET("/peers", InstancePeersHandler)
 }

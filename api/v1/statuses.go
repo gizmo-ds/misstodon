@@ -6,11 +6,10 @@ import (
 	"github.com/gizmo-ds/misstodon/internal/utils"
 	"github.com/gizmo-ds/misstodon/proxy/misskey"
 	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
 )
 
 func StatusesRouter(e *echo.Group) {
-	group := e.Group("/statuses", middleware.CORS())
+	group := e.Group("/statuses")
 	group.GET("/:id", StatusHandler)
 	group.GET("/:id/context", StatusContextHandler)
 }

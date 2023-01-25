@@ -9,7 +9,6 @@ import (
 	"github.com/gizmo-ds/misstodon/api/wellknown"
 	"github.com/gizmo-ds/misstodon/internal/global"
 	"github.com/labstack/echo/v4"
-	echomiddleware "github.com/labstack/echo/v4/middleware"
 )
 
 func Router(e *echo.Echo) {
@@ -24,8 +23,8 @@ func Router(e *echo.Echo) {
 	} {
 		wellknown.Router(group)
 		nodeinfo.Router(group)
-		v1Api := group.Group("/api/v1", echomiddleware.CORS())
 		oauth.Router(group)
+		v1Api := group.Group("/api/v1", middleware.CORS())
 		v1.InstanceRouter(v1Api)
 		v1.AccountsRouter(v1Api)
 		v1.ApplicationRouter(v1Api)

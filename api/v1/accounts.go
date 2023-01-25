@@ -7,12 +7,11 @@ import (
 	"github.com/gizmo-ds/misstodon/internal/utils"
 	"github.com/gizmo-ds/misstodon/proxy/misskey"
 	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
 	"github.com/pkg/errors"
 )
 
 func AccountsRouter(e *echo.Group) {
-	group := e.Group("/accounts", middleware.CORS())
+	group := e.Group("/accounts")
 	group.GET("/verify_credentials", AccountsVerifyCredentialsHandler)
 	group.GET("/lookup", AccountsLookupHandler)
 	group.GET("/:accountID/statuses", AccountsStatusesHandler)

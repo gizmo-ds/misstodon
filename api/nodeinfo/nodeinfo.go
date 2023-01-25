@@ -3,11 +3,11 @@ package nodeinfo
 import (
 	"net/http"
 
+	"github.com/gizmo-ds/misstodon/api/middleware"
 	"github.com/gizmo-ds/misstodon/internal/global"
 	"github.com/gizmo-ds/misstodon/models"
 	"github.com/gizmo-ds/misstodon/proxy/misskey"
 	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
 )
 
 func Router(e *echo.Group) {
