@@ -13,7 +13,9 @@ import (
 
 func Router(e *echo.Echo) {
 	e.HTTPErrorHandler = httperror.ErrorHandler
-	e.Use(middleware.SetContextData)
+	e.Use(
+		middleware.SetContextData,
+		middleware.Recover())
 	if global.Config.Logger.RequestLogger {
 		e.Use(middleware.Logger)
 	}
