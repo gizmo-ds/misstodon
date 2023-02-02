@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/gizmo-ds/misstodon/api/httperror"
@@ -52,6 +53,10 @@ func AccountsLookupHandler(c echo.Context) error {
 			})
 		}
 		return err
+	}
+	if info.Header == "" || info.HeaderStatic == "" {
+		info.Header = fmt.Sprintf("%s://%s/static/missing.png", c.Scheme(), c.Request().Host)
+		info.HeaderStatic = info.Header
 	}
 	return c.JSON(http.StatusOK, info)
 }
