@@ -6,32 +6,45 @@
 
 ## Progress
 
-| Status             | API                                  |
-| ------------------ | ------------------------------------ |
-| :white_check_mark: | /.well-known/webfinger               |
-| :white_check_mark: | /.well-known/nodeinfo                |
-| :white_check_mark: | /nodeinfo/2.0                        |
-| :white_check_mark: | /oauth/authorize                     |
-| :white_check_mark: | /oauth/token                         |
-| :white_check_mark: | `v1` /instance                       |
-| :white_check_mark: | `v1` /accounts/lookup                |
-| :white_check_mark: | `v1` /accounts/verify_credentials    |
-| :x:                | `v1` /accounts/update_credentials    |
-| :construction:     | `v1` /accounts/<user_id>/statuses    |
-| :construction:     | `v1` /accounts/<user_id>/following   |
-| :construction:     | `v1` /accounts/<user_id>/followers   |
-| :construction:     | `v1` /statuses/<status_id>           |
-| :construction:     | `v1` /statuses/<status_id>/context   |
-| :x:                | `v1` /statuses/<status_id>/favourite |
-| :x:                | `v1` /statuses/<status_id>/bookmark  |
-| :x:                | `v1` /trends/statuses                |
-| :x:                | `v1` /notifications                  |
-| :x:                | `v1` /streaming                      |
-| :x:                | `v2` /search                         |
-| :white_check_mark: | `v1` /apps                           |
-| :x:                | `v1` /accounts/relationships         |
-| :construction:     | `v1` /timelines/home                 |
-| :construction:     | `v1` /timelines/public               |
-| :question:         | `v1` /conversations                  |
-| :construction:     | `v1` /favourites                     |
-| :x:                | `v1` /bookmarks                      |
+- [ ] .well-known
+  - [x] /.well-known/webfinger
+  - [x] /.well-known/nodeinfo
+- [ ] Nodeinfo
+  - [x] /nodeinfo/2.0
+- [ ] Auth
+  - [x] /oauth/authorize
+  - [x] /oauth/token
+  - [x] /api/v1/apps
+  - [ ] /api/v1/apps/verify_credentials
+- [ ] Instance
+  - [x] /api/v1/instance
+- [ ] Accounts
+  - [x] /api/v1/accounts/lookup
+  - [x] /api/v1/accounts/verify_credentials
+  - [ ] /api/v1/accounts/update_credentials
+  - [ ] /api/v1/accounts/relationships
+  - [ ] /api/v1/accounts/:user_id/statuses
+  - [ ] /api/v1/accounts/:user_id/following
+  - [ ] /api/v1/accounts/:user_id/followers
+- [ ] Statuses
+  - [x] /api/v1/statuses/:status_id
+  - [ ] /api/v1/statuses/:status_id/context
+  - [ ] /api/v1/statuses/:status_id/favourite
+  - [ ] /api/v1/statuses/:status_id/bookmark
+- [ ] Timelines
+  - [ ] /api/v1/timelines/home
+  - [ ] /api/v1/timelines/public
+- [ ] Favourites
+  - [ ] /api/v1/favourites
+- [ ] Bookmarks
+  - [ ] /api/v1/bookmarks
+- [ ] Push
+  - [ ] /api/v1/notifications
+- [ ] Streaming
+  - [ ] /api/v1/streaming
+- [ ] Search
+  - [ ] /api/v2/search
+- [ ] Conversations
+  - [ ] /api/v1/conversations
+- [ ] Trends
+  - [ ] /api/v1/trends/statuses
