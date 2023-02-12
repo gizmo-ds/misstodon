@@ -27,10 +27,11 @@ func Router(e *echo.Echo) {
 		nodeinfo.Router(group)
 		oauth.Router(group)
 		v1Api := group.Group("/api/v1", middleware.CORS())
+		group.GET("/static/missing.png", v1.MissingImageHandler)
 		v1.InstanceRouter(v1Api)
 		v1.AccountsRouter(v1Api)
 		v1.ApplicationRouter(v1Api)
 		v1.StatusesRouter(v1Api)
-		group.GET("/static/missing.png", v1.MissingImageHandler)
+		v1.StreamingRouter(v1Api)
 	}
 }

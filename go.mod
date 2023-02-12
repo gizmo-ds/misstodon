@@ -5,6 +5,7 @@ go 1.19
 require (
 	github.com/dop251/goja v0.0.0-20230119130012-17fd568758fe
 	github.com/go-resty/resty/v2 v2.7.0
+	github.com/gorilla/websocket v1.5.0
 	github.com/jinzhu/configor v1.2.1
 	github.com/labstack/echo/v4 v4.10.0
 	github.com/pkg/errors v0.9.1
@@ -46,3 +47,5 @@ require (
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
+
+replace github.com/gorilla/websocket v1.5.0 => github.com/gizmo-ds/gorilla-websocket v0.0.0-20230212044710-0f26ab2a978a
