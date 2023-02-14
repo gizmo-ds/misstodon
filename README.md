@@ -6,6 +6,8 @@
 
 ## Progress
 
+<details>
+
 - [ ] .well-known
   - [x] /.well-known/webfinger
   - [x] /.well-known/nodeinfo
@@ -48,3 +50,5 @@
   - [ ] /api/v1/conversations
 - [ ] Trends
   - [ ] /api/v1/trends/statuses
+
+</details>
