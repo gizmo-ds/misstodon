@@ -7,7 +7,7 @@ RUN wget -qO /bin/pnpm "https://github.com/pnpm/pnpm/releases/latest/download/pn
 RUN pnpm install && \
     pnpm build
 
-FROM docker.io/library/golang:1.19.5-alpine AS builder
+FROM docker.io/library/golang:1.20-alpine AS builder
 RUN apk add --no-cache git
 WORKDIR /app
 COPY . /app

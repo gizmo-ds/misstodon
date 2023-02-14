@@ -1,6 +1,6 @@
 module github.com/gizmo-ds/misstodon
 
-go 1.19
+go 1.20
 
 require (
 	github.com/dop251/goja v0.0.0-20230119130012-17fd568758fe
