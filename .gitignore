@@ -1,11 +1,12 @@
 .idea
 .vscode
+
 cert/
 logs/
 build/
+/data/
 node_modules/
 
 /config.toml
 /.env
 /internal/mfm/out.js
-/data/

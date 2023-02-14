@@ -4,7 +4,7 @@ import (
 	_ "embed"
 	"fmt"
 
-	"github.com/gizmo-ds/misstodon/api"
+	"github.com/gizmo-ds/misstodon/internal/api"
 	"github.com/gizmo-ds/misstodon/internal/database"
 	"github.com/gizmo-ds/misstodon/internal/global"
 	"github.com/gizmo-ds/misstodon/internal/utils"

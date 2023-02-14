@@ -3,7 +3,7 @@ package middleware
 import (
 	"net/http"
 
-	"github.com/gizmo-ds/misstodon/api/httperror"
+	"github.com/gizmo-ds/misstodon/internal/api/httperror"
 	"github.com/gizmo-ds/misstodon/internal/global"
 	"github.com/gizmo-ds/misstodon/internal/utils"
 	"github.com/labstack/echo/v4"

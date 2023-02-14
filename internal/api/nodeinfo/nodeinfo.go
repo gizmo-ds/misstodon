@@ -3,7 +3,7 @@ package nodeinfo
 import (
 	"net/http"
 
-	"github.com/gizmo-ds/misstodon/api/middleware"
+	"github.com/gizmo-ds/misstodon/internal/api/middleware"
 	"github.com/gizmo-ds/misstodon/internal/global"
 	"github.com/gizmo-ds/misstodon/models"
 	"github.com/gizmo-ds/misstodon/proxy/misskey"

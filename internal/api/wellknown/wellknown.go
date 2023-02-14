@@ -3,8 +3,8 @@ package wellknown
 import (
 	"net/http"
 
-	"github.com/gizmo-ds/misstodon/api/httperror"
-	"github.com/gizmo-ds/misstodon/api/middleware"
+	"github.com/gizmo-ds/misstodon/internal/api/httperror"
+	"github.com/gizmo-ds/misstodon/internal/api/middleware"
 	"github.com/gizmo-ds/misstodon/proxy/misskey"
 	"github.com/labstack/echo/v4"
 )
