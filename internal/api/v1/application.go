@@ -5,6 +5,7 @@ import (
 	"net/url"
 
 	"github.com/gizmo-ds/misstodon/internal/global"
+	"github.com/gizmo-ds/misstodon/internal/utils"
 	"github.com/gizmo-ds/misstodon/proxy/misskey"
 	"github.com/labstack/echo/v4"
 	"github.com/pkg/errors"
@@ -33,7 +34,8 @@ func ApplicationCreateHandler(c echo.Context) error {
 		})
 	}
 	server := c.Get("server").(string)
-	u, err := url.Parse(global.Config.Server.Url + "/oauth/redirect")
+	serverUrl, _ := utils.StrEvaluation(global.Config.Server.Url, "https://"+c.Request().Host)
+	u, err := url.Parse(serverUrl + "/oauth/redirect")
 	if err != nil {
 		return errors.WithStack(err)
 	}
