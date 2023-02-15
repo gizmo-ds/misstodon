@@ -3,20 +3,22 @@ WORKDIR /app
 COPY ./internal/mfm /app/internal/mfm
 COPY ./package.json /app/package.json
 COPY ./pnpm-lock.yaml /app/pnpm-lock.yaml
-RUN wget -qO /bin/pnpm "https://github.com/pnpm/pnpm/releases/latest/download/pnpm-linuxstatic-x64" && chmod +x /bin/pnpm
+RUN corepack enable && \
+    corepack prepare pnpm@7.27.0 --activate
 RUN pnpm install && \
     pnpm build
 
 FROM docker.io/library/golang:1.20-alpine AS builder
-RUN apk add --no-cache git
 WORKDIR /app
 COPY . /app
 ENV CGO_ENABLED=0
+ARG version=development
 COPY --from=mfm-builder /app/internal/mfm/out.js /app/internal/mfm/out.js
+RUN go mod download
 RUN go build -trimpath -tags timetzdata \
-    -ldflags "-s -w -X github.com/gizmo-ds/misstodon/internal/global.AppVersion=$(git describe --tags --always)" \
+    -ldflags "-s -w -X github.com/gizmo-ds/misstodon/internal/global.AppVersion=$version" \
     -o misstodon \
-    cmd/misstodon/main.go
+    ./cmd/misstodon
 
 FROM docker.io/library/alpine:latest
 WORKDIR /app

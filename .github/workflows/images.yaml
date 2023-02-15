@@ -1,0 +1,25 @@
+name: Build images
+
+on:
+  push:
+    branches: [ main ]
+    tags: [ v* ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Build image
+        run: docker build --build-arg version=$(git describe --tags --always) -t ghcr.io/gizmo-ds/misstodon:latest -f Dockerfile .
+      - name: Push latest
+        env:
+          CR_PAT: ${{ secrets.CR_PAT }}
+        run: |
+          echo $CR_PAT | docker login ghcr.io -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
+          docker push ghcr.io/gizmo-ds/misstodon:latest
+      - name: Push tag
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          docker tag ghcr.io/gizmo-ds/misstodon:latest ghcr.io/gizmo-ds/misstodon:${{ github.ref }}
+          docker push ghcr.io/gizmo-ds/misstodon:${{ github.ref }}
