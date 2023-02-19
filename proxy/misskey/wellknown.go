@@ -31,6 +31,7 @@ func WebFinger(server, resource string, writer http.ResponseWriter) error {
 	}
 	defer resp.RawBody().Close()
 	writer.WriteHeader(resp.StatusCode())
+	writer.Header().Set("Content-Type", resp.Header().Get("Content-Type"))
 	_, err = io.Copy(writer, resp.RawBody())
 	return err
 }
