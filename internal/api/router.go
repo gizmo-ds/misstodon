@@ -33,5 +33,6 @@ func Router(e *echo.Echo) {
 		v1.ApplicationRouter(v1Api)
 		v1.StatusesRouter(v1Api)
 		v1.StreamingRouter(v1Api)
+		v1.TimelinesRouter(v1Api)
 	}
 }

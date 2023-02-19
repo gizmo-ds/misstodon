@@ -35,7 +35,7 @@
   - [ ] /api/v1/statuses/:status_id/bookmark
 - [ ] Timelines
   - [ ] /api/v1/timelines/home
-  - [ ] /api/v1/timelines/public
+  - [x] /api/v1/timelines/public
 - [ ] Favourites
   - [ ] /api/v1/favourites
 - [ ] Bookmarks
