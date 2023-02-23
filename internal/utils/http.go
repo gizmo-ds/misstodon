@@ -7,6 +7,7 @@ import (
 	"github.com/pkg/errors"
 )
 
+// GetHeaderToken extracts the token from the Authorization header, if any.
 func GetHeaderToken(header http.Header) (string, error) {
 	auth := header.Get("Authorization")
 	if auth == "" {

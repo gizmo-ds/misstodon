@@ -2,6 +2,7 @@ package utils
 
 import "strings"
 
+// Contains returns true if the list contains the item, false otherwise.
 func Contains[T comparable](list []T, item T) bool {
 	for _, i := range list {
 		if i == item {
@@ -11,6 +12,8 @@ func Contains[T comparable](list []T, item T) bool {
 	return false
 }
 
+// StrEvaluation evaluates a list of strings and returns the first non-empty
+// string, or an empty string if no non-empty strings are found.
 func StrEvaluation(str ...string) (v string, ok bool) {
 	for _, s := range str {
 		if s != "" {
@@ -20,6 +23,8 @@ func StrEvaluation(str ...string) (v string, ok bool) {
 	return
 }
 
+// Unique returns a new list containing only the unique elements of list.
+// The order of the elements is preserved.
 func Unique[T comparable](list []T) []T {
 	var result []T
 	t := make(map[T]struct{})
@@ -32,6 +37,7 @@ func Unique[T comparable](list []T) []T {
 	return result
 }
 
+// AcctInfo splits an account string into a username and host.
 func AcctInfo(acct string) (username, host string) {
 	_acct := acct
 	if strings.Contains(_acct, "acct:") {
