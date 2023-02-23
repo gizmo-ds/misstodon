@@ -26,5 +26,4 @@ func NewDatabase(dbType, address string) Database {
 	default:
 		panic("unknown database type")
 	}
-	return nil
 }
