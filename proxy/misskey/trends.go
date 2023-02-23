@@ -15,9 +15,7 @@ func TrendsTags(server, token string, limit, offset int) ([]models.Tag, error) {
 		UsersCount int    `json:"usersCount"`
 	}
 	_, err := client.R().
-		SetBody(utils.Map{
-			"i": token,
-		}).
+		SetBody(utils.Map{"i": token}).
 		SetResult(&result).
 		Post("https://" + server + "/api/hashtags/trend")
 	if err != nil {
@@ -43,4 +41,23 @@ func TrendsTags(server, token string, limit, offset int) ([]models.Tag, error) {
 		tags = append(tags, tag)
 	}
 	return tags, nil
+}
+
+func TrendsStatus(server, token string, limit, offset int) ([]models.Status, error) {
+	var statuses []models.Status
+	var result []models.MkNote
+	_, err := client.R().
+		SetBody(utils.Map{
+			"limit": limit,
+			"i":     token,
+		}).
+		SetResult(&result).
+		Post("https://" + server + "/api/notes/featured")
+	if err != nil {
+		return nil, err
+	}
+	for _, note := range result {
+		statuses = append(statuses, note.ToStatus(server))
+	}
+	return statuses, nil
 }

@@ -13,6 +13,7 @@ import (
 func TrendsRouter(e *echo.Group) {
 	group := e.Group("/trends")
 	group.GET("/tags", TrendsTagsHandler)
+	group.GET("/statuses", TrendsStatusHandler)
 }
 
 func TrendsTagsHandler(c echo.Context) error {
@@ -35,4 +36,25 @@ func TrendsTagsHandler(c echo.Context) error {
 		tags = []models.Tag{}
 	}
 	return c.JSON(http.StatusOK, tags)
+}
+
+func TrendsStatusHandler(c echo.Context) error {
+	limit := 20
+	if v, err := strconv.Atoi(c.QueryParam("limit")); err == nil {
+		limit = v
+		if limit > 30 {
+			limit = 30
+		}
+	}
+	offset, _ := strconv.Atoi(c.QueryParam("offset"))
+	server := c.Get("server").(string)
+	accessToken, _ := utils.GetHeaderToken(c.Request().Header)
+	statuses, err := misskey.TrendsStatus(server, accessToken, limit, offset)
+	if err != nil {
+		return err
+	}
+	if statuses == nil {
+		statuses = []models.Status{}
+	}
+	return c.JSON(http.StatusOK, statuses)
 }
