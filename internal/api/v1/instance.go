@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gizmo-ds/misstodon/internal/global"
+	"github.com/gizmo-ds/misstodon/internal/utils"
 	"github.com/gizmo-ds/misstodon/proxy/misskey"
 	"github.com/labstack/echo/v4"
 )
@@ -29,8 +30,5 @@ func InstancePeersHandler(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	if len(peers) == 0 {
-		return c.JSON(http.StatusOK, []string{})
-	}
-	return c.JSON(http.StatusOK, peers)
+	return c.JSON(http.StatusOK, utils.SliceIfNull(peers))
 }

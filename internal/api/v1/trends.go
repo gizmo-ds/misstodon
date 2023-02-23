@@ -5,7 +5,6 @@ import (
 	"strconv"
 
 	"github.com/gizmo-ds/misstodon/internal/utils"
-	"github.com/gizmo-ds/misstodon/models"
 	"github.com/gizmo-ds/misstodon/proxy/misskey"
 	"github.com/labstack/echo/v4"
 )
@@ -32,10 +31,7 @@ func TrendsTagsHandler(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	if tags == nil {
-		tags = []models.Tag{}
-	}
-	return c.JSON(http.StatusOK, tags)
+	return c.JSON(http.StatusOK, utils.SliceIfNull(tags))
 }
 
 func TrendsStatusHandler(c echo.Context) error {
@@ -53,8 +49,5 @@ func TrendsStatusHandler(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	if statuses == nil {
-		statuses = []models.Status{}
-	}
-	return c.JSON(http.StatusOK, statuses)
+	return c.JSON(http.StatusOK, utils.SliceIfNull(statuses))
 }

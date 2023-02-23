@@ -6,7 +6,6 @@ import (
 
 	"github.com/gizmo-ds/misstodon/internal/api/httperror"
 	"github.com/gizmo-ds/misstodon/internal/utils"
-	"github.com/gizmo-ds/misstodon/models"
 	"github.com/gizmo-ds/misstodon/proxy/misskey"
 	"github.com/labstack/echo/v4"
 	"github.com/pkg/errors"
@@ -95,8 +94,5 @@ func AccountsStatusesHandler(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	if statuses == nil {
-		statuses = []models.Status{}
-	}
-	return c.JSON(http.StatusOK, statuses)
+	return c.JSON(http.StatusOK, utils.SliceIfNull(statuses))
 }

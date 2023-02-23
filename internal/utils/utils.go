@@ -65,3 +65,11 @@ func GetMentions(text string) []string {
 	}
 	return result
 }
+
+// SliceIfNull returns the given slice if it is not nil, or an empty slice if it is nil.
+func SliceIfNull[T any](slice []T) []T {
+	if slice == nil {
+		return []T{}
+	}
+	return slice
+}
