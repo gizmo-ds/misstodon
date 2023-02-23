@@ -34,5 +34,6 @@ func Router(e *echo.Echo) {
 		v1.StatusesRouter(v1Api)
 		v1.StreamingRouter(v1Api)
 		v1.TimelinesRouter(v1Api)
+		v1.TrendsRouter(v1Api)
 	}
 }

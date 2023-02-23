@@ -37,6 +37,7 @@
 - [ ] Timelines
   - [ ] /api/v1/timelines/home
   - [x] /api/v1/timelines/public
+  - [ ] /api/v1/timelines/tag/:tag
 - [ ] Favourites
   - [ ] /api/v1/favourites
 - [ ] Bookmarks
@@ -51,5 +52,6 @@
   - [ ] /api/v1/conversations
 - [ ] Trends
   - [ ] /api/v1/trends/statuses
+  - [x] /api/v1/trends/tags
 
 </details>
