@@ -51,7 +51,7 @@ func TestToHtml(t *testing.T) {
 		assert.Equal(t, s,
 			`<p><span>hello world</span></p>`)
 	})
-	//NOTE: 当前版本的mfm.js(0.23.3)不支持, 这里使用了与当前版本行为一致的测试用例
+	// NOTE: 当前版本的mfm.js(0.23.3)不支持, 这里使用了与当前版本行为一致的测试用例
 	t.Run("BlockCode", func(t *testing.T) {
 		s, err := mfm.ToHtml("```js\nabc\n````")
 		assert.NoError(t, err)
@@ -222,4 +222,14 @@ func TestToHtml(t *testing.T) {
 		assert.Equal(t,
 			"<p><a href=\"http://藍.jp/abc\">http://藍.jp/abc</a></p>", s)
 	})
+}
+
+func TestCustomHashtagHandler(t *testing.T) {
+	s, err := mfm.ToHtml("#hello", mfm.Option{
+		Url:            "https://misskey.io",
+		HashtagHandler: mfm.MastodonHashtagHandler,
+	})
+	assert.NoError(t, err)
+	assert.Equal(t,
+		`<p><a href="https://misskey.io/tags/hello" class="mention hashtag" rel="nofollow noopener noreferrer" target="_blank">#<span>hello</span></a></p>`, s)
 }

@@ -1,5 +1,7 @@
 package mfm
 
+import "golang.org/x/net/html"
+
 type mfmNodeType string
 
 const (
@@ -26,12 +28,13 @@ const (
 )
 
 type (
-	mfmNode struct {
+	MfmNode struct {
 		Type     mfmNodeType
 		Props    map[string]any
-		Children []mfmNode
+		Children []MfmNode
 	}
 	Option struct {
-		Url string
+		Url            string
+		HashtagHandler func(*html.Node, MfmNode, string)
 	}
 )

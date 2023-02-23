@@ -33,8 +33,8 @@ func init() {
 }
 
 // Parse parses MFM to nodes.
-func Parse(text string) ([]mfmNode, error) {
-	var nodes []mfmNode
+func Parse(text string) ([]MfmNode, error) {
+	var nodes []MfmNode
 	err := json.Unmarshal([]byte(parseText(text)), &nodes)
 	return nodes, err
 }
@@ -48,7 +48,7 @@ func ToHtml(text string, option ...Option) (string, error) {
 	return toHtml(nodes, option...)
 }
 
-func toHtml(nodes []mfmNode, option ...Option) (string, error) {
+func toHtml(nodes []MfmNode, option ...Option) (string, error) {
 	node := &html.Node{
 		Type: html.ElementNode,
 		Data: "p",
@@ -69,7 +69,7 @@ func toHtml(nodes []mfmNode, option ...Option) (string, error) {
 	return h, nil
 }
 
-func appendChildren(parent *html.Node, children []mfmNode, option ...Option) {
+func appendChildren(parent *html.Node, children []MfmNode, option ...Option) {
 	for _, child := range children {
 		switch child.Type {
 		case nodeTypePlain:
@@ -230,13 +230,18 @@ func appendChildren(parent *html.Node, children []mfmNode, option ...Option) {
 			})
 
 		case nodeTypeHashtag:
+			if option[0].HashtagHandler != nil {
+				option[0].HashtagHandler(parent, child, option[0].Url)
+				break
+			}
 			a := &html.Node{
 				Type: html.ElementNode,
 				Data: "a",
 			}
+			hashtag := child.Props["hashtag"].(string)
 			a.Attr = append(a.Attr, html.Attribute{
 				Key: "href",
-				Val: option[0].Url + "/tags/" + child.Props["hashtag"].(string),
+				Val: option[0].Url + "/tags/" + hashtag,
 			})
 			a.Attr = append(a.Attr, html.Attribute{
 				Key: "rel",
@@ -244,7 +249,7 @@ func appendChildren(parent *html.Node, children []mfmNode, option ...Option) {
 			})
 			a.AppendChild(&html.Node{
 				Type: html.TextNode,
-				Data: "#" + child.Props["hashtag"].(string),
+				Data: "#" + hashtag,
 			})
 			parent.AppendChild(a)
 
