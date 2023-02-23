@@ -34,6 +34,8 @@
   - [ ] /api/v1/statuses/:status_id/context
   - [ ] /api/v1/statuses/:status_id/favourite
   - [ ] /api/v1/statuses/:status_id/bookmark
+  - [ ] /api/v1/statuses/:status_id/favourited_by
+  - [ ] /api/v1/statuses/:status_id/reblogged_by
 - [ ] Timelines
   - [ ] /api/v1/timelines/home
   - [x] /api/v1/timelines/public
