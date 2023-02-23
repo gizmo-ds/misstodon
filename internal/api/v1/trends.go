@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/gizmo-ds/misstodon/internal/utils"
+	"github.com/gizmo-ds/misstodon/models"
 	"github.com/gizmo-ds/misstodon/proxy/misskey"
 	"github.com/labstack/echo/v4"
 )
@@ -29,6 +30,9 @@ func TrendsTagsHandler(c echo.Context) error {
 	tags, err := misskey.TrendsTags(server, accessToken, limit, offset)
 	if err != nil {
 		return err
+	}
+	if tags == nil {
+		tags = []models.Tag{}
 	}
 	return c.JSON(http.StatusOK, tags)
 }
