@@ -41,7 +41,10 @@ func TimelinePublicHandler(c echo.Context) error {
 
 func TimelineHomeHandler(c echo.Context) error {
 	server := c.Get("server").(string)
-	accessToken, _ := utils.GetHeaderToken(c.Request().Header)
+	accessToken, err := utils.GetHeaderToken(c.Request().Header)
+	if err != nil {
+		return c.JSON(http.StatusUnauthorized, echo.Map{"error": "invalid token"})
+	}
 	limit := 20
 	if v, err := strconv.Atoi(c.QueryParam("limit")); err != nil {
 		limit = v
