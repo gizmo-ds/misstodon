@@ -37,6 +37,7 @@ type MkNote struct {
 	Score        int              `json:"score"`
 	FileIds      []string         `json:"fileIds"`
 	Files        []MkFile         `json:"files"`
+	Tags         []string         `json:"tags"`
 }
 
 func (n *MkNote) ToStatus(server string) Status {
@@ -44,7 +45,6 @@ func (n *MkNote) ToStatus(server string) Status {
 		ID:               n.ID,
 		Url:              "https://" + server + "/notes/" + n.ID,
 		Uri:              "https://" + server + "/notes/" + n.ID,
-		Tags:             []StatusTag{},
 		CreatedAt:        n.CreatedAt,
 		Emojis:           []struct{}{},
 		MediaAttachments: []MediaAttachment{},
@@ -58,9 +58,18 @@ func (n *MkNote) ToStatus(server string) Status {
 		}
 		return count
 	}()
+	for _, tag := range n.Tags {
+		s.Tags = append(s.Tags, StatusTag{
+			Name: tag,
+			Url:  "https://" + server + "/tags/" + tag,
+		})
+	}
 	if n.Text != nil {
 		s.Content = *n.Text
-		if content, err := mfm.ToHtml(*n.Text, mfm.Option{Url: "https://" + server}); err == nil {
+		if content, err := mfm.ToHtml(*n.Text, mfm.Option{
+			Url:            "https://" + server,
+			HashtagHandler: mfm.MastodonHashtagHandler,
+		}); err == nil {
 			s.Content = content
 		}
 		utils.GetMentions(*n.Text)

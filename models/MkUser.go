@@ -76,7 +76,10 @@ func (u *MkUser) ToAccount(server string) (Account, error) {
 		info.LastStatusAt = &t
 	}
 	if u.Description != nil {
-		info.Note, err = mfm.ToHtml(*u.Description, mfm.Option{Url: "https://" + host})
+		info.Note, err = mfm.ToHtml(*u.Description, mfm.Option{
+			Url:            "https://" + server,
+			HashtagHandler: mfm.MastodonHashtagHandler,
+		})
 		if err != nil {
 			return info, errors.WithStack(err)
 		}
