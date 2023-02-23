@@ -10,50 +10,51 @@
 <details>
 
 - [ ] .well-known
-  - [x] /.well-known/webfinger
-  - [x] /.well-known/nodeinfo
+  - [x] `GET` /.well-known/webfinger
+  - [x] `GET` /.well-known/nodeinfo
 - [ ] Nodeinfo
-  - [x] /nodeinfo/2.0
+  - [x] `GET` /nodeinfo/2.0
 - [ ] Auth
-  - [x] /oauth/authorize
-  - [x] /oauth/token
-  - [x] /api/v1/apps
-  - [ ] /api/v1/apps/verify_credentials
+  - [x] `GET` /oauth/authorize
+  - [x] `POST` /oauth/token
+  - [x] `POST` /api/v1/apps
+  - [ ] `GET` /api/v1/apps/verify_credentials
 - [ ] Instance
-  - [x] /api/v1/instance
+  - [x] `GET` /api/v1/instance
 - [ ] Accounts
-  - [x] /api/v1/accounts/lookup
-  - [x] /api/v1/accounts/verify_credentials
-  - [ ] /api/v1/accounts/update_credentials
-  - [ ] /api/v1/accounts/relationships
-  - [ ] /api/v1/accounts/:user_id/statuses
-  - [ ] /api/v1/accounts/:user_id/following
-  - [ ] /api/v1/accounts/:user_id/followers
+  - [x] `GET` /api/v1/accounts/lookup
+  - [x] `GET` /api/v1/accounts/verify_credentials
+  - [ ] `PATCH` /api/v1/accounts/update_credentials
+  - [ ] `GET` /api/v1/accounts/relationships
+  - [ ] `GET` /api/v1/accounts/:user_id/statuses
+  - [ ] `GET` /api/v1/accounts/:user_id/following
+  - [ ] `GET` /api/v1/accounts/:user_id/followers
 - [ ] Statuses
-  - [x] /api/v1/statuses/:status_id
-  - [ ] /api/v1/statuses/:status_id/context
-  - [ ] /api/v1/statuses/:status_id/favourite
-  - [ ] /api/v1/statuses/:status_id/bookmark
-  - [ ] /api/v1/statuses/:status_id/favourited_by
-  - [ ] /api/v1/statuses/:status_id/reblogged_by
+  - [ ] `POST` /api/v1/statuses
+  - [x] `GET` /api/v1/statuses/:status_id
+  - [ ] `GET` /api/v1/statuses/:status_id/context
+  - [ ] `GET` /api/v1/statuses/:status_id/favourite
+  - [ ] `GET` /api/v1/statuses/:status_id/bookmark
+  - [ ] `GET` /api/v1/statuses/:status_id/favourited_by
+  - [ ] `GET` /api/v1/statuses/:status_id/reblogged_by
 - [ ] Timelines
-  - [ ] /api/v1/timelines/home
-  - [x] /api/v1/timelines/public
-  - [ ] /api/v1/timelines/tag/:hashtag
+  - [ ] `GET` /api/v1/timelines/home
+  - [x] `GET` /api/v1/timelines/public
+  - [ ] `GET` /api/v1/timelines/tag/:hashtag
 - [ ] Favourites
-  - [ ] /api/v1/favourites
+  - [ ] `GET` /api/v1/favourites
 - [ ] Bookmarks
-  - [ ] /api/v1/bookmarks
+  - [ ] `GET` /api/v1/bookmarks
 - [ ] Push
-  - [ ] /api/v1/notifications
+  - [ ] `GET` /api/v1/notifications
 - [ ] Streaming
-  - [ ] /api/v1/streaming
+  - [ ] `WS` /api/v1/streaming
 - [ ] Search
-  - [ ] /api/v2/search
+  - [ ] `GET` /api/v2/search
 - [ ] Conversations
-  - [ ] /api/v1/conversations
+  - [ ] `GET` /api/v1/conversations
 - [ ] Trends
-  - [x] /api/v1/trends/statuses
-  - [x] /api/v1/trends/tags
+  - [x] `GET` /api/v1/trends/statuses
+  - [x] `GET` /api/v1/trends/tags
 
 </details>
