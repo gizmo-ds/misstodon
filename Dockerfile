@@ -3,6 +3,7 @@ WORKDIR /app
 COPY ./internal/mfm /app/internal/mfm
 COPY ./package.json /app/package.json
 COPY ./pnpm-lock.yaml /app/pnpm-lock.yaml
+RUN echo "update-notifier=false" >> /app/.npmrc
 RUN corepack enable && \
     corepack prepare pnpm@7.27.0 --activate
 RUN pnpm install && \
