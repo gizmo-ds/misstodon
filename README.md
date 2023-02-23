@@ -38,7 +38,7 @@
   - [ ] `GET` /api/v1/statuses/:status_id/favourited_by
   - [ ] `GET` /api/v1/statuses/:status_id/reblogged_by
 - [ ] Timelines
-  - [ ] `GET` /api/v1/timelines/home
+  - [x] `GET` /api/v1/timelines/home
   - [x] `GET` /api/v1/timelines/public
   - [ ] `GET` /api/v1/timelines/tag/:hashtag
 - [ ] Favourites

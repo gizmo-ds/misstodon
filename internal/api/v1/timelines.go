@@ -13,15 +13,17 @@ import (
 func TimelinesRouter(e *echo.Group) {
 	group := e.Group("/timelines")
 	group.GET("/public", TimelinePublicHandler)
+	group.GET("/home", TimelineHomeHandler)
 }
 
 func TimelinePublicHandler(c echo.Context) error {
 	server := c.Get("server").(string)
 	accessToken, _ := utils.GetHeaderToken(c.Request().Header)
 	limit := 20
-	if _limit := c.QueryParam("limit"); _limit != "" {
-		if v, err := strconv.Atoi(_limit); err != nil {
-			limit = v
+	if v, err := strconv.Atoi(c.QueryParam("limit")); err != nil {
+		limit = v
+		if limit > 40 {
+			limit = 40
 		}
 	}
 	timelineType := models.TimelinePublicTypeRemote
@@ -34,5 +36,23 @@ func TimelinePublicHandler(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	return c.JSON(http.StatusOK, list)
+	return c.JSON(http.StatusOK, utils.SliceIfNull(list))
+}
+
+func TimelineHomeHandler(c echo.Context) error {
+	server := c.Get("server").(string)
+	accessToken, _ := utils.GetHeaderToken(c.Request().Header)
+	limit := 20
+	if v, err := strconv.Atoi(c.QueryParam("limit")); err != nil {
+		limit = v
+		if limit > 40 {
+			limit = 40
+		}
+	}
+	list, err := misskey.TimelineHome(server, accessToken,
+		limit, c.QueryParam("max_id"), c.QueryParam("min_id"))
+	if err != nil {
+		return err
+	}
+	return c.JSON(http.StatusOK, utils.SliceIfNull(list))
 }

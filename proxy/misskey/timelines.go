@@ -45,3 +45,31 @@ func TimelinePublic(server, token string,
 	}
 	return list, nil
 }
+
+func TimelineHome(server, token string,
+	limit int, maxId, minId string) ([]models.Status, error) {
+	values := utils.Map{}
+	if minId != "" {
+		values["sinceId"] = minId
+	}
+	if maxId != "" {
+		values["untilId"] = maxId
+	}
+	values["limit"] = limit
+	if token != "" {
+		values["i"] = token
+	}
+	var result []models.MkNote
+	_, err := client.R().
+		SetBody(values).
+		SetResult(&result).
+		Post("https://" + server + "/api/notes/timeline")
+	if err != nil {
+		return nil, err
+	}
+	var list []models.Status
+	for _, note := range result {
+		list = append(list, note.ToStatus(server))
+	}
+	return list, nil
+}
