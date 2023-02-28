@@ -2,10 +2,12 @@ package v1
 
 import (
 	"fmt"
+	"mime/multipart"
 	"net/http"
 
 	"github.com/gizmo-ds/misstodon/internal/api/httperror"
 	"github.com/gizmo-ds/misstodon/internal/utils"
+	"github.com/gizmo-ds/misstodon/models"
 	"github.com/gizmo-ds/misstodon/proxy/misskey"
 	"github.com/labstack/echo/v4"
 	"github.com/pkg/errors"
@@ -14,6 +16,7 @@ import (
 func AccountsRouter(e *echo.Group) {
 	group := e.Group("/accounts")
 	group.GET("/verify_credentials", AccountsVerifyCredentialsHandler)
+	group.PATCH("/update_credentials", AccountsUpdateCredentialsHandler)
 	group.GET("/lookup", AccountsLookupHandler)
 	group.GET("/:accountID/statuses", AccountsStatusesHandler)
 }
@@ -95,4 +98,74 @@ func AccountsStatusesHandler(c echo.Context) error {
 		return err
 	}
 	return c.JSON(http.StatusOK, utils.SliceIfNull(statuses))
+}
+
+func AccountsUpdateCredentialsHandler(c echo.Context) error {
+	form, err := parseAccountsUpdateCredentialsForm(c)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, httperror.ServerError{Error: err.Error()})
+	}
+	server := c.Get("server").(string)
+	accessToken, err := utils.GetHeaderToken(c.Request().Header)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, httperror.ServerError{
+			Error: err.Error(),
+		})
+	}
+	account, err := misskey.UpdateCredentials(server, accessToken,
+		form.DisplayName, form.Note,
+		form.Locked, form.Bot, form.Discoverable,
+		form.SourcePrivacy, form.SourceSensitive, form.SourceLanguage,
+		form.AccountFields,
+		form.Avatar, form.Header)
+	if err != nil {
+		return err
+	}
+	return c.JSON(http.StatusOK, account)
+}
+
+type accountsUpdateCredentialsForm struct {
+	DisplayName     *string `form:"display_name"`
+	Note            *string `form:"note"`
+	Locked          *bool   `form:"locked"`
+	Bot             *bool   `form:"bot"`
+	Discoverable    *bool   `form:"discoverable"`
+	SourcePrivacy   *string `form:"source[privacy]"`
+	SourceSensitive *bool   `form:"source[sensitive]"`
+	SourceLanguage  *string `form:"source[language]"`
+	AccountFields   []models.AccountField
+	Avatar          *multipart.FileHeader
+	Header          *multipart.FileHeader
+}
+
+func parseAccountsUpdateCredentialsForm(c echo.Context) (f accountsUpdateCredentialsForm, err error) {
+	var form accountsUpdateCredentialsForm
+	if err = c.Bind(&form); err != nil {
+		return
+	}
+
+	var values = make(map[string][]string)
+	for k, v := range c.QueryParams() {
+		values[k] = v
+	}
+	if fp, err := c.FormParams(); err == nil {
+		for k, v := range fp {
+			values[k] = v
+		}
+	}
+	if mf, err := c.MultipartForm(); err == nil {
+		for k, v := range mf.Value {
+			values[k] = v
+		}
+	}
+	for _, field := range utils.GetFieldsAttributes(values) {
+		form.AccountFields = append(form.AccountFields, models.AccountField(field))
+	}
+	if fh, err := c.FormFile("avatar"); err == nil {
+		form.Avatar = fh
+	}
+	if fh, err := c.FormFile("header"); err == nil {
+		form.Header = fh
+	}
+	return form, nil
 }

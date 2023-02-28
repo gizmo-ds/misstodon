@@ -49,14 +49,14 @@ type AccountField struct {
 type CredentialAccount struct {
 	Account
 	Source struct {
-		Privacy             PostPrivacy `json:"privacy"`
-		Sensitive           bool        `json:"sensitive"`
-		Language            string      `json:"language"`
-		Note                string      `json:"note"`
-		Fields              []AccountField
-		FollowRequestsCount int `json:"follow_requests_count"`
+		Privacy             PostPrivacy    `json:"privacy"`
+		Sensitive           bool           `json:"sensitive"`
+		Language            string         `json:"language"`
+		Note                string         `json:"note"`
+		Fields              []AccountField `json:"fields"`
+		FollowRequestsCount int            `json:"follow_requests_count"`
 	} `json:"source"`
-	Role struct {
+	Role *struct {
 		Id          string `json:"id"`
 		Name        string `json:"name"`
 		Color       string `json:"color"`

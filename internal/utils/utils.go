@@ -1,6 +1,10 @@
 package utils
 
-import "strings"
+import (
+	"sort"
+	"strconv"
+	"strings"
+)
 
 // Contains returns true if the list contains the item, false otherwise.
 func Contains[T comparable](list []T, item T) bool {
@@ -72,4 +76,64 @@ func SliceIfNull[T any](slice []T) []T {
 		return []T{}
 	}
 	return slice
+}
+
+type accountField struct {
+	Name       string `json:"name"`
+	Value      string `json:"value"`
+	VerifiedAt *string
+}
+
+func GetFieldsAttributes(values map[string][]string) (fields []accountField) {
+	var m = make(map[int]*accountField)
+	var keys []int
+	for k, v := range values {
+		ok, index, tag := func(field string) (ok bool, index int, tag string) {
+			if len(field) < (17+3+6) ||
+				field[:17] != "fields_attributes" ||
+				field[17] != '[' ||
+				field[len(field)-1] != ']' {
+				return
+			}
+			field = field[18 : len(field)-1]
+			if !strings.Contains(field, "][") {
+				return
+			}
+			parts := strings.Split(field, "][")
+			if len(parts) != 2 || (parts[0] == "" || parts[1] == "") {
+				return
+			}
+			var err error
+			index, err = strconv.Atoi(parts[0])
+			if err != nil {
+				return
+			}
+			ok = true
+			tag = parts[1]
+			return
+		}(k)
+		if !ok {
+			continue
+		}
+		if _, e := m[index]; !e {
+			m[index] = &accountField{}
+		}
+		switch tag {
+		case "name":
+			m[index].Name = v[0]
+		case "value":
+			m[index].Value = v[0]
+		}
+	}
+	for i, f := range m {
+		if f.Name == "" {
+			continue
+		}
+		keys = append(keys, i)
+	}
+	sort.Ints(keys)
+	for _, k := range keys {
+		fields = append(fields, *m[k])
+	}
+	return
 }

@@ -34,3 +34,26 @@ func TestGetMentions(t *testing.T) {
 	assert.Equal(t, len(mentions), 1)
 	assert.Equal(t, mentions[0], "@banana")
 }
+
+func TestGetFieldsAttributes(t *testing.T) {
+	values := map[string][]string{
+		"display_name":                {"cy"},
+		"note":                        {"hello"},
+		"fields_attributes[0][name]":  {"GitHub"},
+		"fields_attributes[0][value]": {"https://github.com"},
+		"fields_attributes[1][name]":  {"Twitter"},
+		"fields_attributes[1][value]": {"https://twitter.com"},
+		"fields_attributes[3][name]":  {"Google"},
+		"fields_attributes[3][value]": {"https://google.com"},
+		"fields_attributes[name]":     {"Google"},
+		"fields_attributes[value]":    {"https://google.com"},
+	}
+	fields := utils.GetFieldsAttributes(values)
+	assert.Equal(t, 3, len(fields))
+	assert.Equal(t, "GitHub", fields[0].Name)
+	assert.Equal(t, "https://github.com", fields[0].Value)
+	assert.Equal(t, "Twitter", fields[1].Name)
+	assert.Equal(t, "https://twitter.com", fields[1].Value)
+	assert.Equal(t, "Google", fields[2].Name)
+	assert.Equal(t, "https://google.com", fields[2].Value)
+}
