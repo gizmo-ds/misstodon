@@ -84,6 +84,10 @@ type accountField struct {
 	VerifiedAt *string
 }
 
+// GetFieldsAttributes converts a map of fields to a slice of accountFields
+// The map of fields is expected to have keys in the form fields_attributes[<index>][<tag>]
+// Where <index> is an integer and <tag> is one of "name" or "value".
+// The order of the accountFields in the returned slice is determined by the order of the <index> values.
 func GetFieldsAttributes(values map[string][]string) (fields []accountField) {
 	var m = make(map[int]*accountField)
 	var keys []int
