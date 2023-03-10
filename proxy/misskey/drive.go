@@ -1,0 +1,82 @@
+package misskey
+
+import (
+	"io"
+
+	"github.com/gizmo-ds/misstodon/internal/utils"
+	"github.com/gizmo-ds/misstodon/models"
+	"github.com/pkg/errors"
+)
+
+func driveFileCreate(server, token, filename string, content io.Reader) (models.MkFile, error) {
+	var file models.MkFile
+	// find folder
+	folders, err := driveFolders(server, token)
+	if err != nil {
+		return file, err
+	}
+	var saveFolder *models.MkFolder
+	for _, folder := range folders {
+		if folder.Name == "misstodon" {
+			saveFolder = &folder
+			break
+		}
+	}
+
+	// create folder if not exists
+	if saveFolder == nil {
+		folder, err := driveFolderCreate(server, token, "misstodon")
+		if err != nil {
+			return file, err
+		}
+		saveFolder = &folder
+	}
+
+	resp, err := client.R().
+		SetFormData(map[string]string{
+			"folderId":    saveFolder.Id,
+			"name":        filename,
+			"i":           token,
+			"force":       "true",
+			"isSensitive": "false",
+		}).
+		SetMultipartField("file", filename, "application/octet-stream", content).
+		SetResult(&file).
+		Post("https://" + server + "/api/drive/files/create")
+	if err != nil {
+		return file, err
+	}
+	if resp.StatusCode() != 200 {
+		return file, errors.New("failed to verify credentials")
+	}
+	return file, nil
+}
+
+func driveFolders(server, token string) (folders []models.MkFolder, err error) {
+	resp, err := client.R().
+		SetBody(utils.Map{"i": token, "limit": 100}).
+		SetResult(&folders).
+		Post("https://" + server + "/api/drive/folders")
+	if err != nil {
+		return
+	}
+	if resp.StatusCode() != 200 {
+		return folders, errors.New("failed to verify credentials")
+	}
+	return
+}
+
+func driveFolderCreate(server, token, name string) (models.MkFolder, error) {
+	var folder models.MkFolder
+	resp, err := client.R().
+		SetBody(utils.Map{"name": name, "i": token}).
+		SetResult(&folder).
+		Post("https://" + server + "/api/drive/folders/create")
+	if err != nil {
+		return folder, err
+	}
+	if resp.StatusCode() != 200 {
+		return folder, errors.New("failed to verify credentials")
+	}
+	return folder, nil
+}

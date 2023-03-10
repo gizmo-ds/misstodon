@@ -21,6 +21,12 @@ type MkFile struct {
 		Height int `json:"height"`
 	} `json:"properties"`
 }
+type MkFolder struct {
+	Id        string  `json:"id"`
+	Name      string  `json:"name"`
+	CreatedAt string  `json:"createdAt"`
+	ParentId  *string `json:"parentId"`
+}
 
 func (f *MkFile) ToMediaAttachment() MediaAttachment {
 	a := MediaAttachment{
