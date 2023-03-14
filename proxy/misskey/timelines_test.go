@@ -10,6 +10,9 @@ import (
 
 func TestTimelinePublic(t *testing.T) {
 	server := os.Getenv("TEST_SERVER")
+	if server == "" {
+		t.Skip("TEST_SERVER is required")
+	}
 	list, err := TimelinePublic(
 		server, "",
 		models.TimelinePublicTypeLocal, false,
