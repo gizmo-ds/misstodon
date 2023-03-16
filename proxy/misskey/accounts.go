@@ -106,7 +106,6 @@ func UpdateCredentials(server, token string,
 	locked, bot, discoverable *bool,
 	sourcePrivacy *string, sourceSensitive *bool, sourceLanguage *string,
 	fields []models.AccountField,
-// FIXME: 当前不支持上传头像和封面
 	avatar, header *multipart.FileHeader,
 ) (models.CredentialAccount, error) {
 	var info models.CredentialAccount
@@ -131,6 +130,31 @@ func UpdateCredentials(server, token string,
 	if fields != nil {
 		body["fields"] = fields
 	}
+	if avatar != nil {
+		file, err := avatar.Open()
+		if err != nil {
+			return info, errors.WithStack(err)
+		}
+		defer file.Close()
+		avatarFile, err := driveFileCreate(server, token, avatar.Filename, file)
+		if err != nil {
+			return info, errors.WithStack(err)
+		}
+		body["avatarId"] = avatarFile.ID
+	}
+	if header != nil {
+		file, err := header.Open()
+		if err != nil {
+			return info, errors.WithStack(err)
+		}
+		defer file.Close()
+		headerFile, err := driveFileCreate(server, token, header.Filename, file)
+		if err != nil {
+			return info, errors.WithStack(err)
+		}
+		body["bannerId"] = headerFile.ID
+	}
+
 	var serverInfo models.MkUser
 	resp, err := client.R().
 		SetBody(body).
