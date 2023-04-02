@@ -5,7 +5,7 @@
 [![Release](https://img.shields.io/github/v/release/gizmo-ds/misstodon.svg?include_prereleases&style=flat-square)](https://github.com/gizmo-ds/misstodon/releases/latest)
 [![License](https://img.shields.io/github/license/gizmo-ds/misstodon?style=flat-square)](./LICENSE)
 
-Getting my [Misskey](https://github.com/misskey-dev/misskey/tree/13.2.0) instance to work in [Elk](https://github.com/elk-zone/elk)
+Misskey Mastodon-compatible APIs, Getting my [Misskey](https://github.com/misskey-dev/misskey/tree/13.2.0) instance to work in [Elk](https://github.com/elk-zone/elk)
 
 > **Warning**  
 > This project is still in the early stage of development, and is not ready for production use.
@@ -63,3 +63,6 @@ Elk: [https://elk.zone/misstodon.liuli.lol/@gizmo_ds](https://elk.zone/misstodon
 - [ ] Trends
   - [x] `GET` /api/v1/trends/statuses
   - [x] `GET` /api/v1/trends/tags
+- [ ] Media
+  - [x] `POST` /api/v1/media
+  - [x] `POST` /api/v2/media
