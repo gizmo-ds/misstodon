@@ -25,6 +25,10 @@ func main() {
 		EnableBashCompletion: true,
 		Suggest:              true,
 		Flags: []cli.Flag{
+			&cli.BoolFlag{
+				Name:  "no-color",
+				Usage: "Disable color output",
+			},
 			&cli.StringFlag{
 				Name:    "config",
 				Aliases: []string{"c"},
@@ -36,7 +40,7 @@ func main() {
 			if err := global.LoadConfig(c.String("config")); err != nil {
 				log.Fatal().Stack().Err(errors.WithStack(err)).Msg("Failed to load config")
 			}
-			logger.Init()
+			logger.Init(c.Bool("no-color"))
 			misskey.SetClient(resty.New().
 				SetHeader("User-Agent", "misstodon/"+global.AppVersion))
 			return nil

@@ -20,7 +20,11 @@ var Start = &cli.Command{
 	Name:  "start",
 	Usage: "Start the server",
 	Before: func(c *cli.Context) error {
-		fmt.Printf("\n%s  \033[1;31;40m%s\033[0m\n\n", banner, global.AppVersion)
+		appVersion := global.AppVersion
+		if !c.Bool("no-color") {
+			appVersion = "\033[1;31;40m" + appVersion + "\033[0m"
+		}
+		fmt.Printf("\n%s  %s\n\n", banner, appVersion)
 		return nil
 	},
 	Flags: []cli.Flag{

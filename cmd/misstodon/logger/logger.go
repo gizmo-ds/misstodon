@@ -11,7 +11,7 @@ import (
 	"gopkg.in/natefinch/lumberjack.v2"
 )
 
-func Init() {
+func Init(noColor bool) {
 	_ = os.MkdirAll(filepath.Dir(global.Config.Logger.Filename), 0660)
 	zerolog.SetGlobalLevel(zerolog.Level(global.Config.Logger.Level))
 	writers := []io.Writer{&lumberjack.Logger{
@@ -22,6 +22,7 @@ func Init() {
 	if global.Config.Logger.ConsoleWriter {
 		writers = append(writers, zerolog.ConsoleWriter{
 			Out:           os.Stderr,
+			NoColor:       noColor,
 			TimeFormat:    "2006-01-02 15:04:05",
 			FieldsExclude: []string{"stack"},
 		})
