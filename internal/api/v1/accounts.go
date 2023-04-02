@@ -24,9 +24,7 @@ func AccountsRouter(e *echo.Group) {
 func AccountsVerifyCredentialsHandler(c echo.Context) error {
 	accessToken, err := utils.GetHeaderToken(c.Request().Header)
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, httperror.ServerError{
-			Error: err.Error(),
-		})
+		return c.JSON(http.StatusUnauthorized, httperror.ServerError{Error: err.Error()})
 	}
 	server := c.Get("server").(string)
 	info, err := misskey.VerifyCredentials(server, accessToken)
@@ -108,9 +106,7 @@ func AccountsUpdateCredentialsHandler(c echo.Context) error {
 	server := c.Get("server").(string)
 	accessToken, err := utils.GetHeaderToken(c.Request().Header)
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, httperror.ServerError{
-			Error: err.Error(),
-		})
+		return c.JSON(http.StatusUnauthorized, httperror.ServerError{Error: err.Error()})
 	}
 	account, err := misskey.UpdateCredentials(server, accessToken,
 		form.DisplayName, form.Note,
