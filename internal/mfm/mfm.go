@@ -1,4 +1,4 @@
-//go:generate pnpm build
+//go:generate npm run build
 package mfm
 
 import (
