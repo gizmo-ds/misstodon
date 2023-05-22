@@ -4,8 +4,8 @@ import (
 	"github.com/go-resty/resty/v2"
 )
 
-var client *resty.Client
+var client = resty.New()
 
-func SetClient(c *resty.Client) {
-	client = c
+func SetHeader(header, value string) {
+	client.SetHeader(header, value)
 }
