@@ -17,7 +17,7 @@ func TrendsTags(server, token string, limit, offset int) ([]models.Tag, error) {
 	_, err := client.R().
 		SetBody(utils.Map{"i": token}).
 		SetResult(&result).
-		Post("https://" + server + "/api/hashtags/trend")
+		Post(utils.JoinURL(server, "/api/hashtags/trend"))
 	if err != nil {
 		return nil, err
 	}
@@ -25,7 +25,7 @@ func TrendsTags(server, token string, limit, offset int) ([]models.Tag, error) {
 	for _, r := range result {
 		tag := models.Tag{
 			Name: r.Tag,
-			Url:  "https://" + server + "/tags/" + r.Tag,
+			Url:  utils.JoinURL(server, "/tags/", r.Tag),
 			History: []struct {
 				Day      string `json:"day"`
 				Uses     string `json:"uses"`
@@ -52,7 +52,7 @@ func TrendsStatus(server, token string, limit, offset int) ([]models.Status, err
 			"i":     token,
 		}).
 		SetResult(&result).
-		Post("https://" + server + "/api/notes/featured")
+		Post(utils.JoinURL(server, "/api/notes/featured"))
 	if err != nil {
 		return nil, err
 	}

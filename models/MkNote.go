@@ -43,8 +43,8 @@ type MkNote struct {
 func (n *MkNote) ToStatus(server string) Status {
 	s := Status{
 		ID:               n.ID,
-		Url:              "https://" + server + "/notes/" + n.ID,
-		Uri:              "https://" + server + "/notes/" + n.ID,
+		Url:              utils.JoinURL(server, "/notes/", n.ID),
+		Uri:              utils.JoinURL(server, "/notes/", n.ID),
 		CreatedAt:        n.CreatedAt,
 		Emojis:           []struct{}{},
 		MediaAttachments: []MediaAttachment{},
@@ -61,13 +61,13 @@ func (n *MkNote) ToStatus(server string) Status {
 	for _, tag := range n.Tags {
 		s.Tags = append(s.Tags, StatusTag{
 			Name: tag,
-			Url:  "https://" + server + "/tags/" + tag,
+			Url:  utils.JoinURL(server, "/tags/", tag),
 		})
 	}
 	if n.Text != nil {
 		s.Content = *n.Text
 		if content, err := mfm.ToHtml(*n.Text, mfm.Option{
-			Url:            "https://" + server,
+			Url:            utils.JoinURL(server),
 			HashtagHandler: mfm.MastodonHashtagHandler,
 		}); err == nil {
 			s.Content = content

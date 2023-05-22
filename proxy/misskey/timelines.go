@@ -24,9 +24,9 @@ func TimelinePublic(server, token string,
 	var u string
 	switch timelineType {
 	case models.TimelinePublicTypeLocal:
-		u = "https://" + server + "/api/notes/local-timeline"
+		u = utils.JoinURL(server, "/api/notes/local-timeline")
 	case models.TimelinePublicTypeRemote:
-		u = "https://" + server + "/api/notes/global-timeline"
+		u = utils.JoinURL(server, "/api/notes/global-timeline")
 	default:
 		err := errors.New("invalid timeline type")
 		return nil, err
@@ -63,7 +63,7 @@ func TimelineHome(server, token string,
 	_, err := client.R().
 		SetBody(values).
 		SetResult(&result).
-		Post("https://" + server + "/api/notes/timeline")
+		Post(utils.JoinURL(server, "/api/notes/timeline"))
 	if err != nil {
 		return nil, err
 	}

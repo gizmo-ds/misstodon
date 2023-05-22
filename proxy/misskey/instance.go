@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"net/url"
 
+	"github.com/gizmo-ds/misstodon/internal/utils"
 	"github.com/gizmo-ds/misstodon/models"
 	"github.com/pkg/errors"
 )
@@ -49,7 +50,7 @@ func Instance(server, version string) (models.Instance, error) {
 			"detail": false,
 		}).
 		SetResult(&serverInfo).
-		Post("https://" + server + "/api/meta")
+		Post(utils.JoinURL(server, "/api/meta"))
 	if err != nil {
 		return info, err
 	}
@@ -73,8 +74,8 @@ func Instance(server, version string) (models.Instance, error) {
 		Rules:            []models.InstanceRule{},
 		Languages:        serverInfo.Langs,
 	}
-	//TODO: 需要先实现 `/streaming`
-	//info.Urls.StreamingApi = serverInfo.StreamingAPI
+	// TODO: 需要先实现 `/streaming`
+	// info.Urls.StreamingApi = serverInfo.StreamingAPI
 	if info.Languages == nil {
 		info.Languages = []string{}
 	}
@@ -89,7 +90,7 @@ func Instance(server, version string) (models.Instance, error) {
 	resp, err = client.R().
 		SetBody(map[string]any{}).
 		SetResult(&serverStats).
-		Post("https://" + server + "/api/stats")
+		Post(utils.JoinURL(server, "/api/stats"))
 	if err != nil {
 		return info, err
 	}

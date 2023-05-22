@@ -18,3 +18,7 @@ func GetHeaderToken(header http.Header) (string, error) {
 	}
 	return strings.Split(auth, " ")[1], nil
 }
+
+func JoinURL(server string, p ...string) string {
+	return strings.Join(append([]string{"https://", server}, p...), "")
+}

@@ -1,6 +1,7 @@
 package misskey
 
 import (
+	"github.com/gizmo-ds/misstodon/internal/utils"
 	"github.com/gizmo-ds/misstodon/models"
 	"github.com/pkg/errors"
 )
@@ -15,7 +16,7 @@ func OAuthAuthorize(server, secret string) (string, error) {
 			"appSecret": secret,
 		}).
 		SetResult(&result).
-		Post("https://" + server + "/api/auth/session/generate")
+		Post(utils.JoinURL(server, "/api/auth/session/generate"))
 	if err != nil {
 		return "", errors.WithStack(err)
 	}
@@ -36,7 +37,7 @@ func OAuthToken(server, token, secret string) (string, error) {
 			"token":     token,
 		}).
 		SetResult(&result).
-		Post("https://" + server + "/api/auth/session/userkey")
+		Post(utils.JoinURL(server, "/api/auth/session/userkey"))
 	if err != nil {
 		return "", errors.WithStack(err)
 	}

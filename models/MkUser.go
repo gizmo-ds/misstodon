@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/gizmo-ds/misstodon/internal/mfm"
+	"github.com/gizmo-ds/misstodon/internal/utils"
 	"github.com/pkg/errors"
 )
 
@@ -77,7 +78,7 @@ func (u *MkUser) ToAccount(server string) (Account, error) {
 	}
 	if u.Description != nil {
 		info.Note, err = mfm.ToHtml(*u.Description, mfm.Option{
-			Url:            "https://" + server,
+			Url:            utils.JoinURL(server),
 			HashtagHandler: mfm.MastodonHashtagHandler,
 		})
 		if err != nil {

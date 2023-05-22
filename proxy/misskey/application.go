@@ -36,7 +36,7 @@ func ApplicationCreate(server, clientName, redirectUris, scopes, website string)
 			"permission":  permissions,
 		}).
 		SetResult(&result).
-		Post("https://" + server + "/api/app/create")
+		Post(utils.JoinURL(server, "/api/app/create"))
 	if err != nil {
 		return app, err
 	}

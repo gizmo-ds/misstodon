@@ -33,7 +33,7 @@ func Lookup(server string, acct string) (models.Account, error) {
 			"host":     host,
 		}).
 		SetResult(&serverInfo).
-		Post("https://" + server + "/api/users/show")
+		Post(utils.JoinURL(server, "/api/users/show"))
 	if err != nil {
 		return info, errors.WithStack(err)
 	}
@@ -60,7 +60,7 @@ func AccountsStatuses(
 	resp, err := client.R().
 		SetBody(r).
 		SetResult(&notes).
-		Post("https://" + server + "/api/users/notes")
+		Post(utils.JoinURL(server, "/api/users/notes"))
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
@@ -81,7 +81,7 @@ func VerifyCredentials(server, token string) (models.CredentialAccount, error) {
 	resp, err := client.R().
 		SetBody(utils.Map{"i": token}).
 		SetResult(&serverInfo).
-		Post("https://" + server + "/api/i")
+		Post(utils.JoinURL(server, "/api/i"))
 	if err != nil {
 		return info, errors.WithStack(err)
 	}
@@ -159,7 +159,7 @@ func UpdateCredentials(server, token string,
 	resp, err := client.R().
 		SetBody(body).
 		SetResult(&serverInfo).
-		Patch("https://" + server + "/api/i/update")
+		Patch(utils.JoinURL(server, "/api/i/update"))
 	if err != nil {
 		return info, errors.WithStack(err)
 	}
