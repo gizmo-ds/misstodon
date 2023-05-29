@@ -12,7 +12,7 @@ import (
 )
 
 func Init(noColor bool) {
-	_ = os.MkdirAll(filepath.Dir(global.Config.Logger.Filename), 0660)
+	_ = os.MkdirAll(filepath.Dir(global.Config.Logger.Filename), 0750)
 	zerolog.SetGlobalLevel(zerolog.Level(global.Config.Logger.Level))
 	writers := []io.Writer{&lumberjack.Logger{
 		Filename:   global.Config.Logger.Filename,
