@@ -58,7 +58,7 @@ func StreamingHandler(c echo.Context) error {
 			case <-ctx.Done():
 				return
 			case event := <-ch:
-				log.Debug().Caller().Interface("event", event).Msg("Streaming")
+				log.Debug().Caller().Any("event", event).Msg("Streaming")
 			}
 		}
 	}()
