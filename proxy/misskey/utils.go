@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
+	"strings"
 
 	"github.com/gizmo-ds/misstodon/internal/utils"
 	"github.com/go-resty/resty/v2"
@@ -38,11 +39,13 @@ func isucceed(resp *resty.Response, statusCode int, codes ...string) error {
 			Msg  string `json:"message"`
 		} `json:"error"`
 	}
-	body := resp.Body()
-	if body != nil {
-		err := json.Unmarshal(body, &result)
-		if err != nil {
-			return ServerError{Code: 500, Message: err.Error()}
+	if strings.Contains(resp.Header().Get("Content-Type"), "application/json") {
+		body := resp.Body()
+		if body != nil {
+			err := json.Unmarshal(body, &result)
+			if err != nil {
+				return ServerError{Code: 500, Message: err.Error()}
+			}
 		}
 	}
 	if utils.Contains(codes, result.Error.Code) {
