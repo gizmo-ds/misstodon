@@ -1,6 +1,9 @@
 package misskey
 
 import (
+	"net/http"
+
+	"github.com/gizmo-ds/misstodon/internal/utils"
 	"github.com/gizmo-ds/misstodon/models"
 	"github.com/pkg/errors"
 )
@@ -17,13 +20,55 @@ func StatusSingle(server, token, statusID string) (models.Status, error) {
 	resp, err := client.R().
 		SetBody(body).
 		SetResult(&mkStatus).
-		Post("https://" + server + "/api/notes/show")
+		Post(utils.JoinURL(server, "/api/notes/show"))
 	if err != nil {
 		return status, errors.WithStack(err)
 	}
-	if resp.StatusCode() != 200 {
-		return status, ErrNotFound
+	if err := isucceed(resp, 200); err != nil {
+		return status, errors.WithStack(err)
 	}
 	status = mkStatus.ToStatus(server)
 	return status, err
+}
+
+func StatusBookmark(server, token, id string) (models.Status, error) {
+	status, err := StatusSingle(server, token, id)
+	if err != nil {
+		return status, errors.WithStack(err)
+	}
+	resp, err := client.R().
+		SetBody(utils.Map{
+			"i":      token,
+			"noteId": id,
+		}).
+		Post(utils.JoinURL(server, "/api/notes/favorites/create"))
+	if err != nil {
+		return status, errors.WithStack(err)
+	}
+	if err := isucceed(resp, http.StatusNoContent, "ALREADY_FAVORITED"); err != nil {
+		return status, errors.WithStack(err)
+	}
+	status.Bookmarked = true
+	return status, nil
+}
+
+func StatusUnBookmark(server, token, id string) (models.Status, error) {
+	status, err := StatusSingle(server, token, id)
+	if err != nil {
+		return status, errors.WithStack(err)
+	}
+	resp, err := client.R().
+		SetBody(utils.Map{
+			"i":      token,
+			"noteId": id,
+		}).
+		Post(utils.JoinURL(server, "/api/notes/favorites/delete"))
+	if err != nil {
+		return status, errors.WithStack(err)
+	}
+	if err := isucceed(resp, http.StatusNoContent, "NOT_FAVORITED"); err != nil {
+		return status, errors.WithStack(err)
+	}
+	status.Bookmarked = false
+	return status, nil
 }
