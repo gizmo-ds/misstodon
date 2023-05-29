@@ -30,12 +30,14 @@ Elk: [https://elk.zone/misstodon.liuli.lol/@gizmo_ds](https://elk.zone/misstodon
   - [x] `GET` /api/v1/instance
 - [ ] Accounts
   - [x] `GET` /api/v1/accounts/lookup
+  - [ ] `GET` /api/v1/accounts/:user_id
   - [x] `GET` /api/v1/accounts/verify_credentials
   - [ ] `PATCH` /api/v1/accounts/update_credentials
   - [ ] `GET` /api/v1/accounts/relationships
   - [ ] `GET` /api/v1/accounts/:user_id/statuses
   - [ ] `GET` /api/v1/accounts/:user_id/following
   - [ ] `GET` /api/v1/accounts/:user_id/followers
+  - [ ] `GET` /api/v1/follow_requests
 - [ ] Statuses
   - [ ] `POST` /api/v1/statuses
   - [x] `GET` /api/v1/statuses/:status_id
