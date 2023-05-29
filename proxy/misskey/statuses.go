@@ -72,3 +72,26 @@ func StatusUnBookmark(server, token, id string) (models.Status, error) {
 	status.Bookmarked = false
 	return status, nil
 }
+
+func StatusBookmarks(server, token string) ([]models.Status, error) {
+	var result []struct {
+		ID        string        `json:"id"`
+		CreatedAt string        `json:"createdAt"`
+		Note      models.MkNote `json:"note"`
+	}
+	resp, err := client.R().
+		SetBody(utils.Map{"i": token}).
+		SetResult(&result).
+		Post(utils.JoinURL(server, "/api/i/favorites"))
+	if err != nil {
+		return nil, errors.WithStack(err)
+	}
+	if err := isucceed(resp, http.StatusOK); err != nil {
+		return nil, errors.WithStack(err)
+	}
+	var status []models.Status
+	for _, s := range result {
+		status = append(status, s.Note.ToStatus(server))
+	}
+	return status, nil
+}

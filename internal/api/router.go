@@ -33,6 +33,7 @@ func Router(e *echo.Echo) {
 		v1.AccountsRouter(v1Api)
 		v1.ApplicationRouter(v1Api)
 		v1.StatusesRouter(v1Api)
+		v1Api.GET("/bookmarks", v1.StatusBookmarks)
 		v1.StreamingRouter(v1Api)
 		v1.TimelinesRouter(v1Api)
 		v1.TrendsRouter(v1Api)

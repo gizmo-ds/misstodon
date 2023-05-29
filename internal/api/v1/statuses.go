@@ -77,3 +77,20 @@ func StatusUnBookmark(c echo.Context) error {
 	}
 	return c.JSON(http.StatusOK, status)
 }
+
+func StatusBookmarks(c echo.Context) error {
+	server := c.Get("server").(string)
+	token, err := utils.GetHeaderToken(c.Request().Header)
+	if err != nil {
+		return c.JSON(http.StatusUnauthorized, httperror.ServerError{Error: err.Error()})
+	}
+	status, err := misskey.StatusBookmarks(server, token)
+	if err != nil {
+		if errors.Is(err, misskey.ErrUnauthorized) {
+			return c.JSON(http.StatusUnauthorized, httperror.ServerError{Error: err.Error()})
+		} else {
+			return err
+		}
+	}
+	return c.JSON(http.StatusOK, status)
+}
