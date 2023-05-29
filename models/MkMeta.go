@@ -1,39 +1,39 @@
 package models
 
 type MkMeta struct {
-	MaintainerName           string      `json:"maintainerName"`
-	MaintainerEmail          string      `json:"maintainerEmail"`
-	Version                  string      `json:"version"`
-	Name                     string      `json:"name"`
-	URI                      string      `json:"uri"`
-	Description              string      `json:"description"`
-	Langs                    []string    `json:"langs"`
-	TosUrl                   interface{} `json:"tosUrl"`
-	RepositoryUrl            string      `json:"repositoryUrl"`
-	FeedbackUrl              string      `json:"feedbackUrl"`
-	DisableRegistration      bool        `json:"disableRegistration"`
-	EmailRequiredForSignup   bool        `json:"emailRequiredForSignup"`
-	EnableHCaptcha           bool        `json:"enableHcaptcha"`
-	HCaptchaSiteKey          string      `json:"hcaptchaSiteKey"`
-	EnableRecaptcha          bool        `json:"enableRecaptcha"`
-	RecaptchaSiteKey         interface{} `json:"recaptchaSiteKey"`
-	EnableTurnstile          bool        `json:"enableTurnstile"`
-	TurnstileSiteKey         interface{} `json:"turnstileSiteKey"`
-	SwPublicKey              string      `json:"swPublickey"`
-	ThemeColor               string      `json:"themeColor"`
-	MascotImageUrl           string      `json:"mascotImageUrl"`
-	BannerUrl                string      `json:"bannerUrl"`
-	ErrorImageUrl            string      `json:"errorImageUrl"`
-	IconUrl                  string      `json:"iconUrl"`
-	BackgroundImageUrl       string      `json:"backgroundImageUrl"`
-	LogoImageUrl             interface{} `json:"logoImageUrl"`
-	MaxNoteTextLength        int         `json:"maxNoteTextLength"`
-	EnableEmail              bool        `json:"enableEmail"`
-	EnableTwitterIntegration bool        `json:"enableTwitterIntegration"`
-	EnableGithubIntegration  bool        `json:"enableGithubIntegration"`
-	EnableDiscordIntegration bool        `json:"enableDiscordIntegration"`
-	EnableServiceWorker      bool        `json:"enableServiceWorker"`
-	TranslatorAvailable      bool        `json:"translatorAvailable"`
+	MaintainerName           string   `json:"maintainerName"`
+	MaintainerEmail          string   `json:"maintainerEmail"`
+	Version                  string   `json:"version"`
+	Name                     string   `json:"name"`
+	URI                      string   `json:"uri"`
+	Description              string   `json:"description"`
+	Langs                    []string `json:"langs"`
+	TosUrl                   any      `json:"tosUrl"`
+	RepositoryUrl            string   `json:"repositoryUrl"`
+	FeedbackUrl              string   `json:"feedbackUrl"`
+	DisableRegistration      bool     `json:"disableRegistration"`
+	EmailRequiredForSignup   bool     `json:"emailRequiredForSignup"`
+	EnableHCaptcha           bool     `json:"enableHcaptcha"`
+	HCaptchaSiteKey          string   `json:"hcaptchaSiteKey"`
+	EnableRecaptcha          bool     `json:"enableRecaptcha"`
+	RecaptchaSiteKey         any      `json:"recaptchaSiteKey"`
+	EnableTurnstile          bool     `json:"enableTurnstile"`
+	TurnstileSiteKey         any      `json:"turnstileSiteKey"`
+	SwPublicKey              string   `json:"swPublickey"`
+	ThemeColor               string   `json:"themeColor"`
+	MascotImageUrl           string   `json:"mascotImageUrl"`
+	BannerUrl                string   `json:"bannerUrl"`
+	ErrorImageUrl            string   `json:"errorImageUrl"`
+	IconUrl                  string   `json:"iconUrl"`
+	BackgroundImageUrl       string   `json:"backgroundImageUrl"`
+	LogoImageUrl             any      `json:"logoImageUrl"`
+	MaxNoteTextLength        int      `json:"maxNoteTextLength"`
+	EnableEmail              bool     `json:"enableEmail"`
+	EnableTwitterIntegration bool     `json:"enableTwitterIntegration"`
+	EnableGithubIntegration  bool     `json:"enableGithubIntegration"`
+	EnableDiscordIntegration bool     `json:"enableDiscordIntegration"`
+	EnableServiceWorker      bool     `json:"enableServiceWorker"`
+	TranslatorAvailable      bool     `json:"translatorAvailable"`
 	Policies                 struct {
 		GtlAvailable           bool `json:"gtlAvailable"`
 		LtlAvailable           bool `json:"ltlAvailable"`
@@ -51,11 +51,11 @@ type MkMeta struct {
 		UserEachUserListsLimit int  `json:"userEachUserListsLimit"`
 		RateLimitFactor        int  `json:"rateLimitFactor"`
 	} `json:"policies"`
-	PinnedPages      []string    `json:"pinnedPages"`
-	PinnedClipID     interface{} `json:"pinnedClipId"`
-	CacheRemoteFiles bool        `json:"cacheRemoteFiles"`
-	RequireSetup     bool        `json:"requireSetup"`
-	ProxyAccountName interface{} `json:"proxyAccountName"`
+	PinnedPages      []string `json:"pinnedPages"`
+	PinnedClipID     any      `json:"pinnedClipId"`
+	CacheRemoteFiles bool     `json:"cacheRemoteFiles"`
+	RequireSetup     bool     `json:"requireSetup"`
+	ProxyAccountName any      `json:"proxyAccountName"`
 	Features         struct {
 		Registration           bool `json:"registration"`
 		EmailRequiredForSignup bool `json:"emailRequiredForSignup"`
