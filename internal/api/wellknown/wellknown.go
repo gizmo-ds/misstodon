@@ -5,6 +5,7 @@ import (
 
 	"github.com/gizmo-ds/misstodon/internal/api/httperror"
 	"github.com/gizmo-ds/misstodon/internal/api/middleware"
+	"github.com/gizmo-ds/misstodon/internal/utils"
 	"github.com/gizmo-ds/misstodon/proxy/misskey"
 	"github.com/labstack/echo/v4"
 )
@@ -21,7 +22,7 @@ func NodeInfoHandler(c echo.Context) error {
 	if server != "" {
 		href += "?server=" + server
 	}
-	return c.JSON(http.StatusOK, map[string]interface{}{
+	return c.JSON(http.StatusOK, utils.Map{
 		"links": []map[string]string{
 			{
 				"rel":  "http://nodeinfo.diaspora.software/ns/schema/2.0",
