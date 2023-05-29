@@ -73,14 +73,22 @@ func StatusUnBookmark(server, token, id string) (models.Status, error) {
 	return status, nil
 }
 
-func StatusBookmarks(server, token string) ([]models.Status, error) {
+func StatusBookmarks(server, token string,
+	limit int, sinceID, minID, maxID string) ([]models.Status, error) {
 	var result []struct {
 		ID        string        `json:"id"`
 		CreatedAt string        `json:"createdAt"`
 		Note      models.MkNote `json:"note"`
 	}
+	body := utils.Map{"i": token, "limit": limit}
+	if v, ok := utils.StrEvaluation(sinceID, minID); ok {
+		body["sinceId"] = v
+	}
+	if maxID != "" {
+		body["untilId"] = maxID
+	}
 	resp, err := client.R().
-		SetBody(utils.Map{"i": token}).
+		SetBody(body).
 		SetResult(&result).
 		Post(utils.JoinURL(server, "/api/i/favorites"))
 	if err != nil {

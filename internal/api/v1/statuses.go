@@ -84,7 +84,20 @@ func StatusBookmarks(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusUnauthorized, httperror.ServerError{Error: err.Error()})
 	}
-	status, err := misskey.StatusBookmarks(server, token)
+	var query struct {
+		Limit   int    `query:"limit"`
+		MaxID   string `query:"max_id"`
+		MinID   string `query:"min_id"`
+		SinceID string `query:"since_id"`
+	}
+	if err = c.Bind(&query); err != nil {
+		return c.JSON(http.StatusBadRequest, httperror.ServerError{Error: err.Error()})
+	}
+	if query.Limit <= 0 {
+		query.Limit = 20
+	}
+	status, err := misskey.StatusBookmarks(server, token,
+		query.Limit, query.SinceID, query.MinID, query.MaxID)
 	if err != nil {
 		if errors.Is(err, misskey.ErrUnauthorized) {
 			return c.JSON(http.StatusUnauthorized, httperror.ServerError{Error: err.Error()})
