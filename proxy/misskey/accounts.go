@@ -2,6 +2,7 @@ package misskey
 
 import (
 	"mime/multipart"
+	"net/http"
 
 	"github.com/gizmo-ds/misstodon/internal/utils"
 	"github.com/gizmo-ds/misstodon/models"
@@ -37,7 +38,7 @@ func Lookup(server string, acct string) (models.Account, error) {
 	if err != nil {
 		return info, errors.WithStack(err)
 	}
-	if resp.StatusCode() != 200 {
+	if resp.StatusCode() != http.StatusOK {
 		return info, ErrNotFound
 	}
 	return serverInfo.ToAccount(server)
@@ -64,7 +65,7 @@ func AccountsStatuses(
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
-	if resp.StatusCode() != 200 {
+	if resp.StatusCode() != http.StatusOK {
 		return nil, errors.New("failed to get statuses")
 	}
 	var statuses []models.Status
@@ -176,4 +177,37 @@ func UpdateCredentials(server, token string,
 	}
 	info.Source.Fields = account.Fields
 	return info, err
+}
+
+func AccountFollowRequests(server, token string,
+	limit int, sinceID, maxID string) ([]models.Account, error) {
+	var result []struct {
+		ID       string        `json:"id"`
+		Follower models.MkUser `json:"follower"`
+		Followee models.MkUser `json:"followee"`
+	}
+	body := utils.Map{"i": token, "limit": limit}
+	if sinceID != "" {
+		body["sinceId"] = sinceID
+	}
+	if maxID != "" {
+		body["untilId"] = maxID
+	}
+	resp, err := client.R().
+		SetBody(body).
+		SetResult(&result).
+		Post(utils.JoinURL(server, "/api/following/requests/list"))
+	if err != nil {
+		return nil, errors.WithStack(err)
+	}
+	if err := isucceed(resp, http.StatusOK); err != nil {
+		return nil, errors.WithStack(err)
+	}
+	var accounts []models.Account
+	for _, r := range result {
+		if a, err := r.Follower.ToAccount(server); err == nil {
+			accounts = append(accounts, a)
+		}
+	}
+	return accounts, nil
 }

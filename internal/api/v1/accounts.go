@@ -165,3 +165,28 @@ func parseAccountsUpdateCredentialsForm(c echo.Context) (f accountsUpdateCredent
 	}
 	return form, nil
 }
+
+func AccountFollowRequests(c echo.Context) error {
+	server := c.Get("server").(string)
+	token, err := utils.GetHeaderToken(c.Request().Header)
+	if err != nil {
+		return c.JSON(http.StatusUnauthorized, httperror.ServerError{Error: err.Error()})
+	}
+	var query struct {
+		Limit   int    `query:"limit"`
+		MaxID   string `query:"max_id"`
+		SinceID string `query:"since_id"`
+	}
+	if err = c.Bind(&query); err != nil {
+		return c.JSON(http.StatusBadRequest, httperror.ServerError{Error: err.Error()})
+	}
+	if query.Limit <= 0 {
+		query.Limit = 40
+	}
+	accounts, err := misskey.AccountFollowRequests(server, token,
+		query.Limit, query.SinceID, query.MaxID)
+	if err != nil {
+		return err
+	}
+	return c.JSON(http.StatusOK, accounts)
+}
