@@ -2,9 +2,11 @@ package v1
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/gizmo-ds/misstodon/internal/api/httperror"
 	"github.com/gizmo-ds/misstodon/internal/utils"
+	"github.com/gizmo-ds/misstodon/models"
 	"github.com/gizmo-ds/misstodon/proxy/misskey"
 	"github.com/labstack/echo/v4"
 	"github.com/pkg/errors"
@@ -12,6 +14,7 @@ import (
 
 func StatusesRouter(e *echo.Group) {
 	group := e.Group("/statuses")
+	group.POST("", PostNewStatus)
 	group.GET("/:id", StatusHandler)
 	group.GET("/:id/context", StatusContextHandler)
 	group.POST("/:id/bookmark", StatusBookmark)
@@ -104,6 +107,40 @@ func StatusBookmarks(c echo.Context) error {
 		} else {
 			return err
 		}
+	}
+	return c.JSON(http.StatusOK, status)
+}
+
+type postNewStatusForm struct {
+	Status      *string                 `json:"status"`
+	Poll        any                     `json:"poll"` // FIXME: Poll 未实现
+	MediaIDs    []string                `json:"media_ids"`
+	InReplyToID string                  `json:"in_reply_to_id"`
+	Sensitive   bool                    `json:"sensitive"`
+	SpoilerText string                  `json:"spoiler_text"`
+	Visibility  models.StatusVisibility `json:"visibility"`
+	Language    string                  `json:"language"`
+	ScheduledAt time.Time               `json:"scheduled_at"`
+}
+
+func PostNewStatus(c echo.Context) error {
+	server := c.Get("server").(string)
+	token, err := utils.GetHeaderToken(c.Request().Header)
+	if err != nil {
+		return c.JSON(http.StatusUnauthorized, httperror.ServerError{Error: err.Error()})
+	}
+
+	var form postNewStatusForm
+	if err = c.Bind(&form); err != nil {
+		return c.JSON(http.StatusBadRequest, httperror.ServerError{Error: err.Error()})
+	}
+	status, err := misskey.PostNewStatus(server, token,
+		form.Status, form.Poll, form.MediaIDs, form.InReplyToID,
+		form.Sensitive, form.SpoilerText,
+		form.Visibility, form.Language,
+		form.ScheduledAt)
+	if err != nil {
+		return err
 	}
 	return c.JSON(http.StatusOK, status)
 }

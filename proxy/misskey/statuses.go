@@ -2,6 +2,7 @@ package misskey
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/gizmo-ds/misstodon/internal/utils"
 	"github.com/gizmo-ds/misstodon/models"
@@ -24,7 +25,7 @@ func StatusSingle(server, token, statusID string) (models.Status, error) {
 	if err != nil {
 		return status, errors.WithStack(err)
 	}
-	if err := isucceed(resp, 200); err != nil {
+	if err = isucceed(resp, 200); err != nil {
 		return status, errors.WithStack(err)
 	}
 	status = mkStatus.ToStatus(server)
@@ -45,7 +46,7 @@ func StatusBookmark(server, token, id string) (models.Status, error) {
 	if err != nil {
 		return status, errors.WithStack(err)
 	}
-	if err := isucceed(resp, http.StatusNoContent, "ALREADY_FAVORITED"); err != nil {
+	if err = isucceed(resp, http.StatusNoContent, "ALREADY_FAVORITED"); err != nil {
 		return status, errors.WithStack(err)
 	}
 	status.Bookmarked = true
@@ -66,7 +67,7 @@ func StatusUnBookmark(server, token, id string) (models.Status, error) {
 	if err != nil {
 		return status, errors.WithStack(err)
 	}
-	if err := isucceed(resp, http.StatusNoContent, "NOT_FAVORITED"); err != nil {
+	if err = isucceed(resp, http.StatusNoContent, "NOT_FAVORITED"); err != nil {
 		return status, errors.WithStack(err)
 	}
 	status.Bookmarked = false
@@ -94,7 +95,7 @@ func StatusBookmarks(server, token string,
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
-	if err := isucceed(resp, http.StatusOK); err != nil {
+	if err = isucceed(resp, http.StatusOK); err != nil {
 		return nil, errors.WithStack(err)
 	}
 	var status []models.Status
@@ -102,4 +103,68 @@ func StatusBookmarks(server, token string,
 		status = append(status, s.Note.ToStatus(server))
 	}
 	return status, nil
+}
+
+// PostNewStatus 发送新的 Status
+// FIXME: Poll 未实现
+func PostNewStatus(server, token string,
+	status *string, Poll any, MediaIDs []string, InReplyToID string,
+	Sensitive bool, SpoilerText string,
+	Visibility models.StatusVisibility, Language string,
+	ScheduledAt time.Time,
+) (any, error) {
+	body := utils.Map{"i": token, "localOnly": false}
+	var noteMentions []string
+	if status != nil && *status != "" {
+		body["text"] = *status
+		noteMentions = append(noteMentions, utils.GetMentions(*status)...)
+	}
+	if Sensitive {
+		if SpoilerText != "" {
+			body["cw"] = SpoilerText
+		} else {
+			body["cw"] = "Sensitive"
+		}
+	}
+	switch Visibility {
+	case models.StatusVisibilityPublic:
+		body["visibility"] = "public"
+	case models.StatusVisibilityUnlisted:
+		body["visibility"] = "home"
+	case models.StatusVisibilityPrivate:
+		body["visibility"] = "followers"
+	case models.StatusVisibilityDirect:
+		body["visibility"] = "specified"
+		var visibleUserIds []string
+		for _, m := range noteMentions {
+			a, err := Lookup(server, m)
+			if err != nil {
+				return nil, err
+			}
+			visibleUserIds = append(visibleUserIds, a.ID)
+		}
+		if len(visibleUserIds) > 0 {
+			body["visibleUserIds"] = visibleUserIds
+		}
+	}
+	if MediaIDs != nil {
+		body["mediaIds"] = MediaIDs
+	}
+	if InReplyToID != "" {
+		body["replyId"] = InReplyToID
+	}
+	var result struct {
+		CreatedNote models.MkNote `json:"createdNote"`
+	}
+	resp, err := client.R().
+		SetBody(body).
+		SetResult(&result).
+		Post(utils.JoinURL(server, "/api/notes/create"))
+	if err != nil {
+		return nil, errors.WithStack(err)
+	}
+	if err = isucceed(resp, http.StatusOK); err != nil {
+		return nil, errors.WithStack(err)
+	}
+	return result.CreatedNote.ToStatus(server), nil
 }
