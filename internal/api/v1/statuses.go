@@ -108,7 +108,7 @@ func StatusBookmarks(c echo.Context) error {
 			return err
 		}
 	}
-	return c.JSON(http.StatusOK, status)
+	return c.JSON(http.StatusOK, utils.SliceIfNull(status))
 }
 
 type postNewStatusForm struct {

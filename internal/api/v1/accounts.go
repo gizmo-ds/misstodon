@@ -189,7 +189,7 @@ func AccountFollowRequests(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	return c.JSON(http.StatusOK, accounts)
+	return c.JSON(http.StatusOK, utils.SliceIfNull(accounts))
 }
 
 func AccountFollowers(c echo.Context) error {
@@ -218,5 +218,5 @@ func AccountFollowers(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	return c.JSON(http.StatusOK, accounts)
+	return c.JSON(http.StatusOK, utils.SliceIfNull(accounts))
 }
