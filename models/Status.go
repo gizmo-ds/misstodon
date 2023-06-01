@@ -1,5 +1,7 @@
 package models
 
+import "time"
+
 type StatusVisibility string
 
 const (
@@ -33,7 +35,7 @@ type (
 		Favourited         bool              `json:"favourited"`
 		FavouritesCount    int               `json:"favourites_count"`
 		InReplyToAccountId *string           `json:"in_reply_to_account_id"`
-		InReplyToId        *string           `json:"in_reply_to_id"`
+		InReplyToID        *string           `json:"in_reply_to_id"`
 		Language           *string           `json:"language"`
 		Mentions           []StatusMention   `json:"mentions"`
 		Muted              bool              `json:"muted"`
@@ -52,5 +54,24 @@ type (
 		Username string `json:"username"`
 		Url      string `json:"url"`
 		Acct     string `json:"acct"`
+	}
+	ScheduledStatus struct {
+		ID          string    `json:"id"`
+		ScheduledAt time.Time `json:"scheduled_at"`
+		Params      struct {
+			Text          string           `json:"text"`
+			Poll          *string          `json:"poll"`
+			MediaIDs      any              `json:"media_ids"` // []string | string | null
+			Sensitive     *bool            `json:"sensitive"`
+			SpoilerText   *string          `json:"spoiler_text"`
+			Visibility    StatusVisibility `json:"visibility"`
+			InReplyToID   *int             `json:"in_reply_to_id"` // ID of the Status that will be replied to.
+			Language      *string          `json:"language"`
+			ApplicationID int              `json:"application_id"`
+			ScheduledAt   any              `json:"scheduled_at"`
+			Idempotency   *string          `json:"idempotency"`
+			WithRateLimit bool             `json:"with_rate_limit"`
+		} `json:"params"`
+		MediaAttachments []MediaAttachment `json:"media_attachments"`
 	}
 )
