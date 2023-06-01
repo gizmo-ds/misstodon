@@ -19,6 +19,7 @@ func AccountsRouter(e *echo.Group) {
 	group.PATCH("/update_credentials", AccountsUpdateCredentialsHandler)
 	group.GET("/lookup", AccountsLookupHandler)
 	group.GET("/:accountID/statuses", AccountsStatusesHandler)
+	group.GET("/:accountID/followers", AccountFollowers)
 }
 
 func AccountsVerifyCredentialsHandler(c echo.Context) error {
@@ -185,6 +186,35 @@ func AccountFollowRequests(c echo.Context) error {
 	}
 	accounts, err := misskey.AccountFollowRequests(server, token,
 		query.Limit, query.SinceID, query.MaxID)
+	if err != nil {
+		return err
+	}
+	return c.JSON(http.StatusOK, accounts)
+}
+
+func AccountFollowers(c echo.Context) error {
+	server := c.Get("server").(string)
+	token, err := utils.GetHeaderToken(c.Request().Header)
+	if err != nil {
+		return c.JSON(http.StatusUnauthorized, httperror.ServerError{Error: err.Error()})
+	}
+	id := c.Param("accountID")
+	var query struct {
+		Limit   int    `query:"limit"`
+		MaxID   string `query:"max_id"`
+		MinID   string `query:"min_id"`
+		SinceID string `query:"since_id"`
+	}
+	if err = c.Bind(&query); err != nil {
+		return c.JSON(http.StatusBadRequest, httperror.ServerError{Error: err.Error()})
+	}
+	if query.Limit <= 0 {
+		query.Limit = 40
+	}
+	if query.Limit > 80 {
+		query.Limit = 80
+	}
+	accounts, err := misskey.AccountFollowers(server, token, id, query.Limit, query.SinceID, query.MinID, query.MaxID)
 	if err != nil {
 		return err
 	}

@@ -211,3 +211,40 @@ func AccountFollowRequests(server, token string,
 	}
 	return accounts, nil
 }
+
+func AccountFollowers(server, token string,
+	accountID string,
+	limit int, sinceID, minID, maxID string) ([]models.Account, error) {
+	var result []struct {
+		ID         string        `json:"id"`
+		CreatedAt  string        `json:"createdAt"`
+		FolloweeId string        `json:"followeeId"`
+		FollowerId string        `json:"followerId"`
+		Follower   models.MkUser `json:"follower"`
+	}
+	body := utils.Map{"i": token, "limit": limit, "userId": accountID}
+	if v, ok := utils.StrEvaluation(sinceID, minID); ok {
+		body["sinceId"] = v
+	}
+	if maxID != "" {
+		body["untilId"] = maxID
+	}
+	resp, err := client.R().
+		SetBody(body).
+		SetResult(&result).
+		Post(utils.JoinURL(server, "/api/users/followers"))
+	if err != nil {
+		return nil, errors.WithStack(err)
+	}
+	if err := isucceed(resp, http.StatusOK); err != nil {
+		return nil, errors.WithStack(err)
+	}
+
+	var accounts []models.Account
+	for _, r := range result {
+		if a, err := r.Follower.ToAccount(server); err == nil {
+			accounts = append(accounts, a)
+		}
+	}
+	return accounts, nil
+}
