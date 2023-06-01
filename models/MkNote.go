@@ -72,7 +72,6 @@ func (n *MkNote) ToStatus(server string) Status {
 		}); err == nil {
 			s.Content = content
 		}
-		utils.GetMentions(*n.Text)
 	}
 	if n.User != nil {
 		a, err := n.User.ToAccount(server)
