@@ -21,6 +21,7 @@ func AccountsRouter(e *echo.Group) {
 	group.GET("/:accountID/statuses", AccountsStatusesHandler)
 	group.GET("/:accountID/followers", AccountFollowers)
 	group.GET("/:accountID/following", AccountFollowing)
+	group.GET("/relationships", AccountRelationships)
 }
 
 func AccountsVerifyCredentialsHandler(c echo.Context) error {
@@ -249,4 +250,24 @@ func AccountFollowing(c echo.Context) error {
 		return err
 	}
 	return c.JSON(http.StatusOK, utils.SliceIfNull(accounts))
+}
+
+func AccountRelationships(c echo.Context) error {
+	server := c.Get("server").(string)
+	token, err := utils.GetHeaderToken(c.Request().Header)
+	if err != nil {
+		return c.JSON(http.StatusUnauthorized, httperror.ServerError{Error: err.Error()})
+	}
+	var ids []string
+	for k, v := range c.QueryParams() {
+		if k == "id[]" {
+			ids = append(ids, v...)
+			continue
+		}
+	}
+	relationships, err := misskey.AccountRelationships(server, token, ids)
+	if err != nil {
+		return err
+	}
+	return c.JSON(http.StatusOK, relationships)
 }

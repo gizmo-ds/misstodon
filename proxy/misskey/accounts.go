@@ -285,3 +285,24 @@ func AccountFollowing(server, token string,
 	}
 	return accounts, nil
 }
+
+func AccountRelationships(server, token string,
+	accountIDs []string) ([]models.Relationship, error) {
+	data := utils.Map{"i": token, "userId": accountIDs}
+	var result []models.MkRelation
+	resp, err := client.R().
+		SetBody(data).
+		SetResult(&result).
+		Post(utils.JoinURL(server, "/api/users/relation"))
+	if err != nil {
+		return nil, errors.WithStack(err)
+	}
+	if err = isucceed(resp, http.StatusOK); err != nil {
+		return nil, errors.WithStack(err)
+	}
+	var relationships []models.Relationship
+	for _, r := range result {
+		relationships = append(relationships, r.ToRelationship())
+	}
+	return relationships, nil
+}
