@@ -212,6 +212,34 @@ func AccountFollowRequests(server, token string,
 	return accounts, nil
 }
 
+func AccountFollowRequestsCancel(server, token string, accountID string) error {
+	data := utils.Map{"i": token, "userId": accountID}
+	resp, err := client.R().
+		SetBody(data).
+		Post(utils.JoinURL(server, "/api/following/requests/cancel"))
+	if err != nil {
+		return errors.WithStack(err)
+	}
+	if err = isucceed(resp, http.StatusOK); err != nil {
+		return errors.WithStack(err)
+	}
+	return nil
+}
+
+func AccountFollowRequestsAccept(server, token string, accountID string) error {
+	data := utils.Map{"i": token, "userId": accountID}
+	resp, err := client.R().
+		SetBody(data).
+		Post(utils.JoinURL(server, "/api/following/requests/accept"))
+	if err != nil {
+		return errors.WithStack(err)
+	}
+	if err = isucceed(resp, http.StatusOK); err != nil {
+		return errors.WithStack(err)
+	}
+	return nil
+}
+
 func AccountFollowers(server, token string,
 	accountID string,
 	limit int, sinceID, minID, maxID string) ([]models.Account, error) {
