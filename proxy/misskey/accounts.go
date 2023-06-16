@@ -306,3 +306,17 @@ func AccountRelationships(server, token string,
 	}
 	return relationships, nil
 }
+
+func AccountFollow(server, token string, accountID string) error {
+	data := utils.Map{"i": token, "userId": accountID}
+	resp, err := client.R().
+		SetBody(data).
+		Post(utils.JoinURL(server, "/api/following/create"))
+	if err != nil {
+		return errors.WithStack(err)
+	}
+	if err = isucceed(resp, http.StatusOK); err != nil {
+		return errors.WithStack(err)
+	}
+	return nil
+}

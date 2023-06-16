@@ -22,6 +22,7 @@ func AccountsRouter(e *echo.Group) {
 	group.GET("/:accountID/followers", AccountFollowers)
 	group.GET("/:accountID/following", AccountFollowing)
 	group.GET("/relationships", AccountRelationships)
+	group.POST("/:accountID/follow", AccountFollow)
 }
 
 func AccountsVerifyCredentialsHandler(c echo.Context) error {
@@ -270,4 +271,21 @@ func AccountRelationships(c echo.Context) error {
 		return err
 	}
 	return c.JSON(http.StatusOK, relationships)
+}
+
+func AccountFollow(c echo.Context) error {
+	server := c.Get("server").(string)
+	token, err := utils.GetHeaderToken(c.Request().Header)
+	if err != nil {
+		return c.JSON(http.StatusUnauthorized, httperror.ServerError{Error: err.Error()})
+	}
+	id := c.Param("accountID")
+	if err = misskey.AccountFollow(server, token, id); err != nil {
+		return err
+	}
+	relationships, err := misskey.AccountRelationships(server, token, []string{id})
+	if err != nil {
+		return err
+	}
+	return c.JSON(http.StatusOK, relationships[0])
 }
