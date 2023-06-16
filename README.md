@@ -38,7 +38,7 @@ Elk: [https://elk.zone/misstodon.liuli.lol/@gizmo_ds](https://elk.zone/misstodon
   - [x] `GET` /api/v1/accounts/:user_id/following
   - [x] `GET` /api/v1/accounts/:user_id/followers
   - [x] `POST` /api/v1/accounts/:user_id/follow
-  - [ ] `POST` /api/v1/accounts/:user_id/unfollow
+  - [x] `POST` /api/v1/accounts/:user_id/unfollow
   - [x] `GET` /api/v1/follow_requests
 - [ ] Statuses
   - [x] `POST` /api/v1/statuses

@@ -240,6 +240,20 @@ func AccountFollowRequestsAccept(server, token string, accountID string) error {
 	return nil
 }
 
+func AccountFollowRequestsReject(server, token string, accountID string) error {
+	data := utils.Map{"i": token, "userId": accountID}
+	resp, err := client.R().
+		SetBody(data).
+		Post(utils.JoinURL(server, "/api/following/requests/reject"))
+	if err != nil {
+		return errors.WithStack(err)
+	}
+	if err = isucceed(resp, http.StatusOK); err != nil {
+		return errors.WithStack(err)
+	}
+	return nil
+}
+
 func AccountFollowers(server, token string,
 	accountID string,
 	limit int, sinceID, minID, maxID string) ([]models.Account, error) {
@@ -340,6 +354,20 @@ func AccountFollow(server, token string, accountID string) error {
 	resp, err := client.R().
 		SetBody(data).
 		Post(utils.JoinURL(server, "/api/following/create"))
+	if err != nil {
+		return errors.WithStack(err)
+	}
+	if err = isucceed(resp, http.StatusOK); err != nil {
+		return errors.WithStack(err)
+	}
+	return nil
+}
+
+func AccountUnfollow(server, token string, accountID string) error {
+	data := utils.Map{"i": token, "userId": accountID}
+	resp, err := client.R().
+		SetBody(data).
+		Post(utils.JoinURL(server, "/api/following/delete"))
 	if err != nil {
 		return errors.WithStack(err)
 	}

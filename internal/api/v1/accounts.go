@@ -23,6 +23,7 @@ func AccountsRouter(e *echo.Group) {
 	group.GET("/:accountID/following", AccountFollowing)
 	group.GET("/relationships", AccountRelationships)
 	group.POST("/:accountID/follow", AccountFollow)
+	group.POST("/:accountID/unfollow", AccountUnfollow)
 }
 
 func AccountsVerifyCredentialsHandler(c echo.Context) error {
@@ -281,6 +282,23 @@ func AccountFollow(c echo.Context) error {
 	}
 	id := c.Param("accountID")
 	if err = misskey.AccountFollow(server, token, id); err != nil {
+		return err
+	}
+	relationships, err := misskey.AccountRelationships(server, token, []string{id})
+	if err != nil {
+		return err
+	}
+	return c.JSON(http.StatusOK, relationships[0])
+}
+
+func AccountUnfollow(c echo.Context) error {
+	server := c.Get("server").(string)
+	token, err := utils.GetHeaderToken(c.Request().Header)
+	if err != nil {
+		return c.JSON(http.StatusUnauthorized, httperror.ServerError{Error: err.Error()})
+	}
+	id := c.Param("accountID")
+	if err = misskey.AccountUnfollow(server, token, id); err != nil {
 		return err
 	}
 	relationships, err := misskey.AccountRelationships(server, token, []string{id})
