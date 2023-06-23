@@ -73,7 +73,7 @@ func TimelineHashtag(c echo.Context) error {
 		}
 	}
 
-	list, err := misskey.TimelineHashtag(server, accessToken,
+	list, err := misskey.SearchStatusByHashtag(server, accessToken,
 		c.Param("hashtag"),
 		limit, c.QueryParam("max_id"), c.QueryParam("since_id"), c.QueryParam("min_id"))
 	if err != nil {
