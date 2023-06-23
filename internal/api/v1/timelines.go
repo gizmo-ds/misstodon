@@ -21,7 +21,7 @@ func TimelinePublicHandler(c echo.Context) error {
 	server := c.Get("server").(string)
 	accessToken, _ := utils.GetHeaderToken(c.Request().Header)
 	limit := 20
-	if v, err := strconv.Atoi(c.QueryParam("limit")); err != nil {
+	if v, err := strconv.Atoi(c.QueryParam("limit")); err == nil {
 		limit = v
 		if limit > 40 {
 			limit = 40
@@ -47,7 +47,7 @@ func TimelineHomeHandler(c echo.Context) error {
 		return c.JSON(http.StatusUnauthorized, echo.Map{"error": "invalid token"})
 	}
 	limit := 20
-	if v, err := strconv.Atoi(c.QueryParam("limit")); err != nil {
+	if v, err := strconv.Atoi(c.QueryParam("limit")); err == nil {
 		limit = v
 		if limit > 40 {
 			limit = 40
@@ -66,7 +66,7 @@ func TimelineHashtag(c echo.Context) error {
 	accessToken, _ := utils.GetHeaderToken(c.Request().Header)
 
 	limit := 20
-	if v, err := strconv.Atoi(c.QueryParam("limit")); err != nil {
+	if v, err := strconv.Atoi(c.QueryParam("limit")); err == nil {
 		limit = v
 		if limit > 40 {
 			limit = 40
