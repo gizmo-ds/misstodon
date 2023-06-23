@@ -16,17 +16,17 @@ Elk: [https://elk.zone/misstodon.liuli.lol/@gizmo_ds](https://elk.zone/misstodon
 
 ## Roadmap
 
-- [ ] .well-known
+- [x] .well-known
   - [x] `GET` /.well-known/webfinger
   - [x] `GET` /.well-known/nodeinfo
-- [ ] Nodeinfo
+- [x] Nodeinfo
   - [x] `GET` /nodeinfo/2.0
 - [ ] Auth
   - [x] `GET` /oauth/authorize
   - [x] `POST` /oauth/token
   - [x] `POST` /api/v1/apps
   - [ ] `GET` /api/v1/apps/verify_credentials
-- [ ] Instance
+- [x] Instance
   - [x] `GET` /api/v1/instance
 - [ ] Accounts
   - [x] `GET` /api/v1/accounts/lookup
@@ -49,13 +49,13 @@ Elk: [https://elk.zone/misstodon.liuli.lol/@gizmo_ds](https://elk.zone/misstodon
   - [x] `POST` /api/v1/statuses/:status_id/unbookmark
   - [ ] `GET` /api/v1/statuses/:status_id/favourited_by
   - [ ] `GET` /api/v1/statuses/:status_id/reblogged_by
-- [ ] Timelines
+- [x] Timelines
   - [x] `GET` /api/v1/timelines/home
   - [x] `GET` /api/v1/timelines/public
-  - [ ] `GET` /api/v1/timelines/tag/:hashtag
+  - [x] `GET` /api/v1/timelines/tag/:hashtag
 - [ ] Favourites
   - [ ] `GET` /api/v1/favourites
-- [ ] Bookmarks
+- [x] Bookmarks
   - [x] `GET` /api/v1/bookmarks
 - [ ] Push
   - [ ] `GET` /api/v1/notifications
@@ -65,9 +65,9 @@ Elk: [https://elk.zone/misstodon.liuli.lol/@gizmo_ds](https://elk.zone/misstodon
   - [ ] `GET` /api/v2/search
 - [ ] Conversations
   - [ ] `GET` /api/v1/conversations
-- [ ] Trends
+- [x] Trends
   - [x] `GET` /api/v1/trends/statuses
   - [x] `GET` /api/v1/trends/tags
-- [ ] Media
+- [x] Media
   - [x] `POST` /api/v1/media
   - [x] `POST` /api/v2/media

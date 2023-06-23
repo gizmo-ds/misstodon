@@ -48,22 +48,50 @@ func TimelinePublic(server, token string,
 
 func TimelineHome(server, token string,
 	limit int, maxId, minId string) ([]models.Status, error) {
-	values := utils.Map{}
+	body := utils.Map{}
 	if minId != "" {
-		values["sinceId"] = minId
+		body["sinceId"] = minId
 	}
 	if maxId != "" {
-		values["untilId"] = maxId
+		body["untilId"] = maxId
 	}
-	values["limit"] = limit
+	body["limit"] = limit
 	if token != "" {
-		values["i"] = token
+		body["i"] = token
 	}
 	var result []models.MkNote
 	_, err := client.R().
-		SetBody(values).
+		SetBody(body).
 		SetResult(&result).
 		Post(utils.JoinURL(server, "/api/notes/timeline"))
+	if err != nil {
+		return nil, err
+	}
+	var list []models.Status
+	for _, note := range result {
+		list = append(list, note.ToStatus(server))
+	}
+	return list, nil
+}
+
+func TimelineHashtag(server, token string,
+	hashtag string,
+	limit int, maxId, sinceId, minId string) ([]models.Status, error) {
+	body := utils.Map{"limit": limit}
+	if v, ok := utils.StrEvaluation(sinceId, minId); ok {
+		body["sinceId"] = v
+	}
+	if maxId != "" {
+		body["untilId"] = maxId
+	}
+	if token != "" {
+		body["i"] = token
+	}
+	var result []models.MkNote
+	_, err := client.R().
+		SetBody(body).
+		SetResult(&result).
+		Post(utils.JoinURL(server, "/api/notes/search-by-tag"))
 	if err != nil {
 		return nil, err
 	}

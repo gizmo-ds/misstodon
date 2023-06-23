@@ -14,6 +14,7 @@ func TimelinesRouter(e *echo.Group) {
 	group := e.Group("/timelines")
 	group.GET("/public", TimelinePublicHandler)
 	group.GET("/home", TimelineHomeHandler)
+	group.GET("/tag/:hashtag", TimelineHashtag)
 }
 
 func TimelinePublicHandler(c echo.Context) error {
@@ -54,6 +55,27 @@ func TimelineHomeHandler(c echo.Context) error {
 	}
 	list, err := misskey.TimelineHome(server, accessToken,
 		limit, c.QueryParam("max_id"), c.QueryParam("min_id"))
+	if err != nil {
+		return err
+	}
+	return c.JSON(http.StatusOK, utils.SliceIfNull(list))
+}
+
+func TimelineHashtag(c echo.Context) error {
+	server := c.Get("server").(string)
+	accessToken, _ := utils.GetHeaderToken(c.Request().Header)
+
+	limit := 20
+	if v, err := strconv.Atoi(c.QueryParam("limit")); err != nil {
+		limit = v
+		if limit > 40 {
+			limit = 40
+		}
+	}
+
+	list, err := misskey.TimelineHashtag(server, accessToken,
+		c.Param("hashtag"),
+		limit, c.QueryParam("max_id"), c.QueryParam("since_id"), c.QueryParam("min_id"))
 	if err != nil {
 		return err
 	}
