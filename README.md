@@ -26,8 +26,9 @@ Elk: [https://elk.zone/misstodon.liuli.lol/@gizmo_ds](https://elk.zone/misstodon
   - [x] `POST` /oauth/token
   - [x] `POST` /api/v1/apps
   - [ ] `GET` /api/v1/apps/verify_credentials
-- [x] Instance
+- [ ] Instance
   - [x] `GET` /api/v1/instance
+  - [ ] `GET` /api/v1/custom_emojis
 - [ ] Accounts
   - [x] `GET` /api/v1/accounts/lookup
   - [ ] `GET` /api/v1/accounts/:user_id
