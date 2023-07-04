@@ -7,6 +7,7 @@ import (
 	"github.com/gizmo-ds/misstodon/internal/utils"
 	"github.com/gizmo-ds/misstodon/models"
 	"github.com/pkg/errors"
+	"github.com/samber/lo"
 )
 
 // SupportedMimeTypes is a list of supported mime types
@@ -105,4 +106,26 @@ func Instance(server, version string) (models.Instance, error) {
 
 func InstancePeers(server string) ([]string, error) {
 	return nil, nil
+}
+
+func InstanceCustomEmojis(server string) ([]models.CustomEmoji, error) {
+	var emojis struct {
+		Emojis []models.MkEmoji `json:"emojis"`
+	}
+	resp, err := client.R().
+		SetResult(&emojis).
+		SetBody(utils.Map{}).
+		Post(utils.JoinURL(server, "/api/emojis"))
+	if err != nil {
+		return nil, err
+	}
+	if err != nil {
+		return nil, errors.WithStack(err)
+	}
+	if err = isucceed(resp, http.StatusOK); err != nil {
+		return nil, errors.WithStack(err)
+	}
+	return lo.Map(emojis.Emojis, func(e models.MkEmoji, _ int) models.CustomEmoji {
+		return e.ToCustomEmoji()
+	}), nil
 }

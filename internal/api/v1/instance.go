@@ -13,6 +13,7 @@ func InstanceRouter(e *echo.Group) {
 	group := e.Group("/instance")
 	group.GET("", InstanceHandler)
 	group.GET("/peers", InstancePeersHandler)
+	e.GET("/custom_emojis", InstanceCustomEmojis)
 }
 
 func InstanceHandler(c echo.Context) error {
@@ -31,4 +32,13 @@ func InstancePeersHandler(c echo.Context) error {
 		return err
 	}
 	return c.JSON(http.StatusOK, utils.SliceIfNull(peers))
+}
+
+func InstanceCustomEmojis(c echo.Context) error {
+	server := c.Get("server").(string)
+	emojis, err := misskey.InstanceCustomEmojis(server)
+	if err != nil {
+		return err
+	}
+	return c.JSON(http.StatusOK, emojis)
 }
