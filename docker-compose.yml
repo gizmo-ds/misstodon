@@ -1,0 +1,14 @@
+version: "3"
+
+services:
+  misstodon:
+    image: ghcr.io/gizmo-ds/misstodon:latest
+    container_name: misstodon
+    restart: always
+    environment:
+      MISSTODON_FALLBACK_SERVER: misskey.liuli.lol
+    ports:
+      - 3000:3000
+    volumes:
+      - ./logs:/app/logs
+      - ./database:/app/data
