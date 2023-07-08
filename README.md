@@ -46,6 +46,7 @@ Elk: [https://elk.zone/misstodon.liuli.lol/@gizmo_ds](https://elk.zone/misstodon
   - [x] `GET` /api/v1/statuses/:status_id
   - [ ] `GET` /api/v1/statuses/:status_id/context
   - [ ] `GET` /api/v1/statuses/:status_id/favourite
+  - [ ] `POST` /api/v1/statuses/:status_id/unfavourite
   - [x] `POST` /api/v1/statuses/:status_id/bookmark
   - [x] `POST` /api/v1/statuses/:status_id/unbookmark
   - [ ] `GET` /api/v1/statuses/:status_id/favourited_by
