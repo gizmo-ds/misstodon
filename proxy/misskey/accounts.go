@@ -264,7 +264,10 @@ func AccountFollowers(server, token string,
 		FollowerId string        `json:"followerId"`
 		Follower   models.MkUser `json:"follower"`
 	}
-	body := utils.Map{"i": token, "limit": limit, "userId": accountID}
+	body := utils.Map{"limit": limit, "userId": accountID}
+	if token != "" {
+		body["i"] = token
+	}
 	if v, ok := utils.StrEvaluation(sinceID, minID); ok {
 		body["sinceId"] = v
 	}
@@ -301,7 +304,10 @@ func AccountFollowing(server, token string,
 		FollowerId string        `json:"followerId"`
 		Followee   models.MkUser `json:"followee"`
 	}
-	body := utils.Map{"i": token, "limit": limit, "userId": accountID}
+	body := utils.Map{"limit": limit, "userId": accountID}
+	if token != "" {
+		body["i"] = token
+	}
 	if v, ok := utils.StrEvaluation(sinceID, minID); ok {
 		body["sinceId"] = v
 	}

@@ -198,10 +198,7 @@ func AccountFollowRequests(c echo.Context) error {
 
 func AccountFollowers(c echo.Context) error {
 	server := c.Get("server").(string)
-	token, err := utils.GetHeaderToken(c.Request().Header)
-	if err != nil {
-		return c.JSON(http.StatusUnauthorized, httperror.ServerError{Error: err.Error()})
-	}
+	token, _ := utils.GetHeaderToken(c.Request().Header)
 	id := c.Param("accountID")
 	var query struct {
 		Limit   int    `query:"limit"`
@@ -209,7 +206,7 @@ func AccountFollowers(c echo.Context) error {
 		MinID   string `query:"min_id"`
 		SinceID string `query:"since_id"`
 	}
-	if err = c.Bind(&query); err != nil {
+	if err := c.Bind(&query); err != nil {
 		return c.JSON(http.StatusBadRequest, httperror.ServerError{Error: err.Error()})
 	}
 	if query.Limit <= 0 {
@@ -227,10 +224,7 @@ func AccountFollowers(c echo.Context) error {
 
 func AccountFollowing(c echo.Context) error {
 	server := c.Get("server").(string)
-	token, err := utils.GetHeaderToken(c.Request().Header)
-	if err != nil {
-		return c.JSON(http.StatusUnauthorized, httperror.ServerError{Error: err.Error()})
-	}
+	token, _ := utils.GetHeaderToken(c.Request().Header)
 	id := c.Param("accountID")
 	var query struct {
 		Limit   int    `query:"limit"`
@@ -238,7 +232,7 @@ func AccountFollowing(c echo.Context) error {
 		MinID   string `query:"min_id"`
 		SinceID string `query:"since_id"`
 	}
-	if err = c.Bind(&query); err != nil {
+	if err := c.Bind(&query); err != nil {
 		return c.JSON(http.StatusBadRequest, httperror.ServerError{Error: err.Error()})
 	}
 	if query.Limit <= 0 {
