@@ -23,7 +23,7 @@ func NodeInfoHandler(c echo.Context) error {
 		href += "?server=" + server
 	}
 	return c.JSON(http.StatusOK, utils.Map{
-		"links": []map[string]string{
+		"links": []utils.StrMap{
 			{
 				"rel":  "http://nodeinfo.diaspora.software/ns/schema/2.0",
 				"href": href,
