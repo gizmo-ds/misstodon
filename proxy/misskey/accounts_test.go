@@ -14,7 +14,7 @@ func TestLookup(t *testing.T) {
 	if server == "" || acct == "" {
 		t.Skip("TEST_SERVER and TEST_ACCT are required")
 	}
-	info, err := misskey.Lookup(server, acct)
+	info, err := misskey.AccountsLookup(server, acct)
 	assert.NoError(t, err)
 	assert.Equal(t, acct, info.Acct)
 }

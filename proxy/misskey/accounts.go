@@ -14,7 +14,7 @@ var (
 	ErrAcctIsInvalid = errors.New("acct format is invalid")
 )
 
-func Lookup(server string, acct string) (models.Account, error) {
+func AccountsLookup(server string, acct string) (models.Account, error) {
 	var host *string
 	var info models.Account
 	username, _host := utils.AcctInfo(acct)
@@ -381,4 +381,24 @@ func AccountUnfollow(server, token string, accountID string) error {
 		return errors.WithStack(err)
 	}
 	return nil
+}
+
+func AccountsGet(server, token, accountID string) (models.Account, error) {
+	var info models.Account
+	var serverInfo models.MkUser
+	body := utils.Map{"userId": accountID}
+	if token != "" {
+		body["i"] = token
+	}
+	resp, err := client.R().
+		SetBody(body).
+		SetResult(&serverInfo).
+		Post(utils.JoinURL(server, "/api/users/show"))
+	if err != nil {
+		return info, errors.WithStack(err)
+	}
+	if resp.StatusCode() != http.StatusOK {
+		return info, ErrNotFound
+	}
+	return serverInfo.ToAccount(server)
 }

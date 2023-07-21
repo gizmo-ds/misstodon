@@ -18,6 +18,7 @@ func AccountsRouter(e *echo.Group) {
 	group.GET("/verify_credentials", AccountsVerifyCredentialsHandler)
 	group.PATCH("/update_credentials", AccountsUpdateCredentialsHandler)
 	group.GET("/lookup", AccountsLookupHandler)
+	group.GET("/:id", AccountsGetHandler)
 	group.GET("/:id/statuses", AccountsStatusesHandler)
 	group.GET("/:id/followers", AccountFollowers)
 	group.GET("/:id/following", AccountFollowing)
@@ -46,7 +47,7 @@ func AccountsLookupHandler(c echo.Context) error {
 			Error: "acct is required",
 		})
 	}
-	info, err := misskey.Lookup(c.Get("server").(string), acct)
+	info, err := misskey.AccountsLookup(c.Get("server").(string), acct)
 	if err != nil {
 		if errors.Is(err, misskey.ErrNotFound) {
 			return c.JSON(http.StatusNotFound, httperror.ServerError{
@@ -300,4 +301,18 @@ func AccountUnfollow(c echo.Context) error {
 		return err
 	}
 	return c.JSON(http.StatusOK, relationships[0])
+}
+
+func AccountsGetHandler(c echo.Context) error {
+	server := c.Get("server").(string)
+	token, _ := utils.GetHeaderToken(c.Request().Header)
+	info, err := misskey.AccountsGet(server, token, c.Param("id"))
+	if err != nil {
+		return err
+	}
+	if info.Header == "" || info.HeaderStatic == "" {
+		info.Header = fmt.Sprintf("%s://%s/static/missing.png", c.Scheme(), c.Request().Host)
+		info.HeaderStatic = info.Header
+	}
+	return c.JSON(http.StatusOK, info)
 }

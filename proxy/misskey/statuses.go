@@ -137,7 +137,7 @@ func PostNewStatus(server, token string,
 		body["visibility"] = "specified"
 		var visibleUserIds []string
 		for _, m := range noteMentions {
-			a, err := Lookup(server, m)
+			a, err := AccountsLookup(server, m)
 			if err != nil {
 				return nil, err
 			}
