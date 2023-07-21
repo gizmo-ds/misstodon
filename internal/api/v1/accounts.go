@@ -18,12 +18,12 @@ func AccountsRouter(e *echo.Group) {
 	group.GET("/verify_credentials", AccountsVerifyCredentialsHandler)
 	group.PATCH("/update_credentials", AccountsUpdateCredentialsHandler)
 	group.GET("/lookup", AccountsLookupHandler)
-	group.GET("/:accountID/statuses", AccountsStatusesHandler)
-	group.GET("/:accountID/followers", AccountFollowers)
-	group.GET("/:accountID/following", AccountFollowing)
+	group.GET("/:id/statuses", AccountsStatusesHandler)
+	group.GET("/:id/followers", AccountFollowers)
+	group.GET("/:id/following", AccountFollowing)
 	group.GET("/relationships", AccountRelationships)
-	group.POST("/:accountID/follow", AccountFollow)
-	group.POST("/:accountID/unfollow", AccountUnfollow)
+	group.POST("/:id/follow", AccountFollow)
+	group.POST("/:id/unfollow", AccountUnfollow)
 }
 
 func AccountsVerifyCredentialsHandler(c echo.Context) error {
@@ -67,7 +67,7 @@ func AccountsLookupHandler(c echo.Context) error {
 }
 
 func AccountsStatusesHandler(c echo.Context) error {
-	accountID := c.Param("accountID")
+	accountID := c.Param("id")
 	limit := 30
 	pinnedOnly := false
 	onlyMedia := false
@@ -199,7 +199,7 @@ func AccountFollowRequests(c echo.Context) error {
 func AccountFollowers(c echo.Context) error {
 	server := c.Get("server").(string)
 	token, _ := utils.GetHeaderToken(c.Request().Header)
-	id := c.Param("accountID")
+	id := c.Param("id")
 	var query struct {
 		Limit   int    `query:"limit"`
 		MaxID   string `query:"max_id"`
@@ -225,7 +225,7 @@ func AccountFollowers(c echo.Context) error {
 func AccountFollowing(c echo.Context) error {
 	server := c.Get("server").(string)
 	token, _ := utils.GetHeaderToken(c.Request().Header)
-	id := c.Param("accountID")
+	id := c.Param("id")
 	var query struct {
 		Limit   int    `query:"limit"`
 		MaxID   string `query:"max_id"`
@@ -274,7 +274,7 @@ func AccountFollow(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusUnauthorized, httperror.ServerError{Error: err.Error()})
 	}
-	id := c.Param("accountID")
+	id := c.Param("id")
 	if err = misskey.AccountFollow(server, token, id); err != nil {
 		return err
 	}
@@ -291,7 +291,7 @@ func AccountUnfollow(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusUnauthorized, httperror.ServerError{Error: err.Error()})
 	}
-	id := c.Param("accountID")
+	id := c.Param("id")
 	if err = misskey.AccountUnfollow(server, token, id); err != nil {
 		return err
 	}
