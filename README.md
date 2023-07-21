@@ -31,7 +31,7 @@ Elk: [https://elk.zone/misstodon.liuli.lol/@gizmo_ds](https://elk.zone/misstodon
   - [x] `GET` /api/v1/custom_emojis
 - [ ] Accounts
   - [x] `GET` /api/v1/accounts/lookup
-  - [ ] `GET` /api/v1/accounts/:user_id
+  - [x] `GET` /api/v1/accounts/:user_id
   - [x] `GET` /api/v1/accounts/verify_credentials
   - [ ] `PATCH` /api/v1/accounts/update_credentials
   - [x] `GET` /api/v1/accounts/relationships
