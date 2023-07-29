@@ -29,7 +29,35 @@ func StatusSingle(server, token, statusID string) (models.Status, error) {
 		return status, errors.WithStack(err)
 	}
 	status = mkStatus.ToStatus(server)
+	if token != "" {
+		state, err := getNoteState(server, token, status.ID)
+		if err != nil {
+			return status, err
+		}
+		status.Bookmarked = state.IsFavorited
+		status.Muted = state.IsMutedThread
+	}
 	return status, err
+}
+
+type noteState struct {
+	IsFavorited   bool `json:"isFavorited"`
+	IsMutedThread bool `json:"isMutedThread"`
+}
+
+func getNoteState(server, token, noteId string) (noteState, error) {
+	var state noteState
+	resp, err := client.R().
+		SetBody(utils.Map{"i": token, "noteId": noteId}).
+		SetResult(&state).
+		Post(utils.JoinURL(server, "/api/notes/state"))
+	if err != nil {
+		return state, errors.WithStack(err)
+	}
+	if err = isucceed(resp, 200); err != nil {
+		return state, errors.WithStack(err)
+	}
+	return state, nil
 }
 
 func StatusBookmark(server, token, id string) (models.Status, error) {
@@ -74,6 +102,8 @@ func StatusUnBookmark(server, token, id string) (models.Status, error) {
 	return status, nil
 }
 
+// StatusBookmarks
+// NOTE: 为了减少请求数量, 不支持 Bookmarked
 func StatusBookmarks(server, token string,
 	limit int, sinceID, minID, maxID string) ([]models.Status, error) {
 	var result []struct {
