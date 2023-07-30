@@ -1,7 +1,6 @@
 package misskey_test
 
 import (
-	"os"
 	"testing"
 
 	"github.com/gizmo-ds/misstodon/proxy/misskey"
@@ -9,11 +8,10 @@ import (
 )
 
 func TestInstance(t *testing.T) {
-	server := os.Getenv("TEST_SERVER")
-	if server == "" {
+	if testServer == "" {
 		t.Skip("TEST_SERVER is required")
 	}
-	info, err := misskey.Instance(server, "development")
+	info, err := misskey.Instance(testServer, "development")
 	assert.NoError(t, err)
-	assert.Equal(t, server, info.Uri)
+	assert.Equal(t, testServer, info.Uri)
 }

@@ -7,6 +7,7 @@ require (
 	github.com/go-resty/resty/v2 v2.7.0
 	github.com/gorilla/websocket v1.5.0
 	github.com/jinzhu/configor v1.2.1
+	github.com/joho/godotenv v1.5.1
 	github.com/labstack/echo/v4 v4.10.0
 	github.com/pkg/errors v0.9.1
 	github.com/rs/xid v1.4.0
