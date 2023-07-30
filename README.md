@@ -1,8 +1,8 @@
-# misstodon (WIP)
+# misstodon
 
+[![爱发电](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fafdian.net%2Fapi%2Fuser%2Fget-profile%3Fuser_id%3D75e549844b5111ed8df552540025c377&query=%24.data.user.name&label=%E7%88%B1%E5%8F%91%E7%94%B5&color=%23946ce6)](https://afdian.net/a/gizmo)
 ![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/gizmo-ds/misstodon?style=flat-square)
 [![Build images](https://img.shields.io/github/actions/workflow/status/gizmo-ds/misstodon/images.yaml?branch=main&label=docker%20image&style=flat-square)](https://github.com/gizmo-ds/misstodon/actions/workflows/images.yaml)
-[![Release](https://img.shields.io/github/v/release/gizmo-ds/misstodon.svg?include_prereleases&style=flat-square)](https://github.com/gizmo-ds/misstodon/releases/latest)
 [![License](https://img.shields.io/github/license/gizmo-ds/misstodon?style=flat-square)](./LICENSE)
 
 Misskey Mastodon-compatible APIs, Getting my [Misskey](https://github.com/misskey-dev/misskey/tree/13.2.0) instance to work in [Elk](https://github.com/elk-zone/elk)
@@ -15,6 +15,8 @@ Misskey Mastodon-compatible APIs, Getting my [Misskey](https://github.com/misske
 Elk: [https://elk.zone/misstodon.liuli.lol/@gizmo_ds](https://elk.zone/misstodon.liuli.lol/@gizmo_ds)
 
 ## Roadmap
+
+<details>
 
 - [x] .well-known
   - [x] `GET` /.well-known/webfinger
@@ -75,3 +77,13 @@ Elk: [https://elk.zone/misstodon.liuli.lol/@gizmo_ds](https://elk.zone/misstodon
 - [x] Media
   - [x] `POST` /api/v1/media
   - [x] `POST` /api/v2/media
+
+</details>
+
+## Sponsors
+
+![Sponsors](https://afdian-connect.deno.dev/sponsor.svg)
+
+## Contributors
+
+![Contributors](https://contributors.liuli.lol/gizmo-ds/misstodon/contributors.svg)
