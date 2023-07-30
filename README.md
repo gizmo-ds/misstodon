@@ -43,6 +43,8 @@ Elk: [https://elk.zone/misstodon.liuli.lol/@gizmo_ds](https://elk.zone/misstodon
   - [x] `GET` /api/v1/follow_requests
   - [ ] `POST` /api/v1/accounts/:user_id/mute
   - [ ] `POST` /api/v1/accounts/:user_id/unmute
+  - [x] `GET` /api/v1/bookmarks
+  - [ ] `GET` /api/v1/favourites
 - [ ] Statuses
   - [x] `POST` /api/v1/statuses
   - [x] `GET` /api/v1/statuses/:status_id
@@ -59,8 +61,6 @@ Elk: [https://elk.zone/misstodon.liuli.lol/@gizmo_ds](https://elk.zone/misstodon
   - [x] `GET` /api/v1/timelines/tag/:hashtag
 - [ ] Favourites
   - [ ] `GET` /api/v1/favourites
-- [x] Bookmarks
-  - [x] `GET` /api/v1/bookmarks
 - [ ] Push
   - [ ] `GET` /api/v1/notifications
 - [ ] Streaming
