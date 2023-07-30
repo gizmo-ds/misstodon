@@ -7,6 +7,7 @@ import (
 	"github.com/gizmo-ds/misstodon/internal/utils"
 	"github.com/gizmo-ds/misstodon/models"
 	"github.com/pkg/errors"
+	"github.com/samber/lo"
 )
 
 var (
@@ -45,15 +46,18 @@ func AccountsLookup(server string, acct string) (models.Account, error) {
 }
 
 func AccountsStatuses(
-	server, accountId string,
+	server, uid, token string,
 	limit int,
 	pinnedOnly, onlyMedia, onlyPublic, excludeReplies, excludeReblogs bool,
 	maxID, minID string) ([]models.Status, error) {
 	var notes []models.MkNote
 	r := map[string]any{
-		"userId":         accountId,
+		"userId":         uid,
 		"limit":          limit,
 		"includeReplies": !excludeReplies,
+	}
+	if token != "" {
+		r["i"] = token
 	}
 	if onlyMedia {
 		r["fileType"] = SupportedMimeTypes
@@ -68,10 +72,7 @@ func AccountsStatuses(
 	if resp.StatusCode() != http.StatusOK {
 		return nil, errors.New("failed to get statuses")
 	}
-	var statuses []models.Status
-	for _, note := range notes {
-		statuses = append(statuses, note.ToStatus(server))
-	}
+	statuses := lo.Map(notes, func(note models.MkNote, _i int) models.Status { return note.ToStatus(server) })
 	return statuses, nil
 }
 

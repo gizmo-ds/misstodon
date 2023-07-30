@@ -11,7 +11,7 @@ import (
 
 func StatusSingle(server, token, statusID string) (models.Status, error) {
 	var status models.Status
-	var mkStatus models.MkNote
+	var note models.MkNote
 	body := map[string]any{
 		"noteId": statusID,
 	}
@@ -20,7 +20,7 @@ func StatusSingle(server, token, statusID string) (models.Status, error) {
 	}
 	resp, err := client.R().
 		SetBody(body).
-		SetResult(&mkStatus).
+		SetResult(&note).
 		Post(utils.JoinURL(server, "/api/notes/show"))
 	if err != nil {
 		return status, errors.WithStack(err)
@@ -28,7 +28,7 @@ func StatusSingle(server, token, statusID string) (models.Status, error) {
 	if err = isucceed(resp, 200); err != nil {
 		return status, errors.WithStack(err)
 	}
-	status = mkStatus.ToStatus(server)
+	status = note.ToStatus(server)
 	if token != "" {
 		state, err := getNoteState(server, token, status.ID)
 		if err != nil {

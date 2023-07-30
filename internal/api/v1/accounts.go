@@ -68,7 +68,10 @@ func AccountsLookupHandler(c echo.Context) error {
 }
 
 func AccountsStatusesHandler(c echo.Context) error {
-	accountID := c.Param("id")
+	uid := c.Param("id")
+	server := c.Get("server").(string)
+	token, _ := utils.GetHeaderToken(c.Request().Header)
+
 	limit := 30
 	pinnedOnly := false
 	onlyMedia := false
@@ -87,14 +90,15 @@ func AccountsStatusesHandler(c echo.Context) error {
 		String("max_id", &maxID).
 		String("min_id", &minID).
 		BindError(); err != nil {
-		e := err.(*echo.BindingError)
+		var e *echo.BindingError
+		errors.As(err, &e)
 		return c.JSON(http.StatusBadRequest, echo.Map{
 			"field": e.Field,
 			"error": e.Message,
 		})
 	}
 	statuses, err := misskey.AccountsStatuses(
-		c.Get("server").(string), accountID,
+		server, uid, token,
 		limit,
 		pinnedOnly, onlyMedia, onlyPublic, excludeReplies, excludeReblogs,
 		maxID, minID)

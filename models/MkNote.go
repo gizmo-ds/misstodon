@@ -38,6 +38,7 @@ type MkNote struct {
 	FileIds      []string         `json:"fileIds"`
 	Files        []MkFile         `json:"files"`
 	Tags         []string         `json:"tags"`
+	MyReaction   string           `json:"myReaction"`
 }
 
 func (n *MkNote) ToStatus(server string) Status {
@@ -50,6 +51,7 @@ func (n *MkNote) ToStatus(server string) Status {
 		MediaAttachments: []MediaAttachment{},
 		Mentions:         []StatusMention{},
 		ReBlogsCount:     n.ReNoteCount,
+		Favourited:       n.MyReaction != "",
 	}
 	s.FavouritesCount = func() int {
 		var count int
