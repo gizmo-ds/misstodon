@@ -10,6 +10,7 @@ var (
 		MkAppPermissionReadNotifications,
 		MkAppPermissionReadMessaging,
 		MkAppPermissionReadDrive,
+		MkAppPermissionReadReactions,
 	}
 	ApplicationPermissionWrite = []string{
 		MkAppPermissionWriteAccount,
@@ -20,6 +21,7 @@ var (
 		MkAppPermissionWriteNotifications,
 		MkAppPermissionWriteNotes,
 		MkAppPermissionWriteFavorites,
+		MkAppPermissionWriteReactions,
 	}
 	ApplicationPermissionFollow = []string{
 		MkAppPermissionReadBlocks,
