@@ -60,6 +60,51 @@ func getNoteState(server, token, noteId string) (noteState, error) {
 	return state, nil
 }
 
+func StatusFavourite(server, token, id string) (models.Status, error) {
+	status, err := StatusSingle(server, token, id)
+	if err != nil {
+		return status, errors.WithStack(err)
+	}
+	resp, err := client.R().
+		SetBody(utils.Map{
+			"i":        token,
+			"noteId":   id,
+			"reaction": "⭐",
+		}).
+		Post(utils.JoinURL(server, "/api/notes/reactions/create"))
+	if err != nil {
+		return status, errors.WithStack(err)
+	}
+	if err = isucceed(resp, http.StatusNoContent, "ALREADY_REACTED"); err != nil {
+		return status, errors.WithStack(err)
+	}
+	status.Favourited = true
+	status.FavouritesCount += 1
+	return status, nil
+}
+
+func StatusUnFavourite(server, token, id string) (models.Status, error) {
+	status, err := StatusSingle(server, token, id)
+	if err != nil {
+		return status, errors.WithStack(err)
+	}
+	resp, err := client.R().
+		SetBody(utils.Map{
+			"i":      token,
+			"noteId": id,
+		}).
+		Post(utils.JoinURL(server, "/api/notes/reactions/delete"))
+	if err != nil {
+		return status, errors.WithStack(err)
+	}
+	if err = isucceed(resp, http.StatusNoContent, "NOT_REACTED"); err != nil {
+		return status, errors.WithStack(err)
+	}
+	status.Favourited = false
+	status.FavouritesCount -= 1
+	return status, nil
+}
+
 func StatusBookmark(server, token, id string) (models.Status, error) {
 	status, err := StatusSingle(server, token, id)
 	if err != nil {

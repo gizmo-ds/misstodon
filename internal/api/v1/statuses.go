@@ -19,6 +19,8 @@ func StatusesRouter(e *echo.Group) {
 	group.GET("/:id/context", StatusContextHandler)
 	group.POST("/:id/bookmark", StatusBookmark)
 	group.POST("/:id/unbookmark", StatusUnBookmark)
+	group.POST("/:id/favourite", StatusFavourite)
+	group.POST("/:id/unfavourite", StatusUnFavourite)
 }
 
 func StatusHandler(c echo.Context) error {
@@ -37,6 +39,48 @@ func StatusContextHandler(c echo.Context) error {
 		"ancestors":   []any{},
 		"descendants": []any{},
 	})
+}
+
+func StatusFavourite(c echo.Context) error {
+	server := c.Get("server").(string)
+	id := c.Param("id")
+	token, err := utils.GetHeaderToken(c.Request().Header)
+	if err != nil {
+		return c.JSON(http.StatusUnauthorized, httperror.ServerError{Error: err.Error()})
+	}
+
+	status, err := misskey.StatusFavourite(server, token, id)
+	if err != nil {
+		if errors.Is(err, misskey.ErrUnauthorized) {
+			return c.JSON(http.StatusUnauthorized, httperror.ServerError{Error: err.Error()})
+		} else if errors.Is(err, misskey.ErrNotFound) {
+			return c.JSON(http.StatusNotFound, httperror.ServerError{Error: err.Error()})
+		} else {
+			return err
+		}
+	}
+	return c.JSON(http.StatusOK, status)
+}
+
+func StatusUnFavourite(c echo.Context) error {
+	server := c.Get("server").(string)
+	id := c.Param("id")
+	token, err := utils.GetHeaderToken(c.Request().Header)
+	if err != nil {
+		return c.JSON(http.StatusUnauthorized, httperror.ServerError{Error: err.Error()})
+	}
+
+	status, err := misskey.StatusUnFavourite(server, token, id)
+	if err != nil {
+		if errors.Is(err, misskey.ErrUnauthorized) {
+			return c.JSON(http.StatusUnauthorized, httperror.ServerError{Error: err.Error()})
+		} else if errors.Is(err, misskey.ErrNotFound) {
+			return c.JSON(http.StatusNotFound, httperror.ServerError{Error: err.Error()})
+		} else {
+			return err
+		}
+	}
+	return c.JSON(http.StatusOK, status)
 }
 
 func StatusBookmark(c echo.Context) error {
