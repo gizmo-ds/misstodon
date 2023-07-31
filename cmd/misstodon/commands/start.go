@@ -37,6 +37,11 @@ var Start = &cli.Command{
 			Name:  "url",
 			Usage: "url of the server, used for generating links, " + `e.g. "https://example.com"`,
 		},
+		&cli.StringFlag{
+			Name: "fallbackServer",
+			Usage: "if proxy-server is not found in the request, the fallback server address will be used, " +
+				`e.g. "misskey.io"`,
+		},
 	},
 	Action: func(c *cli.Context) error {
 		global.DB = database.NewDatabase(
