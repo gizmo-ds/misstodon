@@ -10,7 +10,7 @@ import (
 	"github.com/samber/lo"
 )
 
-func AccountsLookup(server string, acct string) (models.Account, error) {
+func AccountsLookup(ctx Context, acct string) (models.Account, error) {
 	var host *string
 	var info models.Account
 	username, _host := utils.AcctInfo(acct)
@@ -18,87 +18,83 @@ func AccountsLookup(server string, acct string) (models.Account, error) {
 		return info, ErrAcctIsInvalid
 	}
 	if _host == "" {
-		_host = server
+		_host = ctx.Server()
 	}
-	if _host != server {
+	if _host != ctx.Server() {
 		host = &_host
 	}
-	var serverInfo models.MkUser
+	var result models.MkUser
 	resp, err := client.R().
 		SetBody(map[string]any{
 			"username": username,
 			"host":     host,
 		}).
-		SetResult(&serverInfo).
-		Post(utils.JoinURL(server, "/api/users/show"))
+		SetResult(&result).
+		Post(utils.JoinURL(ctx.Server(), "/api/users/show"))
 	if err != nil {
 		return info, errors.WithStack(err)
 	}
 	if resp.StatusCode() != http.StatusOK {
 		return info, ErrNotFound
 	}
-	return serverInfo.ToAccount(server)
+	return result.ToAccount(ctx.Server())
 }
 
 func AccountsStatuses(
-	server, uid, token string,
-	limit int,
+	ctx Context, uid string, limit int,
 	pinnedOnly, onlyMedia, onlyPublic, excludeReplies, excludeReblogs bool,
 	maxID, minID string) ([]models.Status, error) {
 	var notes []models.MkNote
-	r := map[string]any{
+	body := makeBody(ctx, utils.Map{
 		"userId":         uid,
 		"limit":          limit,
 		"includeReplies": !excludeReplies,
-	}
-	if token != "" {
-		r["i"] = token
-	}
+	})
 	if onlyMedia {
-		r["fileType"] = SupportedMimeTypes
+		body["fileType"] = SupportedMimeTypes
 	}
 	resp, err := client.R().
-		SetBody(r).
+		SetBody(body).
 		SetResult(&notes).
-		Post(utils.JoinURL(server, "/api/users/notes"))
+		Post(utils.JoinURL(ctx.Server(), "/api/users/notes"))
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
 	if resp.StatusCode() != http.StatusOK {
 		return nil, errors.New("failed to get statuses")
 	}
-	statuses := lo.Map(notes, func(note models.MkNote, _i int) models.Status { return note.ToStatus(server) })
+	statuses := lo.Map(notes, func(note models.MkNote, _i int) models.Status { return note.ToStatus(ctx.Server()) })
 	return statuses, nil
 }
 
-func VerifyCredentials(server, token string) (models.CredentialAccount, error) {
+func VerifyCredentials(ctx Context) (models.CredentialAccount, error) {
 	var account models.Account
-	var serverInfo models.MkUser
+	var result models.MkUser
 	var info models.CredentialAccount
 	resp, err := client.R().
-		SetBody(utils.Map{"i": token}).
-		SetResult(&serverInfo).
-		Post(utils.JoinURL(server, "/api/i"))
+		SetBody(utils.Map{"i": ctx.Token()}).
+		SetResult(&result).
+		Post(utils.JoinURL(ctx.Server(), "/api/i"))
 	if err != nil {
 		return info, errors.WithStack(err)
 	}
 	if resp.StatusCode() != 200 {
 		return info, errors.New("failed to verify credentials")
 	}
-	account, err = serverInfo.ToAccount(server)
+	account, err = result.ToAccount(ctx.Server())
 	if err != nil {
 		return info, err
 	}
 	info.Account = account
-	if serverInfo.Description != nil {
-		info.Source.Note = *serverInfo.Description
+	if result.Description != nil {
+		info.Source.Note = *result.Description
 	}
 	info.Source.Fields = info.Account.Fields
 	return info, nil
 }
 
 // UpdateCredentials updates the credentials of the user.
-func UpdateCredentials(server, token string,
+func UpdateCredentials(ctx Context,
 	displayName, note *string,
 	locked, bot, discoverable *bool,
 	sourcePrivacy *string, sourceSensitive *bool, sourceLanguage *string,
@@ -107,7 +103,7 @@ func UpdateCredentials(server, token string,
 ) (models.CredentialAccount, error) {
 	var info models.CredentialAccount
 	var body = utils.Map{
-		"i": token,
+		"i": ctx.Token(),
 	}
 	if displayName != nil {
 		body["name"] = displayName
@@ -133,7 +129,7 @@ func UpdateCredentials(server, token string,
 			return info, errors.WithStack(err)
 		}
 		defer file.Close()
-		avatarFile, err := driveFileCreate(server, token, avatar.Filename, file)
+		avatarFile, err := driveFileCreate(ctx, avatar.Filename, file)
 		if err != nil {
 			return info, errors.WithStack(err)
 		}
@@ -145,44 +141,44 @@ func UpdateCredentials(server, token string,
 			return info, errors.WithStack(err)
 		}
 		defer file.Close()
-		headerFile, err := driveFileCreate(server, token, header.Filename, file)
+		headerFile, err := driveFileCreate(ctx, header.Filename, file)
 		if err != nil {
 			return info, errors.WithStack(err)
 		}
 		body["bannerId"] = headerFile.ID
 	}
 
-	var serverInfo models.MkUser
+	var result models.MkUser
 	resp, err := client.R().
 		SetBody(body).
-		SetResult(&serverInfo).
-		Patch(utils.JoinURL(server, "/api/i/update"))
+		SetResult(&result).
+		Patch(utils.JoinURL(ctx.Server(), "/api/i/update"))
 	if err != nil {
 		return info, errors.WithStack(err)
 	}
 	if resp.StatusCode() != 200 {
 		return info, errors.New("failed to verify credentials")
 	}
-	account, err := serverInfo.ToAccount(server)
+	account, err := result.ToAccount(ctx.Server())
 	if err != nil {
 		return info, err
 	}
 	info.Account = account
-	if serverInfo.Description != nil {
-		info.Source.Note = *serverInfo.Description
+	if result.Description != nil {
+		info.Source.Note = *result.Description
 	}
 	info.Source.Fields = account.Fields
 	return info, err
 }
 
-func AccountFollowRequests(server, token string,
+func AccountFollowRequests(ctx Context,
 	limit int, sinceID, maxID string) ([]models.Account, error) {
 	var result []struct {
 		ID       string        `json:"id"`
 		Follower models.MkUser `json:"follower"`
 		Followee models.MkUser `json:"followee"`
 	}
-	body := utils.Map{"i": token, "limit": limit}
+	body := utils.Map{"i": ctx.Token(), "limit": limit}
 	if sinceID != "" {
 		body["sinceId"] = sinceID
 	}
@@ -192,7 +188,7 @@ func AccountFollowRequests(server, token string,
 	resp, err := client.R().
 		SetBody(body).
 		SetResult(&result).
-		Post(utils.JoinURL(server, "/api/following/requests/list"))
+		Post(utils.JoinURL(ctx.Server(), "/api/following/requests/list"))
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
@@ -201,18 +197,18 @@ func AccountFollowRequests(server, token string,
 	}
 	var accounts []models.Account
 	for _, r := range result {
-		if a, err := r.Follower.ToAccount(server); err == nil {
+		if a, err := r.Follower.ToAccount(ctx.Server()); err == nil {
 			accounts = append(accounts, a)
 		}
 	}
 	return accounts, nil
 }
 
-func AccountFollowRequestsCancel(server, token string, accountID string) error {
-	data := utils.Map{"i": token, "userId": accountID}
+func AccountFollowRequestsCancel(ctx Context, userID string) error {
+	data := utils.Map{"i": ctx.Token(), "userId": userID}
 	resp, err := client.R().
 		SetBody(data).
-		Post(utils.JoinURL(server, "/api/following/requests/cancel"))
+		Post(utils.JoinURL(ctx.Server(), "/api/following/requests/cancel"))
 	if err != nil {
 		return errors.WithStack(err)
 	}
@@ -222,11 +218,11 @@ func AccountFollowRequestsCancel(server, token string, accountID string) error {
 	return nil
 }
 
-func AccountFollowRequestsAccept(server, token string, accountID string) error {
-	data := utils.Map{"i": token, "userId": accountID}
+func AccountFollowRequestsAccept(ctx Context, userID string) error {
+	data := utils.Map{"i": ctx.Token(), "userId": userID}
 	resp, err := client.R().
 		SetBody(data).
-		Post(utils.JoinURL(server, "/api/following/requests/accept"))
+		Post(utils.JoinURL(*ctx.Token(), "/api/following/requests/accept"))
 	if err != nil {
 		return errors.WithStack(err)
 	}
@@ -236,11 +232,11 @@ func AccountFollowRequestsAccept(server, token string, accountID string) error {
 	return nil
 }
 
-func AccountFollowRequestsReject(server, token string, accountID string) error {
-	data := utils.Map{"i": token, "userId": accountID}
+func AccountFollowRequestsReject(ctx Context, userID string) error {
+	data := utils.Map{"i": ctx.Token(), "userId": userID}
 	resp, err := client.R().
 		SetBody(data).
-		Post(utils.JoinURL(server, "/api/following/requests/reject"))
+		Post(utils.JoinURL(ctx.Server(), "/api/following/requests/reject"))
 	if err != nil {
 		return errors.WithStack(err)
 	}
@@ -250,8 +246,7 @@ func AccountFollowRequestsReject(server, token string, accountID string) error {
 	return nil
 }
 
-func AccountFollowers(server, token string,
-	accountID string,
+func AccountFollowers(ctx Context, userID string,
 	limit int, sinceID, minID, maxID string) ([]models.Account, error) {
 	var result []struct {
 		ID         string        `json:"id"`
@@ -260,10 +255,7 @@ func AccountFollowers(server, token string,
 		FollowerId string        `json:"followerId"`
 		Follower   models.MkUser `json:"follower"`
 	}
-	body := utils.Map{"limit": limit, "userId": accountID}
-	if token != "" {
-		body["i"] = token
-	}
+	body := makeBody(ctx, utils.Map{"limit": limit, "userId": userID})
 	if v, ok := utils.StrEvaluation(sinceID, minID); ok {
 		body["sinceId"] = v
 	}
@@ -273,7 +265,7 @@ func AccountFollowers(server, token string,
 	resp, err := client.R().
 		SetBody(body).
 		SetResult(&result).
-		Post(utils.JoinURL(server, "/api/users/followers"))
+		Post(utils.JoinURL(ctx.Server(), "/api/users/followers"))
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
@@ -283,15 +275,15 @@ func AccountFollowers(server, token string,
 
 	var accounts []models.Account
 	for _, r := range result {
-		if a, err := r.Follower.ToAccount(server); err == nil {
+		if a, err := r.Follower.ToAccount(ctx.Server()); err == nil {
 			accounts = append(accounts, a)
 		}
 	}
 	return accounts, nil
 }
 
-func AccountFollowing(server, token string,
-	accountID string,
+func AccountFollowing(ctx Context,
+	userID string,
 	limit int, sinceID, minID, maxID string) ([]models.Account, error) {
 	var result []struct {
 		ID         string        `json:"id"`
@@ -300,10 +292,7 @@ func AccountFollowing(server, token string,
 		FollowerId string        `json:"followerId"`
 		Followee   models.MkUser `json:"followee"`
 	}
-	body := utils.Map{"limit": limit, "userId": accountID}
-	if token != "" {
-		body["i"] = token
-	}
+	body := makeBody(ctx, utils.Map{"limit": limit, "userId": userID})
 	if v, ok := utils.StrEvaluation(sinceID, minID); ok {
 		body["sinceId"] = v
 	}
@@ -313,7 +302,7 @@ func AccountFollowing(server, token string,
 	resp, err := client.R().
 		SetBody(body).
 		SetResult(&result).
-		Post(utils.JoinURL(server, "/api/users/following"))
+		Post(utils.JoinURL(ctx.Server(), "/api/users/following"))
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
@@ -323,21 +312,21 @@ func AccountFollowing(server, token string,
 
 	var accounts []models.Account
 	for _, r := range result {
-		if a, err := r.Followee.ToAccount(server); err == nil {
+		if a, err := r.Followee.ToAccount(ctx.Server()); err == nil {
 			accounts = append(accounts, a)
 		}
 	}
 	return accounts, nil
 }
 
-func AccountRelationships(server, token string,
-	accountIDs []string) ([]models.Relationship, error) {
-	data := utils.Map{"i": token, "userId": accountIDs}
+func AccountRelationships(ctx Context,
+	userIDs []string) ([]models.Relationship, error) {
+	data := utils.Map{"i": ctx.Token(), "userId": userIDs}
 	var result []models.MkRelation
 	resp, err := client.R().
 		SetBody(data).
 		SetResult(&result).
-		Post(utils.JoinURL(server, "/api/users/relation"))
+		Post(utils.JoinURL(ctx.Server(), "/api/users/relation"))
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
@@ -351,11 +340,11 @@ func AccountRelationships(server, token string,
 	return relationships, nil
 }
 
-func AccountFollow(server, token string, accountID string) error {
-	data := utils.Map{"i": token, "userId": accountID}
+func AccountFollow(ctx Context, userID string) error {
+	data := utils.Map{"i": ctx.Token(), "userId": userID}
 	resp, err := client.R().
 		SetBody(data).
-		Post(utils.JoinURL(server, "/api/following/create"))
+		Post(utils.JoinURL(ctx.Server(), "/api/following/create"))
 	if err != nil {
 		return errors.WithStack(err)
 	}
@@ -365,11 +354,11 @@ func AccountFollow(server, token string, accountID string) error {
 	return nil
 }
 
-func AccountUnfollow(server, token string, accountID string) error {
-	data := utils.Map{"i": token, "userId": accountID}
+func AccountUnfollow(ctx Context, userID string) error {
+	data := makeBody(ctx, utils.Map{"userId": userID})
 	resp, err := client.R().
 		SetBody(data).
-		Post(utils.JoinURL(server, "/api/following/delete"))
+		Post(utils.JoinURL(ctx.Server(), "/api/following/delete"))
 	if err != nil {
 		return errors.WithStack(err)
 	}
@@ -379,53 +368,50 @@ func AccountUnfollow(server, token string, accountID string) error {
 	return nil
 }
 
-func AccountMute(server, token string, accountID string, expiresAt int64) error {
-	data := utils.Map{"i": token, "userId": accountID}
+func AccountMute(ctx Context, userID string, expiresAt int64) error {
+	body := makeBody(ctx, utils.Map{"userId": userID})
 	if expiresAt > 0 {
-		data["expiresAt"] = expiresAt
-	}
-	resp, err := client.R().
-		SetBody(data).
-		Post(utils.JoinURL(server, "/api/mute/create"))
-	if err != nil {
-		return errors.WithStack(err)
-	}
-	if err = isucceed(resp, http.StatusOK); err != nil {
-		return errors.WithStack(err)
-	}
-	return nil
-}
-
-func AccountUnmute(server, token string, accountID string) error {
-	data := utils.Map{"i": token, "userId": accountID}
-	resp, err := client.R().
-		SetBody(data).
-		Post(utils.JoinURL(server, "/api/mute/delete"))
-	if err != nil {
-		return errors.WithStack(err)
-	}
-	if err = isucceed(resp, http.StatusOK); err != nil {
-		return errors.WithStack(err)
-	}
-	return nil
-}
-
-func AccountsGet(server, token, accountID string) (models.Account, error) {
-	var info models.Account
-	var serverInfo models.MkUser
-	body := utils.Map{"userId": accountID}
-	if token != "" {
-		body["i"] = token
+		body["expiresAt"] = expiresAt
 	}
 	resp, err := client.R().
 		SetBody(body).
-		SetResult(&serverInfo).
-		Post(utils.JoinURL(server, "/api/users/show"))
+		Post(utils.JoinURL(ctx.Server(), "/api/mute/create"))
+	if err != nil {
+		return errors.WithStack(err)
+	}
+	if err = isucceed(resp, http.StatusOK); err != nil {
+		return errors.WithStack(err)
+	}
+	return nil
+}
+
+func AccountUnmute(ctx Context, userID string) error {
+	data := makeBody(ctx, utils.Map{"userId": userID})
+	resp, err := client.R().
+		SetBody(data).
+		Post(utils.JoinURL(ctx.Server(), "/api/mute/delete"))
+	if err != nil {
+		return errors.WithStack(err)
+	}
+	if err = isucceed(resp, http.StatusOK); err != nil {
+		return errors.WithStack(err)
+	}
+	return nil
+}
+
+func AccountsGet(ctx Context, userID string) (models.Account, error) {
+	var info models.Account
+	var result models.MkUser
+	body := makeBody(ctx, utils.Map{"userId": userID})
+	resp, err := client.R().
+		SetBody(body).
+		SetResult(&result).
+		Post(utils.JoinURL(ctx.Server(), "/api/users/show"))
 	if err != nil {
 		return info, errors.WithStack(err)
 	}
 	if resp.StatusCode() != http.StatusOK {
 		return info, ErrNotFound
 	}
-	return serverInfo.ToAccount(server)
+	return result.ToAccount(ctx.Server())
 }

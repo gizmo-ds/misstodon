@@ -24,14 +24,10 @@ func ApplicationCreateHandler(c echo.Context) error {
 		Scopes       string `json:"scopes"`
 	}
 	if err := c.Bind(&params); err != nil {
-		return c.JSON(http.StatusBadRequest, echo.Map{
-			"error": err.Error(),
-		})
+		return echo.NewHTTPError(http.StatusBadRequest, err)
 	}
 	if params.ClientName == "" || params.RedirectUris == "" {
-		return c.JSON(http.StatusBadRequest, echo.Map{
-			"error": "client_name and redirect_uris are required",
-		})
+		return echo.NewHTTPError(http.StatusBadRequest, "client_name and redirect_uris are required")
 	}
 	server := c.Get("server").(string)
 	serverUrl, _ := utils.StrEvaluation(global.Config.Server.Url, "https://"+c.Request().Host)

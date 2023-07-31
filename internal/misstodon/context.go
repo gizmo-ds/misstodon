@@ -26,6 +26,13 @@ func ContextWithEchoContext(eCtx echo.Context, tokenRequired ...bool) (*Context,
 	return c, nil
 }
 
+func ContextWithValues(server, token string) *Context {
+	c := &Context{}
+	c.SetServer(server)
+	c.SetToken(token)
+	return c
+}
+
 func (*Context) Deadline() (deadline time.Time, ok bool) {
 	return
 }

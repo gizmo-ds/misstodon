@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/gizmo-ds/misstodon/internal/api/httperror"
+	"github.com/gizmo-ds/misstodon/internal/misstodon"
 	"github.com/gizmo-ds/misstodon/internal/utils"
 	"github.com/gizmo-ds/misstodon/models"
 	"github.com/gizmo-ds/misstodon/proxy/misskey"
@@ -24,10 +25,9 @@ func StatusesRouter(e *echo.Group) {
 }
 
 func StatusHandler(c echo.Context) error {
-	server := c.Get("server").(string)
 	id := c.Param("id")
-	token, _ := utils.GetHeaderToken(c.Request().Header)
-	info, err := misskey.StatusSingle(server, token, id)
+	ctx, _ := misstodon.ContextWithEchoContext(c)
+	info, err := misskey.StatusSingle(ctx, id)
 	if err != nil {
 		return err
 	}
@@ -42,14 +42,12 @@ func StatusContextHandler(c echo.Context) error {
 }
 
 func StatusFavourite(c echo.Context) error {
-	server := c.Get("server").(string)
 	id := c.Param("id")
-	token, err := utils.GetHeaderToken(c.Request().Header)
+	ctx, err := misstodon.ContextWithEchoContext(c, true)
 	if err != nil {
-		return c.JSON(http.StatusUnauthorized, httperror.ServerError{Error: err.Error()})
+		return err
 	}
-
-	status, err := misskey.StatusFavourite(server, token, id)
+	status, err := misskey.StatusFavourite(ctx, id)
 	if err != nil {
 		if errors.Is(err, misskey.ErrUnauthorized) {
 			return c.JSON(http.StatusUnauthorized, httperror.ServerError{Error: err.Error()})
@@ -63,14 +61,12 @@ func StatusFavourite(c echo.Context) error {
 }
 
 func StatusUnFavourite(c echo.Context) error {
-	server := c.Get("server").(string)
 	id := c.Param("id")
-	token, err := utils.GetHeaderToken(c.Request().Header)
+	ctx, err := misstodon.ContextWithEchoContext(c, true)
 	if err != nil {
-		return c.JSON(http.StatusUnauthorized, httperror.ServerError{Error: err.Error()})
+		return err
 	}
-
-	status, err := misskey.StatusUnFavourite(server, token, id)
+	status, err := misskey.StatusUnFavourite(ctx, id)
 	if err != nil {
 		if errors.Is(err, misskey.ErrUnauthorized) {
 			return c.JSON(http.StatusUnauthorized, httperror.ServerError{Error: err.Error()})
@@ -84,14 +80,12 @@ func StatusUnFavourite(c echo.Context) error {
 }
 
 func StatusBookmark(c echo.Context) error {
-	server := c.Get("server").(string)
 	id := c.Param("id")
-	token, err := utils.GetHeaderToken(c.Request().Header)
+	ctx, err := misstodon.ContextWithEchoContext(c, true)
 	if err != nil {
-		return c.JSON(http.StatusUnauthorized, httperror.ServerError{Error: err.Error()})
+		return err
 	}
-
-	status, err := misskey.StatusBookmark(server, token, id)
+	status, err := misskey.StatusBookmark(ctx, id)
 	if err != nil {
 		if errors.Is(err, misskey.ErrUnauthorized) {
 			return c.JSON(http.StatusUnauthorized, httperror.ServerError{Error: err.Error()})
@@ -105,14 +99,12 @@ func StatusBookmark(c echo.Context) error {
 }
 
 func StatusUnBookmark(c echo.Context) error {
-	server := c.Get("server").(string)
 	id := c.Param("id")
-	token, err := utils.GetHeaderToken(c.Request().Header)
+	ctx, err := misstodon.ContextWithEchoContext(c, true)
 	if err != nil {
-		return c.JSON(http.StatusUnauthorized, httperror.ServerError{Error: err.Error()})
+		return err
 	}
-
-	status, err := misskey.StatusUnBookmark(server, token, id)
+	status, err := misskey.StatusUnBookmark(ctx, id)
 	if err != nil {
 		if errors.Is(err, misskey.ErrUnauthorized) {
 			return c.JSON(http.StatusUnauthorized, httperror.ServerError{Error: err.Error()})
@@ -126,10 +118,9 @@ func StatusUnBookmark(c echo.Context) error {
 }
 
 func StatusBookmarks(c echo.Context) error {
-	server := c.Get("server").(string)
-	token, err := utils.GetHeaderToken(c.Request().Header)
+	ctx, err := misstodon.ContextWithEchoContext(c, true)
 	if err != nil {
-		return c.JSON(http.StatusUnauthorized, httperror.ServerError{Error: err.Error()})
+		return err
 	}
 	var query struct {
 		Limit   int    `query:"limit"`
@@ -143,8 +134,7 @@ func StatusBookmarks(c echo.Context) error {
 	if query.Limit <= 0 {
 		query.Limit = 20
 	}
-	status, err := misskey.StatusBookmarks(server, token,
-		query.Limit, query.SinceID, query.MinID, query.MaxID)
+	status, err := misskey.StatusBookmarks(ctx, query.Limit, query.SinceID, query.MinID, query.MaxID)
 	if err != nil {
 		if errors.Is(err, misskey.ErrUnauthorized) {
 			return c.JSON(http.StatusUnauthorized, httperror.ServerError{Error: err.Error()})
@@ -168,17 +158,16 @@ type postNewStatusForm struct {
 }
 
 func PostNewStatus(c echo.Context) error {
-	server := c.Get("server").(string)
-	token, err := utils.GetHeaderToken(c.Request().Header)
+	ctx, err := misstodon.ContextWithEchoContext(c, true)
 	if err != nil {
-		return c.JSON(http.StatusUnauthorized, httperror.ServerError{Error: err.Error()})
+		return err
 	}
 
 	var form postNewStatusForm
 	if err = c.Bind(&form); err != nil {
 		return c.JSON(http.StatusBadRequest, httperror.ServerError{Error: err.Error()})
 	}
-	status, err := misskey.PostNewStatus(server, token,
+	status, err := misskey.PostNewStatus(ctx,
 		form.Status, form.Poll, form.MediaIDs, form.InReplyToID,
 		form.Sensitive, form.SpoilerText,
 		form.Visibility, form.Language,

@@ -8,10 +8,10 @@ import (
 	"github.com/pkg/errors"
 )
 
-func driveFileCreate(server, token, filename string, content io.Reader) (models.MkFile, error) {
+func driveFileCreate(ctx Context, filename string, content io.Reader) (models.MkFile, error) {
 	var file models.MkFile
 	// find folder
-	folders, err := driveFolders(server, token)
+	folders, err := driveFolders(ctx)
 	if err != nil {
 		return file, err
 	}
@@ -25,7 +25,7 @@ func driveFileCreate(server, token, filename string, content io.Reader) (models.
 
 	// create folder if not exists
 	if saveFolder == nil {
-		folder, err := driveFolderCreate(server, token, "misstodon")
+		folder, err := driveFolderCreate(ctx, "misstodon")
 		if err != nil {
 			return file, err
 		}
@@ -36,13 +36,13 @@ func driveFileCreate(server, token, filename string, content io.Reader) (models.
 		SetFormData(map[string]string{
 			"folderId":    saveFolder.Id,
 			"name":        filename,
-			"i":           token,
+			"i":           *ctx.Token(),
 			"force":       "true",
 			"isSensitive": "false",
 		}).
 		SetMultipartField("file", filename, "application/octet-stream", content).
 		SetResult(&file).
-		Post("https://" + server + "/api/drive/files/create")
+		Post(utils.JoinURL(ctx.Server(), "/api/drive/files/create"))
 	if err != nil {
 		return file, err
 	}
@@ -52,11 +52,11 @@ func driveFileCreate(server, token, filename string, content io.Reader) (models.
 	return file, nil
 }
 
-func driveFolders(server, token string) (folders []models.MkFolder, err error) {
+func driveFolders(ctx Context) (folders []models.MkFolder, err error) {
 	resp, err := client.R().
-		SetBody(utils.Map{"i": token, "limit": 100}).
+		SetBody(utils.Map{"i": ctx.Token(), "limit": 100}).
 		SetResult(&folders).
-		Post("https://" + server + "/api/drive/folders")
+		Post(utils.JoinURL(ctx.Server(), "/api/drive/folders"))
 	if err != nil {
 		return
 	}
@@ -66,12 +66,12 @@ func driveFolders(server, token string) (folders []models.MkFolder, err error) {
 	return
 }
 
-func driveFolderCreate(server, token, name string) (models.MkFolder, error) {
+func driveFolderCreate(ctx Context, name string) (models.MkFolder, error) {
 	var folder models.MkFolder
 	resp, err := client.R().
-		SetBody(utils.Map{"name": name, "i": token}).
+		SetBody(utils.Map{"name": name, "i": ctx.Token()}).
 		SetResult(&folder).
-		Post("https://" + server + "/api/drive/folders/create")
+		Post(utils.JoinURL(ctx.Server(), "/api/drive/folders/create"))
 	if err != nil {
 		return folder, err
 	}

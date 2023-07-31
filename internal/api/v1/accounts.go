@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/gizmo-ds/misstodon/internal/api/httperror"
+	"github.com/gizmo-ds/misstodon/internal/misstodon"
 	"github.com/gizmo-ds/misstodon/internal/utils"
 	"github.com/gizmo-ds/misstodon/models"
 	"github.com/gizmo-ds/misstodon/proxy/misskey"
@@ -32,12 +33,11 @@ func AccountsRouter(e *echo.Group) {
 }
 
 func AccountsVerifyCredentialsHandler(c echo.Context) error {
-	accessToken, err := utils.GetHeaderToken(c.Request().Header)
+	ctx, err := misstodon.ContextWithEchoContext(c, true)
 	if err != nil {
-		return c.JSON(http.StatusUnauthorized, httperror.ServerError{Error: err.Error()})
+		return err
 	}
-	server := c.Get("server").(string)
-	info, err := misskey.VerifyCredentials(server, accessToken)
+	info, err := misskey.VerifyCredentials(ctx)
 	if err != nil {
 		return err
 	}
@@ -51,7 +51,8 @@ func AccountsLookupHandler(c echo.Context) error {
 			Error: "acct is required",
 		})
 	}
-	info, err := misskey.AccountsLookup(c.Get("server").(string), acct)
+	ctx, _ := misstodon.ContextWithEchoContext(c)
+	info, err := misskey.AccountsLookup(ctx, acct)
 	if err != nil {
 		if errors.Is(err, misskey.ErrNotFound) {
 			return c.JSON(http.StatusNotFound, httperror.ServerError{
@@ -73,8 +74,8 @@ func AccountsLookupHandler(c echo.Context) error {
 
 func AccountsStatusesHandler(c echo.Context) error {
 	uid := c.Param("id")
-	server := c.Get("server").(string)
-	token, _ := utils.GetHeaderToken(c.Request().Header)
+
+	ctx, _ := misstodon.ContextWithEchoContext(c)
 
 	limit := 30
 	pinnedOnly := false
@@ -102,7 +103,7 @@ func AccountsStatusesHandler(c echo.Context) error {
 		})
 	}
 	statuses, err := misskey.AccountsStatuses(
-		server, uid, token,
+		ctx, uid,
 		limit,
 		pinnedOnly, onlyMedia, onlyPublic, excludeReplies, excludeReblogs,
 		maxID, minID)
@@ -117,12 +118,13 @@ func AccountsUpdateCredentialsHandler(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, httperror.ServerError{Error: err.Error()})
 	}
-	server := c.Get("server").(string)
-	accessToken, err := utils.GetHeaderToken(c.Request().Header)
+
+	ctx, err := misstodon.ContextWithEchoContext(c, true)
 	if err != nil {
-		return c.JSON(http.StatusUnauthorized, httperror.ServerError{Error: err.Error()})
+		return err
 	}
-	account, err := misskey.UpdateCredentials(server, accessToken,
+
+	account, err := misskey.UpdateCredentials(ctx,
 		form.DisplayName, form.Note,
 		form.Locked, form.Bot, form.Discoverable,
 		form.SourcePrivacy, form.SourceSensitive, form.SourceLanguage,
@@ -181,10 +183,9 @@ func parseAccountsUpdateCredentialsForm(c echo.Context) (f accountsUpdateCredent
 }
 
 func AccountFollowRequests(c echo.Context) error {
-	server := c.Get("server").(string)
-	token, err := utils.GetHeaderToken(c.Request().Header)
+	ctx, err := misstodon.ContextWithEchoContext(c, true)
 	if err != nil {
-		return c.JSON(http.StatusUnauthorized, httperror.ServerError{Error: err.Error()})
+		return err
 	}
 	var query struct {
 		Limit   int    `query:"limit"`
@@ -192,13 +193,12 @@ func AccountFollowRequests(c echo.Context) error {
 		SinceID string `query:"since_id"`
 	}
 	if err = c.Bind(&query); err != nil {
-		return c.JSON(http.StatusBadRequest, httperror.ServerError{Error: err.Error()})
+		return err
 	}
 	if query.Limit <= 0 {
 		query.Limit = 40
 	}
-	accounts, err := misskey.AccountFollowRequests(server, token,
-		query.Limit, query.SinceID, query.MaxID)
+	accounts, err := misskey.AccountFollowRequests(ctx, query.Limit, query.SinceID, query.MaxID)
 	if err != nil {
 		return err
 	}
@@ -206,8 +206,7 @@ func AccountFollowRequests(c echo.Context) error {
 }
 
 func AccountFollowers(c echo.Context) error {
-	server := c.Get("server").(string)
-	token, _ := utils.GetHeaderToken(c.Request().Header)
+	ctx, _ := misstodon.ContextWithEchoContext(c)
 	id := c.Param("id")
 	var query struct {
 		Limit   int    `query:"limit"`
@@ -224,7 +223,7 @@ func AccountFollowers(c echo.Context) error {
 	if query.Limit > 80 {
 		query.Limit = 80
 	}
-	accounts, err := misskey.AccountFollowers(server, token, id, query.Limit, query.SinceID, query.MinID, query.MaxID)
+	accounts, err := misskey.AccountFollowers(ctx, id, query.Limit, query.SinceID, query.MinID, query.MaxID)
 	if err != nil {
 		return err
 	}
@@ -232,8 +231,8 @@ func AccountFollowers(c echo.Context) error {
 }
 
 func AccountFollowing(c echo.Context) error {
-	server := c.Get("server").(string)
-	token, _ := utils.GetHeaderToken(c.Request().Header)
+	ctx, _ := misstodon.ContextWithEchoContext(c)
+
 	id := c.Param("id")
 	var query struct {
 		Limit   int    `query:"limit"`
@@ -250,7 +249,7 @@ func AccountFollowing(c echo.Context) error {
 	if query.Limit > 80 {
 		query.Limit = 80
 	}
-	accounts, err := misskey.AccountFollowing(server, token, id, query.Limit, query.SinceID, query.MinID, query.MaxID)
+	accounts, err := misskey.AccountFollowing(ctx, id, query.Limit, query.SinceID, query.MinID, query.MaxID)
 	if err != nil {
 		return err
 	}
@@ -258,10 +257,9 @@ func AccountFollowing(c echo.Context) error {
 }
 
 func AccountRelationships(c echo.Context) error {
-	server := c.Get("server").(string)
-	token, err := utils.GetHeaderToken(c.Request().Header)
+	ctx, err := misstodon.ContextWithEchoContext(c, true)
 	if err != nil {
-		return c.JSON(http.StatusUnauthorized, httperror.ServerError{Error: err.Error()})
+		return err
 	}
 	var ids []string
 	for k, v := range c.QueryParams() {
@@ -270,7 +268,7 @@ func AccountRelationships(c echo.Context) error {
 			continue
 		}
 	}
-	relationships, err := misskey.AccountRelationships(server, token, ids)
+	relationships, err := misskey.AccountRelationships(ctx, ids)
 	if err != nil {
 		return err
 	}
@@ -278,16 +276,15 @@ func AccountRelationships(c echo.Context) error {
 }
 
 func AccountFollow(c echo.Context) error {
-	server := c.Get("server").(string)
-	token, err := utils.GetHeaderToken(c.Request().Header)
+	ctx, err := misstodon.ContextWithEchoContext(c, true)
 	if err != nil {
-		return c.JSON(http.StatusUnauthorized, httperror.ServerError{Error: err.Error()})
-	}
-	id := c.Param("id")
-	if err = misskey.AccountFollow(server, token, id); err != nil {
 		return err
 	}
-	relationships, err := misskey.AccountRelationships(server, token, []string{id})
+	id := c.Param("id")
+	if err = misskey.AccountFollow(ctx, id); err != nil {
+		return err
+	}
+	relationships, err := misskey.AccountRelationships(ctx, []string{id})
 	if err != nil {
 		return err
 	}
@@ -295,16 +292,15 @@ func AccountFollow(c echo.Context) error {
 }
 
 func AccountUnfollow(c echo.Context) error {
-	server := c.Get("server").(string)
-	token, err := utils.GetHeaderToken(c.Request().Header)
+	ctx, err := misstodon.ContextWithEchoContext(c, true)
 	if err != nil {
-		return c.JSON(http.StatusUnauthorized, httperror.ServerError{Error: err.Error()})
-	}
-	id := c.Param("id")
-	if err = misskey.AccountUnfollow(server, token, id); err != nil {
 		return err
 	}
-	relationships, err := misskey.AccountRelationships(server, token, []string{id})
+	id := c.Param("id")
+	if err = misskey.AccountUnfollow(ctx, id); err != nil {
+		return err
+	}
+	relationships, err := misskey.AccountRelationships(ctx, []string{id})
 	if err != nil {
 		return err
 	}
@@ -312,10 +308,9 @@ func AccountUnfollow(c echo.Context) error {
 }
 
 func AccountMute(c echo.Context) error {
-	server := c.Get("server").(string)
-	token, err := utils.GetHeaderToken(c.Request().Header)
+	ctx, err := misstodon.ContextWithEchoContext(c, true)
 	if err != nil {
-		return c.JSON(http.StatusUnauthorized, httperror.ServerError{Error: err.Error()})
+		return err
 	}
 	id := c.Param("id")
 	var duration int64 = 0
@@ -324,10 +319,10 @@ func AccountMute(c echo.Context) error {
 			duration = time.Now().UnixMilli() + int64(v*1000)
 		}
 	}
-	if err = misskey.AccountMute(server, token, id, duration); err != nil {
+	if err = misskey.AccountMute(ctx, id, duration); err != nil {
 		return err
 	}
-	relationships, err := misskey.AccountRelationships(server, token, []string{id})
+	relationships, err := misskey.AccountRelationships(ctx, []string{id})
 	if err != nil {
 		return err
 	}
@@ -335,16 +330,15 @@ func AccountMute(c echo.Context) error {
 }
 
 func AccountUnmute(c echo.Context) error {
-	server := c.Get("server").(string)
-	token, err := utils.GetHeaderToken(c.Request().Header)
+	ctx, err := misstodon.ContextWithEchoContext(c, true)
 	if err != nil {
-		return c.JSON(http.StatusUnauthorized, httperror.ServerError{Error: err.Error()})
-	}
-	id := c.Param("id")
-	if err = misskey.AccountUnmute(server, token, id); err != nil {
 		return err
 	}
-	relationships, err := misskey.AccountRelationships(server, token, []string{id})
+	id := c.Param("id")
+	if err = misskey.AccountUnmute(ctx, id); err != nil {
+		return err
+	}
+	relationships, err := misskey.AccountRelationships(ctx, []string{id})
 	if err != nil {
 		return err
 	}
@@ -352,9 +346,8 @@ func AccountUnmute(c echo.Context) error {
 }
 
 func AccountsGetHandler(c echo.Context) error {
-	server := c.Get("server").(string)
-	token, _ := utils.GetHeaderToken(c.Request().Header)
-	info, err := misskey.AccountsGet(server, token, c.Param("id"))
+	ctx, _ := misstodon.ContextWithEchoContext(c)
+	info, err := misskey.AccountsGet(ctx, c.Param("id"))
 	if err != nil {
 		return err
 	}

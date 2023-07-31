@@ -3,8 +3,7 @@ package v2
 import (
 	"net/http"
 
-	"github.com/gizmo-ds/misstodon/internal/api/httperror"
-	"github.com/gizmo-ds/misstodon/internal/utils"
+	"github.com/gizmo-ds/misstodon/internal/misstodon"
 	"github.com/gizmo-ds/misstodon/proxy/misskey"
 	"github.com/labstack/echo/v4"
 )
@@ -21,12 +20,11 @@ func MediaUploadHandler(c echo.Context) error {
 	}
 	description := c.FormValue("description")
 
-	accessToken, err := utils.GetHeaderToken(c.Request().Header)
+	ctx, err := misstodon.ContextWithEchoContext(c, true)
 	if err != nil {
-		return c.JSON(http.StatusUnauthorized, httperror.ServerError{Error: err.Error()})
+		return err
 	}
-	server := c.Get("server").(string)
-	ma, err := misskey.MediaUpload(server, accessToken, file, description)
+	ma, err := misskey.MediaUpload(ctx, file, description)
 	if err != nil {
 		return err
 	}

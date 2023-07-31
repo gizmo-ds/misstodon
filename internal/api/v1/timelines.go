@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/gizmo-ds/misstodon/internal/misstodon"
 	"github.com/gizmo-ds/misstodon/internal/utils"
 	"github.com/gizmo-ds/misstodon/models"
 	"github.com/gizmo-ds/misstodon/proxy/misskey"
@@ -18,8 +19,7 @@ func TimelinesRouter(e *echo.Group) {
 }
 
 func TimelinePublicHandler(c echo.Context) error {
-	server := c.Get("server").(string)
-	accessToken, _ := utils.GetHeaderToken(c.Request().Header)
+	ctx, _ := misstodon.ContextWithEchoContext(c)
 	limit := 20
 	if v, err := strconv.Atoi(c.QueryParam("limit")); err == nil {
 		limit = v
@@ -31,7 +31,7 @@ func TimelinePublicHandler(c echo.Context) error {
 	if c.QueryParam("local") == "true" {
 		timelineType = models.TimelinePublicTypeLocal
 	}
-	list, err := misskey.TimelinePublic(server, accessToken,
+	list, err := misskey.TimelinePublic(ctx,
 		timelineType, c.QueryParam("only_media") == "true", limit,
 		c.QueryParam("max_id"), c.QueryParam("min_id"))
 	if err != nil {
@@ -41,10 +41,9 @@ func TimelinePublicHandler(c echo.Context) error {
 }
 
 func TimelineHomeHandler(c echo.Context) error {
-	server := c.Get("server").(string)
-	accessToken, err := utils.GetHeaderToken(c.Request().Header)
+	ctx, err := misstodon.ContextWithEchoContext(c, true)
 	if err != nil {
-		return c.JSON(http.StatusUnauthorized, echo.Map{"error": "invalid token"})
+		return err
 	}
 	limit := 20
 	if v, err := strconv.Atoi(c.QueryParam("limit")); err == nil {
@@ -53,7 +52,7 @@ func TimelineHomeHandler(c echo.Context) error {
 			limit = 40
 		}
 	}
-	list, err := misskey.TimelineHome(server, accessToken,
+	list, err := misskey.TimelineHome(ctx,
 		limit, c.QueryParam("max_id"), c.QueryParam("min_id"))
 	if err != nil {
 		return err
@@ -62,8 +61,7 @@ func TimelineHomeHandler(c echo.Context) error {
 }
 
 func TimelineHashtag(c echo.Context) error {
-	server := c.Get("server").(string)
-	accessToken, _ := utils.GetHeaderToken(c.Request().Header)
+	ctx, _ := misstodon.ContextWithEchoContext(c)
 
 	limit := 20
 	if v, err := strconv.Atoi(c.QueryParam("limit")); err == nil {
@@ -73,8 +71,7 @@ func TimelineHashtag(c echo.Context) error {
 		}
 	}
 
-	list, err := misskey.SearchStatusByHashtag(server, accessToken,
-		c.Param("hashtag"),
+	list, err := misskey.SearchStatusByHashtag(ctx, c.Param("hashtag"),
 		limit, c.QueryParam("max_id"), c.QueryParam("since_id"), c.QueryParam("min_id"))
 	if err != nil {
 		return err

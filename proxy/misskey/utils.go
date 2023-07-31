@@ -55,3 +55,15 @@ func isucceed(resp *resty.Response, statusCode int, codes ...string) error {
 	}
 	return errors.New(result.Error.Msg)
 }
+
+func makeBody(ctx Context, m utils.Map) utils.Map {
+	r := utils.Map{}
+	token := ctx.Token()
+	if token != nil && *token != "" {
+		r["i"] = token
+	}
+	for k, v := range m {
+		r[k] = v
+	}
+	return r
+}

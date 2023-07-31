@@ -7,7 +7,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-func MediaUpload(server, token string, file *multipart.FileHeader, description string) (models.MediaAttachment, error) {
+func MediaUpload(ctx Context, file *multipart.FileHeader, description string) (models.MediaAttachment, error) {
 	var ma models.MediaAttachment
 	if file == nil {
 		return ma, errors.New("file is nil")
@@ -18,7 +18,7 @@ func MediaUpload(server, token string, file *multipart.FileHeader, description s
 	}
 	defer f.Close()
 
-	fileInfo, err := driveFileCreate(server, token, file.Filename, f)
+	fileInfo, err := driveFileCreate(ctx, file.Filename, f)
 	if err != nil {
 		return ma, err
 	}
