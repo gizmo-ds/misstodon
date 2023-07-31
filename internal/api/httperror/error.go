@@ -1,6 +1,8 @@
 package httperror
 
 import (
+	"errors"
+	"fmt"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -15,12 +17,17 @@ type ServerError struct {
 
 func ErrorHandler(err error, c echo.Context) {
 	code := http.StatusInternalServerError
-	if he, ok := err.(*echo.HTTPError); ok {
+	if err == nil {
+		return
+	}
+
+	info := ServerError{Error: err.Error()}
+	var he *echo.HTTPError
+	if errors.As(err, &he) {
 		code = he.Code
+		info.Error = fmt.Sprint(he.Message)
 	}
-	info := ServerError{
-		Error: err.Error(),
-	}
+
 	if code == http.StatusInternalServerError {
 		errorID := xid.New().String()
 		info = ServerError{
