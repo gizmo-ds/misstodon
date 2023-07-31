@@ -43,8 +43,8 @@ Elk: [https://elk.zone/misstodon.liuli.lol/@gizmo_ds](https://elk.zone/misstodon
   - [x] `POST` /api/v1/accounts/:user_id/follow
   - [x] `POST` /api/v1/accounts/:user_id/unfollow
   - [x] `GET` /api/v1/follow_requests
-  - [ ] `POST` /api/v1/accounts/:user_id/mute
-  - [ ] `POST` /api/v1/accounts/:user_id/unmute
+  - [x] `POST` /api/v1/accounts/:user_id/mute
+  - [x] `POST` /api/v1/accounts/:user_id/unmute
   - [x] `GET` /api/v1/bookmarks
   - [ ] `GET` /api/v1/favourites
 - [ ] Statuses

@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"mime/multipart"
 	"net/http"
+	"strconv"
+	"time"
 
 	"github.com/gizmo-ds/misstodon/internal/api/httperror"
 	"github.com/gizmo-ds/misstodon/internal/utils"
@@ -25,6 +27,8 @@ func AccountsRouter(e *echo.Group) {
 	group.GET("/relationships", AccountRelationships)
 	group.POST("/:id/follow", AccountFollow)
 	group.POST("/:id/unfollow", AccountUnfollow)
+	group.POST("/:id/mute", AccountMute)
+	group.POST("/:id/unmute", AccountUnmute)
 }
 
 func AccountsVerifyCredentialsHandler(c echo.Context) error {
@@ -298,6 +302,46 @@ func AccountUnfollow(c echo.Context) error {
 	}
 	id := c.Param("id")
 	if err = misskey.AccountUnfollow(server, token, id); err != nil {
+		return err
+	}
+	relationships, err := misskey.AccountRelationships(server, token, []string{id})
+	if err != nil {
+		return err
+	}
+	return c.JSON(http.StatusOK, relationships[0])
+}
+
+func AccountMute(c echo.Context) error {
+	server := c.Get("server").(string)
+	token, err := utils.GetHeaderToken(c.Request().Header)
+	if err != nil {
+		return c.JSON(http.StatusUnauthorized, httperror.ServerError{Error: err.Error()})
+	}
+	id := c.Param("id")
+	var duration int64 = 0
+	if v, err := strconv.Atoi(c.QueryParam("duration")); err == nil {
+		if v != 0 {
+			duration = time.Now().UnixMilli() + int64(v*1000)
+		}
+	}
+	if err = misskey.AccountMute(server, token, id, duration); err != nil {
+		return err
+	}
+	relationships, err := misskey.AccountRelationships(server, token, []string{id})
+	if err != nil {
+		return err
+	}
+	return c.JSON(http.StatusOK, relationships[0])
+}
+
+func AccountUnmute(c echo.Context) error {
+	server := c.Get("server").(string)
+	token, err := utils.GetHeaderToken(c.Request().Header)
+	if err != nil {
+		return c.JSON(http.StatusUnauthorized, httperror.ServerError{Error: err.Error()})
+	}
+	id := c.Param("id")
+	if err = misskey.AccountUnmute(server, token, id); err != nil {
 		return err
 	}
 	relationships, err := misskey.AccountRelationships(server, token, []string{id})
