@@ -13,6 +13,7 @@ var (
 	testServer string
 	testToken  string
 	testAcct   string
+	testUserID string
 )
 
 func TestMain(m *testing.M) {
@@ -27,5 +28,6 @@ func TestMain(m *testing.M) {
 	testServer = os.Getenv("TEST_SERVER")
 	testToken = os.Getenv("TEST_TOKEN")
 	testAcct = os.Getenv("TEST_ACCT")
+	testUserID = os.Getenv("TEST_USER_ID")
 	m.Run()
 }
