@@ -384,6 +384,37 @@ func AccountUnfollow(server, token string, accountID string) error {
 	return nil
 }
 
+func AccountMute(server, token string, accountID string, expiresAt int64) error {
+	data := utils.Map{"i": token, "userId": accountID}
+	if expiresAt > 0 {
+		data["expiresAt"] = expiresAt
+	}
+	resp, err := client.R().
+		SetBody(data).
+		Post(utils.JoinURL(server, "/api/mute/create"))
+	if err != nil {
+		return errors.WithStack(err)
+	}
+	if err = isucceed(resp, http.StatusOK); err != nil {
+		return errors.WithStack(err)
+	}
+	return nil
+}
+
+func AccountUnmute(server, token string, accountID string) error {
+	data := utils.Map{"i": token, "userId": accountID}
+	resp, err := client.R().
+		SetBody(data).
+		Post(utils.JoinURL(server, "/api/mute/delete"))
+	if err != nil {
+		return errors.WithStack(err)
+	}
+	if err = isucceed(resp, http.StatusOK); err != nil {
+		return errors.WithStack(err)
+	}
+	return nil
+}
+
 func AccountsGet(server, token, accountID string) (models.Account, error) {
 	var info models.Account
 	var serverInfo models.MkUser
