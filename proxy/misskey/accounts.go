@@ -3,6 +3,7 @@ package misskey
 import (
 	"mime/multipart"
 	"net/http"
+	"time"
 
 	"github.com/gizmo-ds/misstodon/internal/utils"
 	"github.com/gizmo-ds/misstodon/models"
@@ -368,10 +369,10 @@ func AccountUnfollow(ctx Context, userID string) error {
 	return nil
 }
 
-func AccountMute(ctx Context, userID string, expiresAt int64) error {
+func AccountMute(ctx Context, userID string, duration int64) error {
 	body := makeBody(ctx, utils.Map{"userId": userID})
-	if expiresAt > 0 {
-		body["expiresAt"] = expiresAt
+	if duration > 0 {
+		body["expiresAt"] = time.Now().Add(time.Second * time.Duration(duration)).UnixMilli()
 	}
 	resp, err := client.R().
 		SetBody(body).

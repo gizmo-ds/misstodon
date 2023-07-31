@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"mime/multipart"
 	"net/http"
-	"strconv"
-	"time"
 
 	"github.com/gizmo-ds/misstodon/internal/api/httperror"
 	"github.com/gizmo-ds/misstodon/internal/misstodon"
@@ -312,17 +310,17 @@ func AccountMute(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	id := c.Param("id")
-	var duration int64 = 0
-	if v, err := strconv.Atoi(c.QueryParam("duration")); err == nil {
-		if v != 0 {
-			duration = time.Now().UnixMilli() + int64(v*1000)
-		}
+	var params struct {
+		ID       string `param:"id"`
+		Duration int64  `json:"duration" form:"duration"`
 	}
-	if err = misskey.AccountMute(ctx, id, duration); err != nil {
+	if err := c.Bind(&params); err != nil {
 		return err
 	}
-	relationships, err := misskey.AccountRelationships(ctx, []string{id})
+	if err = misskey.AccountMute(ctx, params.ID, params.Duration); err != nil {
+		return err
+	}
+	relationships, err := misskey.AccountRelationships(ctx, []string{params.ID})
 	if err != nil {
 		return err
 	}
