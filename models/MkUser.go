@@ -27,6 +27,11 @@ type MkUser struct {
 	Fields         []AccountField `json:"fields"`
 	Instance       MkInstance     `json:"instance"`
 	Mentions       []string       `json:"mentions"`
+	IsMuted        bool           `json:"isMuted"`
+	IsBlocked      bool           `json:"isBlocked"`
+	IsBlocking     bool           `json:"isBlocking"`
+	IsFollowing    bool           `json:"isFollowing"`
+	IsFollowed     bool           `json:"isFollowed"`
 }
 
 type MkInstance struct {
@@ -63,6 +68,7 @@ func (u *MkUser) ToAccount(server string) (Account, error) {
 		Emojis:         []CustomEmoji{},
 		Fields:         append([]AccountField{}, u.Fields...),
 		CreatedAt:      u.CreatedAt,
+		Limited:        &u.IsMuted,
 	}
 	if info.DisplayName == "" {
 		info.DisplayName = info.Username
