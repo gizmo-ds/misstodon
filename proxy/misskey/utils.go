@@ -31,6 +31,8 @@ func isucceed(resp *resty.Response, statusCode int, codes ...string) error {
 		return ErrUnauthorized
 	case http.StatusNotFound:
 		return ErrNotFound
+	case http.StatusTooManyRequests:
+		return ErrRateLimit
 	}
 
 	var result struct {

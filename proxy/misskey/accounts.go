@@ -10,11 +10,6 @@ import (
 	"github.com/samber/lo"
 )
 
-var (
-	ErrNotFound      = errors.New("not found")
-	ErrAcctIsInvalid = errors.New("acct format is invalid")
-)
-
 func AccountsLookup(server string, acct string) (models.Account, error) {
 	var host *string
 	var info models.Account
