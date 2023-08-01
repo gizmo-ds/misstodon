@@ -65,6 +65,7 @@ Another simple approach is to run the misstodon server and use tools like [Insom
 Start the misstodon server:
 
 ```shell
+cp config_example.toml config.toml
 go run cmd/misstodon/main.go start --fallbackServer=misskey.io
 ```
 
