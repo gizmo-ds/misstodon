@@ -52,6 +52,9 @@ var Start = &cli.Command{
 		if c.String("url") != "" {
 			global.Config.Server.Url = c.String("url")
 		}
+		if c.String("fallbackServer") != "" {
+			global.Config.Proxy.FallbackServer = c.String("fallbackServer")
+		}
 		bindAddress, _ := utils.StrEvaluation(c.String("bind"), global.Config.Server.BindAddress)
 
 		e := echo.New()
