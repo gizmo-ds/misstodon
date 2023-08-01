@@ -80,6 +80,10 @@ Elk: [https://elk.zone/misstodon.liuli.lol/@gizmo_ds](https://elk.zone/misstodon
 
 </details>
 
+## Information for Developers
+
+[Contributing](./CONTRIBUTING.md) Information about contributing to this project.
+
 ## Sponsors
 
 ![Sponsors](https://afdian-connect.deno.dev/sponsor.svg)
