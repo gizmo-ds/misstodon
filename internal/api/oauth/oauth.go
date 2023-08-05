@@ -69,12 +69,12 @@ func TokenHandler(c echo.Context) error {
 		})
 	}
 	server := c.Get("server").(string)
-	accessToken, err := misskey.OAuthToken(server, params.Code, params.ClientSecret)
+	accessToken, userID, err := misskey.OAuthToken(server, params.Code, params.ClientSecret)
 	if err != nil {
 		return err
 	}
 	return c.JSON(http.StatusOK, echo.Map{
-		"access_token": accessToken,
+		"access_token": strings.Join([]string{userID, accessToken}, "."),
 		"token_type":   "Bearer",
 		"scope":        params.Scope,
 		"created_at":   time.Now().Unix(),
