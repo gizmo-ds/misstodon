@@ -90,4 +90,4 @@ Elk: [https://elk.zone/misstodon.liuli.lol/@gizmo_ds](https://elk.zone/misstodon
 
 ## Contributors
 
-![Contributors](https://contributors.liuli.lol/gizmo-ds/misstodon/contributors.svg)
+![Contributors](https://contributors.liuli.lol/gizmo-ds/misstodon/contributors.svg?align=left)
