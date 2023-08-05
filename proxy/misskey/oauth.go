@@ -26,7 +26,7 @@ func OAuthAuthorize(server, secret string) (string, error) {
 	return result.Url, nil
 }
 
-func OAuthToken(server, token, secret string) (string, error) {
+func OAuthToken(server, token, secret string) (string, string, error) {
 	var result struct {
 		AccessToken string `json:"accessToken"`
 		User        models.MkUser
@@ -39,10 +39,10 @@ func OAuthToken(server, token, secret string) (string, error) {
 		SetResult(&result).
 		Post(utils.JoinURL(server, "/api/auth/session/userkey"))
 	if err != nil {
-		return "", errors.WithStack(err)
+		return "", "", errors.WithStack(err)
 	}
 	if resp.StatusCode() != 200 {
-		return "", errors.New("failed to get access_token")
+		return "", "", errors.New("failed to get access_token")
 	}
-	return result.AccessToken, nil
+	return result.AccessToken, result.User.ID, nil
 }
