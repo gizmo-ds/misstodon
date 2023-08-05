@@ -29,14 +29,14 @@ func ErrorHandler(err error, c echo.Context) {
 	}
 
 	if code == http.StatusInternalServerError {
-		errorID := xid.New().String()
+		id := xid.New().String()
 		info = ServerError{
-			TraceID: errorID,
+			TraceID: id,
 			Error:   "Internal Server Error",
 		}
 		log.Warn().Err(err).
 			Str("user_agent", c.Request().UserAgent()).
-			Str("trace_id", errorID).
+			Str("trace_id", id).
 			Int("code", code).
 			Msg("Server Error")
 	}
