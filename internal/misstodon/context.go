@@ -19,16 +19,18 @@ func ContextWithEchoContext(eCtx echo.Context, tokenRequired ...bool) (*Context,
 	if server, ok := eCtx.Get("server").(string); ok {
 		c.SetServer(server)
 	}
-	token, err := utils.GetHeaderToken(eCtx.Request().Header)
-	if err != nil && (len(tokenRequired) > 0 && tokenRequired[0]) {
-		return nil, echo.NewHTTPError(http.StatusUnauthorized, "the access token is invalid")
+	if len(tokenRequired) > 0 && tokenRequired[0] {
+		token, err := utils.GetHeaderToken(eCtx.Request().Header)
+		if err != nil && (len(tokenRequired) > 0 && tokenRequired[0]) {
+			return nil, echo.NewHTTPError(http.StatusUnauthorized, "the access token is invalid")
+		}
+		arr := strings.Split(token, ".")
+		if len(arr) < 2 {
+			return nil, echo.NewHTTPError(http.StatusUnauthorized, "the access token is invalid")
+		}
+		c.SetUserID(arr[0])
+		c.SetToken(arr[1])
 	}
-	arr := strings.Split(token, ".")
-	if len(arr) < 2 {
-		return nil, echo.NewHTTPError(http.StatusUnauthorized, "the access token is invalid")
-	}
-	c.SetUserID(arr[0])
-	c.SetToken(arr[1])
 	return c, nil
 }
 
