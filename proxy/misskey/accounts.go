@@ -416,3 +416,34 @@ func AccountsGet(ctx Context, userID string) (models.Account, error) {
 	}
 	return result.ToAccount(ctx.Server())
 }
+
+func AccountFavourites(ctx Context,
+	limit int, sinceID, minID, maxID string,
+) ([]models.Status, error) {
+	type reactionsResult struct {
+		ID        string        `json:"id"`
+		User      models.MkUser `json:"user"`
+		Note      models.MkNote `json:"note"`
+		Type      string        `json:"type"`
+		CreatedAt time.Time     `json:"createdAt"`
+	}
+	var result []reactionsResult
+	body := makeBody(ctx, utils.Map{"limit": limit, "userId": ctx.UserID()})
+	if v, ok := utils.StrEvaluation(sinceID, minID); ok {
+		body["sinceId"] = v
+	}
+	if maxID != "" {
+		body["untilId"] = maxID
+	}
+	resp, err := client.R().
+		SetBody(body).
+		SetResult(&result).
+		Post(utils.JoinURL(ctx.Server(), "/api/users/reactions"))
+	if err != nil {
+		return nil, errors.WithStack(err)
+	}
+	if err = isucceed(resp, http.StatusOK); err != nil {
+		return nil, errors.WithStack(err)
+	}
+	return lo.Map(result, func(r reactionsResult, i int) models.Status { return r.Note.ToStatus(ctx.Server()) }), nil
+}

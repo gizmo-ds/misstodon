@@ -16,6 +16,7 @@ import (
 
 func AccountsRouter(e *echo.Group) {
 	group := e.Group("/accounts")
+	e.GET("/favourites", AccountFavourites)
 	group.GET("/verify_credentials", AccountsVerifyCredentialsHandler)
 	group.PATCH("/update_credentials", AccountsUpdateCredentialsHandler)
 	group.GET("/lookup", AccountsLookupHandler)
@@ -354,4 +355,30 @@ func AccountsGetHandler(c echo.Context) error {
 		info.HeaderStatic = info.Header
 	}
 	return c.JSON(http.StatusOK, info)
+}
+
+func AccountFavourites(c echo.Context) error {
+	ctx, err := misstodon.ContextWithEchoContext(c, true)
+	if err != nil {
+		return err
+	}
+
+	var params struct {
+		Limit   int    `query:"limit"`
+		MaxID   string `query:"max_id"`
+		MinID   string `query:"min_id"`
+		SinceID string `query:"since_id"`
+	}
+	if err = c.Bind(&params); err != nil {
+		return err
+	}
+	if params.Limit <= 0 {
+		params.Limit = 20
+	}
+	list, err := misskey.AccountFavourites(ctx,
+		params.Limit, params.SinceID, params.MinID, params.MaxID)
+	if err != nil {
+		return err
+	}
+	return c.JSON(http.StatusOK, list)
 }
