@@ -3,15 +3,15 @@ module github.com/gizmo-ds/misstodon
 go 1.20
 
 require (
-	github.com/dop251/goja v0.0.0-20230707174833-636fdf960de1
-	github.com/go-resty/resty/v2 v2.7.0
+	github.com/dop251/goja v0.0.0-20231014103939-873a1496dc8e
+	github.com/go-resty/resty/v2 v2.10.0
 	github.com/gorilla/websocket v1.5.0
 	github.com/jinzhu/configor v1.2.1
 	github.com/joho/godotenv v1.5.1
-	github.com/labstack/echo/v4 v4.11.1
+	github.com/labstack/echo/v4 v4.11.2
 	github.com/pkg/errors v0.9.1
 	github.com/rs/xid v1.5.0
-	github.com/rs/zerolog v1.30.0
+	github.com/rs/zerolog v1.31.0
 	github.com/samber/lo v1.38.1
 	github.com/stretchr/testify v1.8.4
 	github.com/tidwall/buntdb v1.3.0
