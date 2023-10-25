@@ -32,7 +32,7 @@ func StreamingHandler(c echo.Context) error {
 			return errors.New("no access token provided")
 		}
 	}
-	server := c.Get("server").(string)
+	server := c.Get("proxy-server").(string)
 
 	conn, err := wsUpgrade.Upgrade(c.Response(), c.Request(), nil)
 	if err != nil {

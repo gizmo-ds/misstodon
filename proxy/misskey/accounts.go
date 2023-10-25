@@ -19,9 +19,9 @@ func AccountsLookup(ctx Context, acct string) (models.Account, error) {
 		return info, ErrAcctIsInvalid
 	}
 	if _host == "" {
-		_host = ctx.Server()
+		_host = ctx.ProxyServer()
 	}
-	if _host != ctx.Server() {
+	if _host != ctx.ProxyServer() {
 		host = &_host
 	}
 	var result models.MkUser
@@ -31,14 +31,14 @@ func AccountsLookup(ctx Context, acct string) (models.Account, error) {
 			"host":     host,
 		}).
 		SetResult(&result).
-		Post(utils.JoinURL(ctx.Server(), "/api/users/show"))
+		Post(utils.JoinURL(ctx.ProxyServer(), "/api/users/show"))
 	if err != nil {
 		return info, errors.WithStack(err)
 	}
 	if resp.StatusCode() != http.StatusOK {
 		return info, ErrNotFound
 	}
-	return result.ToAccount(ctx.Server())
+	return result.ToAccount(ctx.ProxyServer())
 }
 
 func AccountsStatuses(
@@ -57,14 +57,14 @@ func AccountsStatuses(
 	resp, err := client.R().
 		SetBody(body).
 		SetResult(&notes).
-		Post(utils.JoinURL(ctx.Server(), "/api/users/notes"))
+		Post(utils.JoinURL(ctx.ProxyServer(), "/api/users/notes"))
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
 	if resp.StatusCode() != http.StatusOK {
 		return nil, errors.New("failed to get statuses")
 	}
-	statuses := lo.Map(notes, func(note models.MkNote, _i int) models.Status { return note.ToStatus(ctx.Server()) })
+	statuses := lo.Map(notes, func(note models.MkNote, _i int) models.Status { return note.ToStatus(ctx.ProxyServer()) })
 	return statuses, nil
 }
 
@@ -75,14 +75,14 @@ func VerifyCredentials(ctx Context) (models.CredentialAccount, error) {
 	resp, err := client.R().
 		SetBody(utils.Map{"i": ctx.Token()}).
 		SetResult(&result).
-		Post(utils.JoinURL(ctx.Server(), "/api/i"))
+		Post(utils.JoinURL(ctx.ProxyServer(), "/api/i"))
 	if err != nil {
 		return info, errors.WithStack(err)
 	}
 	if resp.StatusCode() != 200 {
 		return info, errors.New("failed to verify credentials")
 	}
-	account, err = result.ToAccount(ctx.Server())
+	account, err = result.ToAccount(ctx.ProxyServer())
 	if err != nil {
 		return info, err
 	}
@@ -153,14 +153,14 @@ func UpdateCredentials(ctx Context,
 	resp, err := client.R().
 		SetBody(body).
 		SetResult(&result).
-		Patch(utils.JoinURL(ctx.Server(), "/api/i/update"))
+		Patch(utils.JoinURL(ctx.ProxyServer(), "/api/i/update"))
 	if err != nil {
 		return info, errors.WithStack(err)
 	}
 	if resp.StatusCode() != 200 {
 		return info, errors.New("failed to verify credentials")
 	}
-	account, err := result.ToAccount(ctx.Server())
+	account, err := result.ToAccount(ctx.ProxyServer())
 	if err != nil {
 		return info, err
 	}
@@ -189,7 +189,7 @@ func AccountFollowRequests(ctx Context,
 	resp, err := client.R().
 		SetBody(body).
 		SetResult(&result).
-		Post(utils.JoinURL(ctx.Server(), "/api/following/requests/list"))
+		Post(utils.JoinURL(ctx.ProxyServer(), "/api/following/requests/list"))
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
@@ -198,7 +198,7 @@ func AccountFollowRequests(ctx Context,
 	}
 	var accounts []models.Account
 	for _, r := range result {
-		if a, err := r.Follower.ToAccount(ctx.Server()); err == nil {
+		if a, err := r.Follower.ToAccount(ctx.ProxyServer()); err == nil {
 			accounts = append(accounts, a)
 		}
 	}
@@ -209,7 +209,7 @@ func AccountFollowRequestsCancel(ctx Context, userID string) error {
 	data := utils.Map{"i": ctx.Token(), "userId": userID}
 	resp, err := client.R().
 		SetBody(data).
-		Post(utils.JoinURL(ctx.Server(), "/api/following/requests/cancel"))
+		Post(utils.JoinURL(ctx.ProxyServer(), "/api/following/requests/cancel"))
 	if err != nil {
 		return errors.WithStack(err)
 	}
@@ -237,7 +237,7 @@ func AccountFollowRequestsReject(ctx Context, userID string) error {
 	data := utils.Map{"i": ctx.Token(), "userId": userID}
 	resp, err := client.R().
 		SetBody(data).
-		Post(utils.JoinURL(ctx.Server(), "/api/following/requests/reject"))
+		Post(utils.JoinURL(ctx.ProxyServer(), "/api/following/requests/reject"))
 	if err != nil {
 		return errors.WithStack(err)
 	}
@@ -266,7 +266,7 @@ func AccountFollowers(ctx Context, userID string,
 	resp, err := client.R().
 		SetBody(body).
 		SetResult(&result).
-		Post(utils.JoinURL(ctx.Server(), "/api/users/followers"))
+		Post(utils.JoinURL(ctx.ProxyServer(), "/api/users/followers"))
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
@@ -276,7 +276,7 @@ func AccountFollowers(ctx Context, userID string,
 
 	var accounts []models.Account
 	for _, r := range result {
-		if a, err := r.Follower.ToAccount(ctx.Server()); err == nil {
+		if a, err := r.Follower.ToAccount(ctx.ProxyServer()); err == nil {
 			accounts = append(accounts, a)
 		}
 	}
@@ -303,7 +303,7 @@ func AccountFollowing(ctx Context,
 	resp, err := client.R().
 		SetBody(body).
 		SetResult(&result).
-		Post(utils.JoinURL(ctx.Server(), "/api/users/following"))
+		Post(utils.JoinURL(ctx.ProxyServer(), "/api/users/following"))
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
@@ -313,7 +313,7 @@ func AccountFollowing(ctx Context,
 
 	var accounts []models.Account
 	for _, r := range result {
-		if a, err := r.Followee.ToAccount(ctx.Server()); err == nil {
+		if a, err := r.Followee.ToAccount(ctx.ProxyServer()); err == nil {
 			accounts = append(accounts, a)
 		}
 	}
@@ -327,7 +327,7 @@ func AccountRelationships(ctx Context,
 	resp, err := client.R().
 		SetBody(data).
 		SetResult(&result).
-		Post(utils.JoinURL(ctx.Server(), "/api/users/relation"))
+		Post(utils.JoinURL(ctx.ProxyServer(), "/api/users/relation"))
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
@@ -345,7 +345,7 @@ func AccountFollow(ctx Context, userID string) error {
 	data := utils.Map{"i": ctx.Token(), "userId": userID}
 	resp, err := client.R().
 		SetBody(data).
-		Post(utils.JoinURL(ctx.Server(), "/api/following/create"))
+		Post(utils.JoinURL(ctx.ProxyServer(), "/api/following/create"))
 	if err != nil {
 		return errors.WithStack(err)
 	}
@@ -359,7 +359,7 @@ func AccountUnfollow(ctx Context, userID string) error {
 	data := makeBody(ctx, utils.Map{"userId": userID})
 	resp, err := client.R().
 		SetBody(data).
-		Post(utils.JoinURL(ctx.Server(), "/api/following/delete"))
+		Post(utils.JoinURL(ctx.ProxyServer(), "/api/following/delete"))
 	if err != nil {
 		return errors.WithStack(err)
 	}
@@ -376,7 +376,7 @@ func AccountMute(ctx Context, userID string, duration int64) error {
 	}
 	resp, err := client.R().
 		SetBody(body).
-		Post(utils.JoinURL(ctx.Server(), "/api/mute/create"))
+		Post(utils.JoinURL(ctx.ProxyServer(), "/api/mute/create"))
 	if err != nil {
 		return errors.WithStack(err)
 	}
@@ -390,7 +390,7 @@ func AccountUnmute(ctx Context, userID string) error {
 	data := makeBody(ctx, utils.Map{"userId": userID})
 	resp, err := client.R().
 		SetBody(data).
-		Post(utils.JoinURL(ctx.Server(), "/api/mute/delete"))
+		Post(utils.JoinURL(ctx.ProxyServer(), "/api/mute/delete"))
 	if err != nil {
 		return errors.WithStack(err)
 	}
@@ -407,14 +407,14 @@ func AccountsGet(ctx Context, userID string) (models.Account, error) {
 	resp, err := client.R().
 		SetBody(body).
 		SetResult(&result).
-		Post(utils.JoinURL(ctx.Server(), "/api/users/show"))
+		Post(utils.JoinURL(ctx.ProxyServer(), "/api/users/show"))
 	if err != nil {
 		return info, errors.WithStack(err)
 	}
 	if resp.StatusCode() != http.StatusOK {
 		return info, ErrNotFound
 	}
-	return result.ToAccount(ctx.Server())
+	return result.ToAccount(ctx.ProxyServer())
 }
 
 func AccountFavourites(ctx Context,
@@ -438,12 +438,12 @@ func AccountFavourites(ctx Context,
 	resp, err := client.R().
 		SetBody(body).
 		SetResult(&result).
-		Post(utils.JoinURL(ctx.Server(), "/api/users/reactions"))
+		Post(utils.JoinURL(ctx.ProxyServer(), "/api/users/reactions"))
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
 	if err = isucceed(resp, http.StatusOK); err != nil {
 		return nil, errors.WithStack(err)
 	}
-	return lo.Map(result, func(r reactionsResult, i int) models.Status { return r.Note.ToStatus(ctx.Server()) }), nil
+	return lo.Map(result, func(r reactionsResult, i int) models.Status { return r.Note.ToStatus(ctx.ProxyServer()) }), nil
 }

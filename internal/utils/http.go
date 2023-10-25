@@ -20,5 +20,9 @@ func GetHeaderToken(header http.Header) (string, error) {
 }
 
 func JoinURL(server string, p ...string) string {
-	return strings.Join(append([]string{"https://", server}, p...), "")
+	u := strings.Join(append([]string{server}, p...), "")
+	if !strings.HasPrefix(u, "https://") && !strings.HasPrefix(u, "http://") {
+		u = "https://" + u
+	}
+	return u
 }

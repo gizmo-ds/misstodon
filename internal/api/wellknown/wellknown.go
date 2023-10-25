@@ -17,7 +17,7 @@ func Router(e *echo.Group) {
 }
 
 func NodeInfoHandler(c echo.Context) error {
-	server := c.Get("server").(string)
+	server := c.Get("proxy-server").(string)
 	href := "https://" + c.Request().Host + "/nodeinfo/2.0"
 	if server != "" {
 		href += "?server=" + server
@@ -39,5 +39,5 @@ func WebFingerHandler(c echo.Context) error {
 			Error: "resource is required",
 		})
 	}
-	return misskey.WebFinger(c.Get("server").(string), resource, c.Response().Writer)
+	return misskey.WebFinger(c.Get("proxy-server").(string), resource, c.Response().Writer)
 }

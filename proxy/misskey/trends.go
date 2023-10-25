@@ -17,7 +17,7 @@ func TrendsTags(ctx Context, limit, offset int) ([]models.Tag, error) {
 	_, err := client.R().
 		SetBody(makeBody(ctx, nil)).
 		SetResult(&result).
-		Post(utils.JoinURL(ctx.Server(), "/api/hashtags/trend"))
+		Post(utils.JoinURL(ctx.ProxyServer(), "/api/hashtags/trend"))
 	if err != nil {
 		return nil, err
 	}
@@ -25,7 +25,7 @@ func TrendsTags(ctx Context, limit, offset int) ([]models.Tag, error) {
 	for _, r := range result {
 		tag := models.Tag{
 			Name: r.Tag,
-			Url:  utils.JoinURL(ctx.Server(), "/tags/", r.Tag),
+			Url:  utils.JoinURL(ctx.ProxyServer(), "/tags/", r.Tag),
 			History: []struct {
 				Day      string `json:"day"`
 				Uses     string `json:"uses"`
@@ -49,12 +49,12 @@ func TrendsStatus(ctx Context, limit, offset int) ([]models.Status, error) {
 	_, err := client.R().
 		SetBody(makeBody(ctx, utils.Map{"limit": limit})).
 		SetResult(&result).
-		Post(utils.JoinURL(ctx.Server(), "/api/notes/featured"))
+		Post(utils.JoinURL(ctx.ProxyServer(), "/api/notes/featured"))
 	if err != nil {
 		return nil, err
 	}
 	for _, note := range result {
-		statuses = append(statuses, note.ToStatus(ctx.Server()))
+		statuses = append(statuses, note.ToStatus(ctx.ProxyServer()))
 	}
 	return statuses, nil
 }

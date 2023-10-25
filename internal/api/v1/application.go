@@ -29,7 +29,7 @@ func ApplicationCreateHandler(c echo.Context) error {
 	if params.ClientName == "" || params.RedirectUris == "" {
 		return echo.NewHTTPError(http.StatusBadRequest, "client_name and redirect_uris are required")
 	}
-	server := c.Get("server").(string)
+	server := c.Get("proxy-server").(string)
 	serverUrl, _ := utils.StrEvaluation(global.Config.Server.Url, "https://"+c.Request().Host)
 	u, err := url.Parse(serverUrl + "/oauth/redirect")
 	if err != nil {

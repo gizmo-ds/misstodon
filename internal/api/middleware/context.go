@@ -41,7 +41,7 @@ func SetContextData(next echo.HandlerFunc) echo.HandlerFunc {
 		}
 		c.Response().Header().Set("User-Agent", "misstodon/"+global.AppVersion)
 		c.Response().Header().Set("X-Proxy-Server", proxyServer)
-		c.Set("server", proxyServer)
+		c.Set("proxy-server", proxyServer)
 		return next(c)
 	}
 }

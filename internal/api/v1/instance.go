@@ -18,7 +18,7 @@ func InstanceRouter(e *echo.Group) {
 
 func InstanceHandler(c echo.Context) error {
 	info, err := misskey.Instance(
-		c.Get("server").(string),
+		c.Get("proxy-server").(string),
 		global.AppVersion)
 	if err != nil {
 		return err
@@ -27,7 +27,7 @@ func InstanceHandler(c echo.Context) error {
 }
 
 func InstancePeersHandler(c echo.Context) error {
-	peers, err := misskey.InstancePeers(c.Get("server").(string))
+	peers, err := misskey.InstancePeers(c.Get("proxy-server").(string))
 	if err != nil {
 		return err
 	}
@@ -35,7 +35,7 @@ func InstancePeersHandler(c echo.Context) error {
 }
 
 func InstanceCustomEmojis(c echo.Context) error {
-	server := c.Get("server").(string)
+	server := c.Get("proxy-server").(string)
 	emojis, err := misskey.InstanceCustomEmojis(server)
 	if err != nil {
 		return err

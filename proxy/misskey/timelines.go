@@ -23,9 +23,9 @@ func TimelinePublic(ctx Context,
 	var u string
 	switch timelineType {
 	case models.TimelinePublicTypeLocal:
-		u = utils.JoinURL(ctx.Server(), "/api/notes/local-timeline")
+		u = utils.JoinURL(ctx.ProxyServer(), "/api/notes/local-timeline")
 	case models.TimelinePublicTypeRemote:
-		u = utils.JoinURL(ctx.Server(), "/api/notes/global-timeline")
+		u = utils.JoinURL(ctx.ProxyServer(), "/api/notes/global-timeline")
 	default:
 		err := errors.New("invalid timeline type")
 		return nil, err
@@ -38,7 +38,7 @@ func TimelinePublic(ctx Context,
 	if err != nil {
 		return nil, err
 	}
-	list := lo.Map(result, func(n models.MkNote, _ int) models.Status { return n.ToStatus(ctx.Server()) })
+	list := lo.Map(result, func(n models.MkNote, _ int) models.Status { return n.ToStatus(ctx.ProxyServer()) })
 	return list, nil
 }
 
@@ -55,10 +55,10 @@ func TimelineHome(ctx Context,
 	_, err := client.R().
 		SetBody(body).
 		SetResult(&result).
-		Post(utils.JoinURL(ctx.Server(), "/api/notes/timeline"))
+		Post(utils.JoinURL(ctx.ProxyServer(), "/api/notes/timeline"))
 	if err != nil {
 		return nil, err
 	}
-	list := lo.Map(result, func(n models.MkNote, _ int) models.Status { return n.ToStatus(ctx.Server()) })
+	list := lo.Map(result, func(n models.MkNote, _ int) models.Status { return n.ToStatus(ctx.ProxyServer()) })
 	return list, nil
 }

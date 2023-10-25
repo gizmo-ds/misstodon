@@ -49,10 +49,10 @@ var Start = &cli.Command{
 			global.Config.Database.Address)
 		defer global.DB.Close()
 
-		if c.String("url") != "" {
+		if c.IsSet("url") {
 			global.Config.Server.Url = c.String("url")
 		}
-		if c.String("fallbackServer") != "" {
+		if c.IsSet("fallbackServer") {
 			global.Config.Proxy.FallbackServer = c.String("fallbackServer")
 		}
 		bindAddress, _ := utils.StrEvaluation(c.String("bind"), global.Config.Server.BindAddress)

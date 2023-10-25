@@ -16,8 +16,8 @@ type Context struct {
 
 func ContextWithEchoContext(eCtx echo.Context, tokenRequired ...bool) (*Context, error) {
 	c := &Context{}
-	if server, ok := eCtx.Get("server").(string); ok {
-		c.SetServer(server)
+	if server, ok := eCtx.Get("proxy-server").(string); ok {
+		c.SetProxyServer(server)
 	}
 	if len(tokenRequired) > 0 && tokenRequired[0] {
 		token, err := utils.GetHeaderToken(eCtx.Request().Header)
@@ -31,12 +31,13 @@ func ContextWithEchoContext(eCtx echo.Context, tokenRequired ...bool) (*Context,
 		c.SetUserID(arr[0])
 		c.SetToken(arr[1])
 	}
+	c.SetHOST(eCtx.Request().Host)
 	return c, nil
 }
 
-func ContextWithValues(server, token string) *Context {
+func ContextWithValues(proxyServer, token string) *Context {
 	c := &Context{}
-	c.SetServer(server)
+	c.SetProxyServer(proxyServer)
 	c.SetToken(token)
 	return c
 }
@@ -72,12 +73,12 @@ func (c *Context) String(key string) *string {
 	return nil
 }
 
-func (c *Context) Server() string {
-	return *c.String("server")
+func (c *Context) ProxyServer() string {
+	return *c.String("proxy-server")
 }
 
-func (c *Context) SetServer(val string) {
-	c.SetValue("server", val)
+func (c *Context) SetProxyServer(val string) {
+	c.SetValue("proxy-server", val)
 }
 
 func (c *Context) Token() *string {
@@ -94,4 +95,12 @@ func (c *Context) UserID() *string {
 
 func (c *Context) SetUserID(val string) {
 	c.SetValue("user_id", val)
+}
+
+func (c *Context) HOST() *string {
+	return c.String("host")
+}
+
+func (c *Context) SetHOST(val string) {
+	c.SetValue("host", val)
 }

@@ -42,7 +42,7 @@ func driveFileCreate(ctx Context, filename string, content io.Reader) (models.Mk
 		}).
 		SetMultipartField("file", filename, "application/octet-stream", content).
 		SetResult(&file).
-		Post(utils.JoinURL(ctx.Server(), "/api/drive/files/create"))
+		Post(utils.JoinURL(ctx.ProxyServer(), "/api/drive/files/create"))
 	if err != nil {
 		return file, err
 	}
@@ -56,7 +56,7 @@ func driveFolders(ctx Context) (folders []models.MkFolder, err error) {
 	resp, err := client.R().
 		SetBody(utils.Map{"i": ctx.Token(), "limit": 100}).
 		SetResult(&folders).
-		Post(utils.JoinURL(ctx.Server(), "/api/drive/folders"))
+		Post(utils.JoinURL(ctx.ProxyServer(), "/api/drive/folders"))
 	if err != nil {
 		return
 	}
@@ -71,7 +71,7 @@ func driveFolderCreate(ctx Context, name string) (models.MkFolder, error) {
 	resp, err := client.R().
 		SetBody(utils.Map{"name": name, "i": ctx.Token()}).
 		SetResult(&folder).
-		Post(utils.JoinURL(ctx.Server(), "/api/drive/folders/create"))
+		Post(utils.JoinURL(ctx.ProxyServer(), "/api/drive/folders/create"))
 	if err != nil {
 		return folder, err
 	}

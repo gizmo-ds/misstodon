@@ -68,7 +68,7 @@ func TokenHandler(c echo.Context) error {
 			"error": "grant_type, client_id, client_secret and redirect_uri are required",
 		})
 	}
-	server := c.Get("server").(string)
+	server := c.Get("proxy-server").(string)
 	accessToken, userID, err := misskey.OAuthToken(server, params.Code, params.ClientSecret)
 	if err != nil {
 		return err
@@ -105,7 +105,7 @@ func AuthorizeHandler(c echo.Context) error {
 			"error": "client_id, redirect_uri and response_type are required",
 		})
 	}
-	server := c.Get("server").(string)
+	server := c.Get("proxy-server").(string)
 	secret, ok := global.DB.Get(server, params.ClientID)
 	if !ok {
 		return c.JSON(http.StatusBadRequest, echo.Map{

@@ -1,7 +1,8 @@
 package misskey
 
 type Context interface {
-	Server() string
+	ProxyServer() string
 	Token() *string
 	UserID() *string
+	HOST() *string
 }
