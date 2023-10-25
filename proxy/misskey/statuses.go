@@ -239,6 +239,7 @@ func SearchStatusByHashtag(ctx Context,
 	if maxId != "" {
 		body["untilId"] = maxId
 	}
+	body["tag"] = hashtag
 	var result []models.MkNote
 	_, err := client.R().
 		SetBody(body).
