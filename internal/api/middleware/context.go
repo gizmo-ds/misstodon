@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"net/http"
+	"strings"
 
 	"github.com/gizmo-ds/misstodon/internal/api/httperror"
 	"github.com/gizmo-ds/misstodon/internal/global"
@@ -11,7 +12,19 @@ import (
 
 func SetContextData(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
+		var hostProxyServer string
+		host := c.Request().Host
+		if strings.HasPrefix(host, "mt_") {
+			tmp := strings.Split(host[3:], ".")[0]
+			tmp = strings.ReplaceAll(tmp, "__", "+")
+			arr := strings.Split(tmp, "_")
+			if len(arr) > 1 {
+				tmp = strings.Join(arr, ".")
+				hostProxyServer = strings.ReplaceAll(tmp, "+", "_")
+			}
+		}
 		proxyServer, ok := utils.StrEvaluation(
+			hostProxyServer,
 			c.Param("proxyServer"),
 			c.QueryParam("server"),
 			c.Request().Header.Get("x-proxy-server"),
