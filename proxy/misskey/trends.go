@@ -25,7 +25,7 @@ func TrendsTags(ctx Context, limit, offset int) ([]models.Tag, error) {
 	for _, r := range result {
 		tag := models.Tag{
 			Name: r.Tag,
-			Url:  utils.JoinURL(ctx.ProxyServer(), "/tags/", r.Tag),
+			Url:  utils.JoinURL(*ctx.HOST(), "/tags/", r.Tag),
 			History: []struct {
 				Day      string `json:"day"`
 				Uses     string `json:"uses"`
