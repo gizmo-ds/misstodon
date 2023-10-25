@@ -6,13 +6,14 @@ import (
 	"strings"
 	"time"
 
+	"github.com/gizmo-ds/misstodon/internal/api/middleware"
 	"github.com/gizmo-ds/misstodon/internal/global"
 	"github.com/gizmo-ds/misstodon/proxy/misskey"
 	"github.com/labstack/echo/v4"
 )
 
 func Router(e *echo.Group) {
-	group := e.Group("/oauth")
+	group := e.Group("/oauth", middleware.CORS())
 	group.GET("/authorize", AuthorizeHandler)
 	group.POST("/token", TokenHandler)
 	// NOTE: This is not a standard endpoint
@@ -50,12 +51,12 @@ func RedirectHandler(c echo.Context) error {
 
 func TokenHandler(c echo.Context) error {
 	var params struct {
-		GrantType    string `json:"grant_type"`
-		ClientID     string `json:"client_id"`
-		ClientSecret string `json:"client_secret"`
-		RedirectURI  string `json:"redirect_uri"`
-		Code         string `json:"code"`
-		Scope        string `json:"scope"`
+		GrantType    string `json:"grant_type" form:"grant_type"`
+		ClientID     string `json:"client_id" form:"client_id"`
+		ClientSecret string `json:"client_secret" form:"client_secret"`
+		RedirectURI  string `json:"redirect_uri" form:"redirect_uri"`
+		Code         string `json:"code" form:"code"`
+		Scope        string `json:"scope" form:"scope"`
 	}
 	if err := c.Bind(&params); err != nil {
 		return c.JSON(http.StatusBadRequest, echo.Map{

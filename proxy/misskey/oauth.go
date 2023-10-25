@@ -1,6 +1,8 @@
 package misskey
 
 import (
+	"net/http"
+
 	"github.com/gizmo-ds/misstodon/internal/utils"
 	"github.com/gizmo-ds/misstodon/models"
 	"github.com/pkg/errors"
@@ -20,7 +22,7 @@ func OAuthAuthorize(server, secret string) (string, error) {
 	if err != nil {
 		return "", errors.WithStack(err)
 	}
-	if resp.StatusCode() != 200 {
+	if resp.StatusCode() != http.StatusOK {
 		return "", errors.New("failed to authorize")
 	}
 	return result.Url, nil
@@ -41,7 +43,7 @@ func OAuthToken(server, token, secret string) (string, string, error) {
 	if err != nil {
 		return "", "", errors.WithStack(err)
 	}
-	if resp.StatusCode() != 200 {
+	if resp.StatusCode() != http.StatusOK {
 		return "", "", errors.New("failed to get access_token")
 	}
 	return result.AccessToken, result.User.ID, nil
