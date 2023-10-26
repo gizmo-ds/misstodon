@@ -7,8 +7,13 @@ services:
     restart: always
     environment:
       MISSTODON_FALLBACK_SERVER: misskey.liuli.lol
+      # MISSTODON_SERVER_AUTO_TLS: true
+      # MISSTODON_SERVER_DOMAIN: example.com # required if MISSTODON_SERVER_AUTO_TLS is true
+      # MISSTODON_SERVER_TLS_CERT_FILE: /app/cert/fullchain.pem
+      # MISSTODON_SERVER_TLS_KEY_FILE: /app/cert/privkey.pem
     ports:
       - "3000:3000"
     volumes:
       - ./logs:/app/logs
       - ./data:/app/data
+      - ./cert:/app/cert

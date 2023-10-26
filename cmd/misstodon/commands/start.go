@@ -3,14 +3,17 @@ package commands
 import (
 	_ "embed"
 	"fmt"
+	"path/filepath"
 
 	"github.com/gizmo-ds/misstodon/internal/api"
 	"github.com/gizmo-ds/misstodon/internal/database"
 	"github.com/gizmo-ds/misstodon/internal/global"
 	"github.com/gizmo-ds/misstodon/internal/utils"
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 	"github.com/rs/zerolog/log"
 	"github.com/urfave/cli/v2"
+	"golang.org/x/crypto/acme/autocert"
 )
 
 //go:embed banner.txt
@@ -40,25 +43,36 @@ var Start = &cli.Command{
 		},
 	},
 	Action: func(c *cli.Context) error {
+		conf := global.Config
 		global.DB = database.NewDatabase(
-			global.Config.Database.Type,
-			global.Config.Database.Address)
+			conf.Database.Type,
+			conf.Database.Address)
 		defer global.DB.Close()
 		if c.IsSet("fallbackServer") {
-			global.Config.Proxy.FallbackServer = c.String("fallbackServer")
+			conf.Proxy.FallbackServer = c.String("fallbackServer")
 		}
-		bindAddress, _ := utils.StrEvaluation(c.String("bind"), global.Config.Server.BindAddress)
+		bindAddress, _ := utils.StrEvaluation(c.String("bind"), conf.Server.BindAddress)
 
 		e := echo.New()
 		e.HidePort, e.HideBanner = true, true
+
 		api.Router(e)
+
 		logStart := log.Info().Str("address", bindAddress)
-		if global.Config.Server.TlsCertFile != "" && global.Config.Server.TlsKeyFile != "" {
+		switch {
+		case conf.Server.AutoTLS && conf.Server.Domain != "":
+			e.Pre(middleware.HTTPSNonWWWRedirect())
+			cacheDir, _ := filepath.Abs("./cert/.cache")
+			e.AutoTLSManager.Cache = autocert.DirCache(cacheDir)
+			e.AutoTLSManager.HostPolicy = autocert.HostWhitelist(conf.Server.Domain)
+			logStart.Msg("Starting server with AutoTLS")
+			return e.StartAutoTLS(bindAddress)
+		case conf.Server.TlsCertFile != "" && conf.Server.TlsKeyFile != "":
 			logStart.Msg("Starting server with TLS")
-			return e.StartTLS(bindAddress,
-				global.Config.Server.TlsCertFile, global.Config.Server.TlsKeyFile)
+			return e.StartTLS(bindAddress, conf.Server.TlsCertFile, conf.Server.TlsKeyFile)
+		default:
+			logStart.Msg("Starting server")
+			return e.Start(bindAddress)
 		}
-		logStart.Msg("Starting server")
-		return e.Start(bindAddress)
 	},
 }

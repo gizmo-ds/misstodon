@@ -11,6 +11,8 @@ type config struct {
 	} `toml:"proxy" yaml:"proxy"`
 	Server struct {
 		BindAddress string `toml:"bind_address" yaml:"bind_address" env:"MISSTODON_SERVER_BIND_ADDRESS"`
+		AutoTLS     bool   `toml:"auto_tls" yaml:"auto_tls" env:"MISSTODON_SERVER_AUTO_TLS"`
+		Domain      string `toml:"domain" yaml:"domain" env:"MISSTODON_SERVER_DOMAIN"`
 		TlsCertFile string `toml:"tls_cert_file" yaml:"tls_cert_file" env:"MISSTODON_SERVER_TLS_CERT_FILE"`
 		TlsKeyFile  string `toml:"tls_key_file" yaml:"tls_key_file" env:"MISSTODON_SERVER_TLS_KEY_FILE"`
 	} `toml:"server" yaml:"server"`
