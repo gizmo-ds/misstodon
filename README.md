@@ -12,8 +12,9 @@ Misskey Mastodon-compatible APIs, Getting my [Misskey](https://github.com/misske
 
 ## Demo
 
-[https://elk.zone/misstodon.liuli.lol/@gizmo_ds](https://elk.zone/misstodon.liuli.lol/@gizmo_ds)  
-[https://elk.zone/mt_misskey_moe.liuli.lol/@gizmo](https://elk.zone/mt_misskey_moe.liuli.lol/@gizmo)
+Elk: [https://elk.zone/misstodon.liuli.lol/public](https://elk.zone/misstodon.liuli.lol/public)  
+Elk: [https://elk.zone/mt_misskey_moe.liuli.lol/explore](https://elk.zone/mt_misskey_moe.liuli.lol/explore)  
+Phanpy: [https://phanpy.social/#/mt_misskey_io.liuli.lol/p](https://phanpy.social/#/mt_misskey_io.liuli.lol/p)
 
 ## How to Use
 
