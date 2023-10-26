@@ -38,7 +38,7 @@ var Start = &cli.Command{
 			Usage: "url of the server, used for generating links, " + `e.g. "https://example.com"`,
 		},
 		&cli.StringFlag{
-			Name: "fallbackServer",
+			Name: "fallback-server",
 			Usage: "if proxy-server is not found in the request, the fallback server address will be used, " +
 				`e.g. "misskey.io"`,
 		},
