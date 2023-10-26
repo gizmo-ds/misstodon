@@ -8,22 +8,26 @@ FLAGS+=-tags timetzdata
 FLAGS+=-ldflags "-s -w -X $(PKGNAME)/internal/global.AppVersion=$(VERSION)"
 export CGO_ENABLED=0
 
-all: windows-amd64 linux-amd64 darwin-amd64
+PLATFORMS := linux windows darwin
+
+all: build-all
 
 generate:
 	go generate ./...
 
-darwin-amd64: generate
-	GOOS=darwin GOARCH=amd64 go build $(FLAGS) -o $(OUTDIR)/$(NAME)-$@ $(MAIN)
+build-all: $(PLATFORMS)
 
-linux-amd64: generate
-	GOOS=linux GOARCH=amd64 go build $(FLAGS) -o $(OUTDIR)/$(NAME)-$@ $(MAIN)
-
-windows-amd64: generate
-	GOOS=windows GOARCH=amd64 go build $(FLAGS) -o $(OUTDIR)/$(NAME)-$@.exe $(MAIN)
+$(PLATFORMS): generate
+	GOOS=$@ GOARCH=amd64 go build $(FLAGS) -o $(OUTDIR)/$(NAME)-$@-amd64$(if $(filter windows,$@),.exe) $(MAIN)
 
 sha256sum:
 	cd $(OUTDIR); for file in *; do sha256sum $$file > $$file.sha256; done
+
+zip:
+	cp config_example.toml $(OUTDIR)/config.toml
+	for platform in $(PLATFORMS); do \
+		zip -jq9 $(OUTDIR)/$(NAME)-$$platform-amd64.zip $(OUTDIR)/$(NAME)-$$platform-amd64* $(OUTDIR)/config.toml README.md LICENSE; \
+	done
 
 clean:
 	rm -rf $(OUTDIR)/*
