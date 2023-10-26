@@ -24,3 +24,6 @@ windows-amd64: generate
 
 sha256sum:
 	cd $(OUTDIR); for file in *; do sha256sum $$file > $$file.sha256; done
+
+clean:
+	rm -rf $(OUTDIR)/*
