@@ -3,8 +3,10 @@
 
 [server]
 bind_address = "[::]:3000"
-#tls_cert_file = "cert/localhost.pem"
-#tls_key_file = "cert/localhost-key.pem"
+# auto_tls = true
+# domain = "example.com" # required if auto_tls is true
+# tls_cert_file = "cert/fullchain.pem"
+# tls_key_file = "cert/privkey.pem"
 
 [logger]
 level = 0
