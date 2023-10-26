@@ -12,7 +12,62 @@ Misskey Mastodon-compatible APIs, Getting my [Misskey](https://github.com/misske
 
 ## Demo
 
-Elk: [https://elk.zone/misstodon.liuli.lol/@gizmo_ds](https://elk.zone/misstodon.liuli.lol/@gizmo_ds)
+[https://elk.zone/misstodon.liuli.lol/@gizmo_ds](https://elk.zone/misstodon.liuli.lol/@gizmo_ds)  
+[https://elk.zone/mt_misskey_moe.liuli.lol/@gizmo](https://elk.zone/mt_misskey_moe.liuli.lol/@gizmo)
+
+## How to Use
+
+> **Warning**  
+> `liuli.lol` is a demonstration site and may not guarantee high availability. We recommend [self-hosting](#running-your-own-instance) for greater control.
+
+### Domain Name Prefixing Scheme (Recommended)
+
+The simplest usage method is to specify the instance address using a domain name prefix.
+
+1. Replace underscores ("\_") in the domain name with double underscores ("\_\_").
+2. Replace dots (".") in the domain name with underscores ("\_").
+3. Prepend "mt\_" to the modified string.
+4. Append ".liuli.lol" to the modified string.
+
+When processing `misskey.io` according to the described steps, it will be transformed into the result: `mt_misskey_io.liuli.lol`.
+
+```bash
+curl --request GET --url 'https://mt_misskey_io.liuli.lol/nodeinfo/2.0' | jq .
+```
+
+### Self-Hosting with Default Instance Configuration
+
+Edit the 'config.toml' file, and within the "[proxy]" section, modify the "fallback_server" field. For example:
+
+```toml
+[proxy]
+fallback_server = "misskey.io"
+```
+
+If you are [deploying using Docker Compose](#running-your-own-instance), you can specify the default instance by modifying the 'docker-compose.yml' file. Look for the 'MISSTODON_FALLBACK_SERVER' field within the Docker Compose configuration and set it to the desired default instance.
+
+### Instance Specification via Query Parameter
+
+```bash
+curl --request GET --url 'https://misstodon.liuli.lol/nodeinfo/2.0?server=misskey.io' | jq .
+```
+
+### Instance Specification via Header
+
+```bash
+curl --request GET --url https://misstodon.liuli.lol/nodeinfo/2.0 --header 'x-proxy-server: misskey.io' | jq .
+```
+
+## Running your own instance
+
+The simplest way is to use Docker Compose. Download the [docker-compose.yml](https://github.com/gizmo-ds/misstodon/raw/main/docker-compose.yml) file to your local machine. Customize it to your needs, particularly by changing the "MISSTODON_FALLBACK_SERVER" in the "environment" to your preferred Misskey instance domain. Afterward, run the following command:
+
+```bash
+docker-compose up -d
+```
+
+> **Important**  
+> For security and privacy, we strongly discourage using HTTP directly. Instead, consider configuring a TLS certificate or utilizing Misstodon's AutoTLS feature for enhanced security.
 
 ## Roadmap
 
@@ -84,7 +139,7 @@ Elk: [https://elk.zone/misstodon.liuli.lol/@gizmo_ds](https://elk.zone/misstodon
 
 ## Sponsors
 
-![Sponsors](https://afdian-connect.deno.dev/sponsor.svg)
+[![Sponsors](https://afdian-connect.deno.dev/sponsor.svg)](https://afdian.net/a/gizmo)
 
 ## Contributors
 
