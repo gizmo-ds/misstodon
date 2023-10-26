@@ -3,9 +3,9 @@ package v1
 import (
 	"net/http"
 	"net/url"
+	"strings"
 
 	"github.com/gizmo-ds/misstodon/internal/global"
-	"github.com/gizmo-ds/misstodon/internal/utils"
 	"github.com/gizmo-ds/misstodon/proxy/misskey"
 	"github.com/labstack/echo/v4"
 	"github.com/pkg/errors"
@@ -30,8 +30,7 @@ func ApplicationCreateHandler(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, "client_name and redirect_uris are required")
 	}
 	server := c.Get("proxy-server").(string)
-	serverUrl, _ := utils.StrEvaluation(global.Config.Server.Url, "https://"+c.Request().Host)
-	u, err := url.Parse(serverUrl + "/oauth/redirect")
+	u, err := url.Parse(strings.Join([]string{"https://", c.Request().Host, "/oauth/redirect"}, ""))
 	if err != nil {
 		return errors.WithStack(err)
 	}

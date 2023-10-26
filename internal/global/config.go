@@ -10,7 +10,6 @@ type config struct {
 		FallbackServer string `toml:"fallback_server" yaml:"fallback_server"  env:"MISSTODON_FALLBACK_SERVER"`
 	} `toml:"proxy" yaml:"proxy"`
 	Server struct {
-		Url         string `toml:"url" yaml:"url" env:"MISSTODON_SERVER_URL"`
 		BindAddress string `toml:"bind_address" yaml:"bind_address" env:"MISSTODON_SERVER_BIND_ADDRESS"`
 		TlsCertFile string `toml:"tls_cert_file" yaml:"tls_cert_file" env:"MISSTODON_SERVER_TLS_CERT_FILE"`
 		TlsKeyFile  string `toml:"tls_key_file" yaml:"tls_key_file" env:"MISSTODON_SERVER_TLS_KEY_FILE"`

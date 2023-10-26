@@ -3,7 +3,6 @@
 
 [server]
 bind_address = "[::]:3000"
-#url = "https://example.com"
 #tls_cert_file = "cert/localhost.pem"
 #tls_key_file = "cert/localhost-key.pem"
 

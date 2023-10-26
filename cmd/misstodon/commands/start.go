@@ -34,10 +34,6 @@ var Start = &cli.Command{
 			Usage:   "bind address",
 		},
 		&cli.StringFlag{
-			Name:  "url",
-			Usage: "url of the server, used for generating links, " + `e.g. "https://example.com"`,
-		},
-		&cli.StringFlag{
 			Name: "fallback-server",
 			Usage: "if proxy-server is not found in the request, the fallback server address will be used, " +
 				`e.g. "misskey.io"`,
@@ -48,10 +44,6 @@ var Start = &cli.Command{
 			global.Config.Database.Type,
 			global.Config.Database.Address)
 		defer global.DB.Close()
-
-		if c.IsSet("url") {
-			global.Config.Server.Url = c.String("url")
-		}
 		if c.IsSet("fallbackServer") {
 			global.Config.Proxy.FallbackServer = c.String("fallbackServer")
 		}
