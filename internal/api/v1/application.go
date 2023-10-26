@@ -18,10 +18,10 @@ func ApplicationRouter(e *echo.Group) {
 
 func ApplicationCreateHandler(c echo.Context) error {
 	var params struct {
-		ClientName   string `json:"client_name"`
-		WebSite      string `json:"website"`
-		RedirectUris string `json:"redirect_uris"`
-		Scopes       string `json:"scopes"`
+		ClientName   string `json:"client_name" form:"client_name"`
+		WebSite      string `json:"website" form:"website"`
+		RedirectUris string `json:"redirect_uris" form:"redirect_uris"`
+		Scopes       string `json:"scopes" form:"scopes"`
 	}
 	if err := c.Bind(&params); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err)
