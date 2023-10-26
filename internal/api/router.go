@@ -28,6 +28,7 @@ func Router(e *echo.Echo) {
 		nodeinfo.Router(group)
 		oauth.Router(group)
 		v1Api := group.Group("/api/v1", middleware.CORS())
+		v2Api := group.Group("/api/v2", middleware.CORS())
 		group.GET("/static/missing.png", v1.MissingImageHandler)
 		v1.InstanceRouter(v1Api)
 		v1.AccountsRouter(v1Api)
@@ -37,7 +38,7 @@ func Router(e *echo.Echo) {
 		v1.TimelinesRouter(v1Api)
 		v1.TrendsRouter(v1Api)
 		v1.MediaRouter(v1Api)
-		v2.MediaRouter(v1Api)
+		v2.MediaRouter(v2Api)
 
 		v1Api.GET("/bookmarks", v1.StatusBookmarks)
 		v1Api.GET("/follow_requests", v1.AccountFollowRequests)
