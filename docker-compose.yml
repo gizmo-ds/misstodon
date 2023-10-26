@@ -11,4 +11,4 @@ services:
       - "3000:3000"
     volumes:
       - ./logs:/app/logs
-      - ./database:/app/data
+      - ./data:/app/data
