@@ -31,3 +31,9 @@ zip:
 
 clean:
 	rm -rf $(OUTDIR)/*
+
+build-image: generate
+	docker build --no-cache --build-arg version=$(shell git describe --tags --always) -t ghcr.io/gizmo-ds/misstodon:latest -f Dockerfile .
+
+build-develop-image: generate
+	docker build --no-cache --build-arg version=$(shell git describe --tags --always) -t ghcr.io/gizmo-ds/misstodon:develop -f Dockerfile .
