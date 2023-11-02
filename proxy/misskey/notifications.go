@@ -27,11 +27,17 @@ func NotificationsGet(ctx Context,
 			return item.ToMkNotificationType()
 		})
 	_excludeTypes = append(_excludeTypes, models.MkNotificationTypeAchievementEarned)
+	if lo.Contains(_excludeTypes, models.MkNotificationTypeMention) {
+		_excludeTypes = append(_excludeTypes, models.MkNotificationTypeReply)
+	}
 	body["excludeTypes"] = _excludeTypes
 	_includeTypes := lo.Map(types,
 		func(item models.NotificationType, _ int) models.MkNotificationType {
 			return item.ToMkNotificationType()
 		})
+	if lo.Contains(_includeTypes, models.MkNotificationTypeMention) {
+		_includeTypes = append(_includeTypes, models.MkNotificationTypeReply)
+	}
 	if len(_includeTypes) > 0 {
 		body["includeTypes"] = _includeTypes
 	}
@@ -52,7 +58,7 @@ func NotificationsGet(ctx Context,
 		if err == nil {
 			return n
 		}
-		return models.Notification{}
+		return models.Notification{Type: models.NotificationTypeUnknown}
 	})
 	notifications = lo.Filter(notifications, func(item models.Notification, _ int) bool {
 		return item.Type != models.NotificationTypeUnknown
