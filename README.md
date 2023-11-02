@@ -117,8 +117,8 @@ docker-compose up -d
   - [x] `GET` /api/v1/timelines/home
   - [x] `GET` /api/v1/timelines/public
   - [x] `GET` /api/v1/timelines/tag/:hashtag
-- [ ] Push
-  - [ ] `GET` /api/v1/notifications
+- [ ] Notifications
+  - [x] `GET` /api/v1/notifications
 - [ ] Streaming
   - [ ] `WS` /api/v1/streaming
 - [ ] Search

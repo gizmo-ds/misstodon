@@ -141,3 +141,13 @@ func GetFieldsAttributes(values map[string][]string) (fields []accountField) {
 	}
 	return
 }
+
+func NumRangeLimit[T int | int64](i, min, max T) T {
+	if i < min {
+		return min
+	}
+	if i > max {
+		return max
+	}
+	return i
+}

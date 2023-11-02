@@ -38,6 +38,7 @@ func Router(e *echo.Echo) {
 		v1.TimelinesRouter(v1Api)
 		v1.TrendsRouter(v1Api)
 		v1.MediaRouter(v1Api)
+		v1.NotificationsRouter(v1Api)
 		v2.MediaRouter(v2Api)
 
 		v1Api.GET("/bookmarks", v1.StatusBookmarks)
