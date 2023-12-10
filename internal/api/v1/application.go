@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/gizmo-ds/misstodon/internal/global"
+	"github.com/gizmo-ds/misstodon/internal/misstodon"
 	"github.com/gizmo-ds/misstodon/proxy/misskey"
 	"github.com/labstack/echo/v4"
 	"github.com/pkg/errors"
@@ -29,17 +30,23 @@ func ApplicationCreateHandler(c echo.Context) error {
 	if params.ClientName == "" || params.RedirectUris == "" {
 		return echo.NewHTTPError(http.StatusBadRequest, "client_name and redirect_uris are required")
 	}
-	server := c.Get("proxy-server").(string)
+
+	ctx, err := misstodon.ContextWithEchoContext(c, false)
+	if err != nil {
+		return err
+	}
+
 	u, err := url.Parse(strings.Join([]string{"https://", c.Request().Host, "/oauth/redirect"}, ""))
 	if err != nil {
 		return errors.WithStack(err)
 	}
 	query := u.Query()
-	query.Add("server", server)
+	query.Add("server", ctx.ProxyServer())
 	query.Add("redirect_uris", params.RedirectUris)
 	u.RawQuery = query.Encode()
+
 	app, err := misskey.ApplicationCreate(
-		server,
+		ctx,
 		params.ClientName,
 		u.String(),
 		params.Scopes,
@@ -47,7 +54,7 @@ func ApplicationCreateHandler(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	err = global.DB.Set(server, app.ID, *app.ClientSecret, -1)
+	err = global.DB.Set(ctx.ProxyServer(), app.ID, *app.ClientSecret, -1)
 	if err != nil {
 		return err
 	}

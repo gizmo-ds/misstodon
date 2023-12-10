@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	"github.com/gizmo-ds/misstodon/internal/utils"
-	"github.com/go-resty/resty/v2"
+	"github.com/gizmo-ds/misstodon/pkg/httpclient"
 )
 
 var (
@@ -23,7 +23,7 @@ func (e ServerError) Error() string {
 	return e.Message
 }
 
-func isucceed(resp *resty.Response, statusCode int, codes ...string) error {
+func isucceed(resp httpclient.Response, statusCode int, codes ...string) error {
 	switch resp.StatusCode() {
 	case http.StatusOK, http.StatusNoContent, statusCode:
 		return nil

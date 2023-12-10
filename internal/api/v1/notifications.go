@@ -13,10 +13,10 @@ import (
 
 func NotificationsRouter(e *echo.Group) {
 	group := e.Group("/notifications")
-	group.GET("", NotificationsJandler)
+	group.GET("", NotificationsHandler)
 }
 
-func NotificationsJandler(c echo.Context) error {
+func NotificationsHandler(c echo.Context) error {
 	ctx, err := misstodon.ContextWithEchoContext(c, true)
 	if err != nil {
 		return err

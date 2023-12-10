@@ -44,9 +44,10 @@ func NotificationsGet(ctx Context,
 
 	var result []models.MkNotification
 	resp, err := client.R().
+		SetBaseURL(ctx.ProxyServer()).
 		SetBody(body).
 		SetResult(&result).
-		Post(utils.JoinURL(ctx.ProxyServer(), "/api/i/notifications"))
+		Post("/api/i/notifications")
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}

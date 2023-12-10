@@ -8,6 +8,7 @@ import (
 
 	"github.com/gizmo-ds/misstodon/internal/api/middleware"
 	"github.com/gizmo-ds/misstodon/internal/global"
+	"github.com/gizmo-ds/misstodon/internal/misstodon"
 	"github.com/gizmo-ds/misstodon/proxy/misskey"
 	"github.com/labstack/echo/v4"
 )
@@ -69,8 +70,11 @@ func TokenHandler(c echo.Context) error {
 			"error": "grant_type, client_id, client_secret and redirect_uri are required",
 		})
 	}
-	server := c.Get("proxy-server").(string)
-	accessToken, userID, err := misskey.OAuthToken(server, params.Code, params.ClientSecret)
+	ctx, err := misstodon.ContextWithEchoContext(c, false)
+	if err != nil {
+		return err
+	}
+	accessToken, userID, err := misskey.OAuthToken(ctx, params.Code, params.ClientSecret)
 	if err != nil {
 		return err
 	}
@@ -106,14 +110,17 @@ func AuthorizeHandler(c echo.Context) error {
 			"error": "client_id, redirect_uri and response_type are required",
 		})
 	}
-	server := c.Get("proxy-server").(string)
-	secret, ok := global.DB.Get(server, params.ClientID)
+	ctx, err := misstodon.ContextWithEchoContext(c, false)
+	if err != nil {
+		return err
+	}
+	secret, ok := global.DB.Get(ctx.ProxyServer(), params.ClientID)
 	if !ok {
 		return c.JSON(http.StatusBadRequest, echo.Map{
 			"error": "client_id is invalid",
 		})
 	}
-	u, err := misskey.OAuthAuthorize(server, secret)
+	u, err := misskey.OAuthAuthorize(ctx, secret)
 	if err != nil {
 		return err
 	}

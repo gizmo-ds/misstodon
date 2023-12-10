@@ -4,6 +4,7 @@ import (
 	"context"
 	"net/http"
 
+	"github.com/gizmo-ds/misstodon/internal/misstodon"
 	"github.com/gizmo-ds/misstodon/models"
 	"github.com/gizmo-ds/misstodon/proxy/misskey/streaming"
 	"github.com/gorilla/websocket"
@@ -32,7 +33,10 @@ func StreamingHandler(c echo.Context) error {
 			return errors.New("no access token provided")
 		}
 	}
-	server := c.Get("proxy-server").(string)
+	mCtx, err := misstodon.ContextWithEchoContext(c, false)
+	if err != nil {
+		return err
+	}
 
 	conn, err := wsUpgrade.Upgrade(c.Response(), c.Request(), nil)
 	if err != nil {
@@ -46,7 +50,7 @@ func StreamingHandler(c echo.Context) error {
 	ch := make(chan models.StreamEvent)
 	defer close(ch)
 	go func() {
-		if err := streaming.Streaming(ctx, server, token, ch); err != nil {
+		if err := streaming.Streaming(ctx, mCtx, token, ch); err != nil {
 			log.Debug().Caller().Err(err).Msg("Streaming error")
 		}
 		_ = conn.Close()

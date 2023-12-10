@@ -3,22 +3,22 @@ package misskey
 import (
 	"net/http"
 
-	"github.com/gizmo-ds/misstodon/internal/utils"
 	"github.com/gizmo-ds/misstodon/models"
 	"github.com/pkg/errors"
 )
 
-func OAuthAuthorize(server, secret string) (string, error) {
+func OAuthAuthorize(ctx Context, secret string) (string, error) {
 	var result struct {
 		Token string `json:"token"`
 		Url   string `json:"url"`
 	}
 	resp, err := client.R().
+		SetBaseURL(ctx.ProxyServer()).
 		SetBody(map[string]any{
 			"appSecret": secret,
 		}).
 		SetResult(&result).
-		Post(utils.JoinURL(server, "/api/auth/session/generate"))
+		Post("/api/auth/session/generate")
 	if err != nil {
 		return "", errors.WithStack(err)
 	}
@@ -28,18 +28,19 @@ func OAuthAuthorize(server, secret string) (string, error) {
 	return result.Url, nil
 }
 
-func OAuthToken(server, token, secret string) (string, string, error) {
+func OAuthToken(ctx Context, token, secret string) (string, string, error) {
 	var result struct {
 		AccessToken string `json:"accessToken"`
 		User        models.MkUser
 	}
 	resp, err := client.R().
+		SetBaseURL(ctx.ProxyServer()).
 		SetBody(map[string]any{
 			"appSecret": secret,
 			"token":     token,
 		}).
 		SetResult(&result).
-		Post(utils.JoinURL(server, "/api/auth/session/userkey"))
+		Post("/api/auth/session/userkey")
 	if err != nil {
 		return "", "", errors.WithStack(err)
 	}

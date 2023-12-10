@@ -1,6 +1,7 @@
 package misskey
 
 import (
+	"net/http"
 	"strings"
 
 	"github.com/gizmo-ds/misstodon/internal/utils"
@@ -8,7 +9,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-func ApplicationCreate(server, clientName, redirectUris, scopes, website string) (models.Application, error) {
+func ApplicationCreate(ctx Context, clientName, redirectUris, scopes, website string) (models.Application, error) {
 	var permissions []string
 	var app models.Application
 	arr := strings.Split(scopes, " ")
@@ -29,6 +30,7 @@ func ApplicationCreate(server, clientName, redirectUris, scopes, website string)
 	permissions = utils.Unique(permissions)
 	var result models.MkApplication
 	resp, err := client.R().
+		SetBaseURL(ctx.ProxyServer()).
 		SetBody(map[string]any{
 			"name":        clientName,
 			"description": website,
@@ -36,11 +38,11 @@ func ApplicationCreate(server, clientName, redirectUris, scopes, website string)
 			"permission":  permissions,
 		}).
 		SetResult(&result).
-		Post(utils.JoinURL(server, "/api/app/create"))
+		Post("/api/app/create")
 	if err != nil {
 		return app, err
 	}
-	if resp.StatusCode() != 200 {
+	if resp.StatusCode() != http.StatusOK {
 		return app, errors.New("failed to create application")
 	}
 	app = models.Application{

@@ -26,12 +26,13 @@ func AccountsLookup(ctx Context, acct string) (models.Account, error) {
 	}
 	var result models.MkUser
 	resp, err := client.R().
+		SetBaseURL(ctx.ProxyServer()).
 		SetBody(map[string]any{
 			"username": username,
 			"host":     host,
 		}).
 		SetResult(&result).
-		Post(utils.JoinURL(ctx.ProxyServer(), "/api/users/show"))
+		Post("/api/users/show")
 	if err != nil {
 		return info, errors.WithStack(err)
 	}
@@ -55,9 +56,10 @@ func AccountsStatuses(
 		body["fileType"] = SupportedMimeTypes
 	}
 	resp, err := client.R().
+		SetBaseURL(ctx.ProxyServer()).
 		SetBody(body).
 		SetResult(&notes).
-		Post(utils.JoinURL(ctx.ProxyServer(), "/api/users/notes"))
+		Post("/api/users/notes")
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
@@ -73,13 +75,14 @@ func VerifyCredentials(ctx Context) (models.CredentialAccount, error) {
 	var result models.MkUser
 	var info models.CredentialAccount
 	resp, err := client.R().
+		SetBaseURL(ctx.ProxyServer()).
 		SetBody(utils.Map{"i": ctx.Token()}).
 		SetResult(&result).
-		Post(utils.JoinURL(ctx.ProxyServer(), "/api/i"))
+		Post("/api/i")
 	if err != nil {
 		return info, errors.WithStack(err)
 	}
-	if resp.StatusCode() != 200 {
+	if resp.StatusCode() != http.StatusOK {
 		return info, errors.New("failed to verify credentials")
 	}
 	account, err = result.ToAccount(ctx.ProxyServer())
@@ -151,13 +154,14 @@ func UpdateCredentials(ctx Context,
 
 	var result models.MkUser
 	resp, err := client.R().
+		SetBaseURL(ctx.ProxyServer()).
 		SetBody(body).
 		SetResult(&result).
-		Patch(utils.JoinURL(ctx.ProxyServer(), "/api/i/update"))
+		Patch("/api/i/update")
 	if err != nil {
 		return info, errors.WithStack(err)
 	}
-	if resp.StatusCode() != 200 {
+	if resp.StatusCode() != http.StatusOK {
 		return info, errors.New("failed to verify credentials")
 	}
 	account, err := result.ToAccount(ctx.ProxyServer())
@@ -187,9 +191,10 @@ func AccountFollowRequests(ctx Context,
 		body["untilId"] = maxID
 	}
 	resp, err := client.R().
+		SetBaseURL(ctx.ProxyServer()).
 		SetBody(body).
 		SetResult(&result).
-		Post(utils.JoinURL(ctx.ProxyServer(), "/api/following/requests/list"))
+		Post("/api/following/requests/list")
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
@@ -208,8 +213,9 @@ func AccountFollowRequests(ctx Context,
 func AccountFollowRequestsCancel(ctx Context, userID string) error {
 	data := utils.Map{"i": ctx.Token(), "userId": userID}
 	resp, err := client.R().
+		SetBaseURL(ctx.ProxyServer()).
 		SetBody(data).
-		Post(utils.JoinURL(ctx.ProxyServer(), "/api/following/requests/cancel"))
+		Post("/api/following/requests/cancel")
 	if err != nil {
 		return errors.WithStack(err)
 	}
@@ -222,8 +228,9 @@ func AccountFollowRequestsCancel(ctx Context, userID string) error {
 func AccountFollowRequestsAccept(ctx Context, userID string) error {
 	data := utils.Map{"i": ctx.Token(), "userId": userID}
 	resp, err := client.R().
+		SetBaseURL(ctx.ProxyServer()).
 		SetBody(data).
-		Post(utils.JoinURL(*ctx.Token(), "/api/following/requests/accept"))
+		Post("/api/following/requests/accept")
 	if err != nil {
 		return errors.WithStack(err)
 	}
@@ -236,8 +243,9 @@ func AccountFollowRequestsAccept(ctx Context, userID string) error {
 func AccountFollowRequestsReject(ctx Context, userID string) error {
 	data := utils.Map{"i": ctx.Token(), "userId": userID}
 	resp, err := client.R().
+		SetBaseURL(ctx.ProxyServer()).
 		SetBody(data).
-		Post(utils.JoinURL(ctx.ProxyServer(), "/api/following/requests/reject"))
+		Post("/api/following/requests/reject")
 	if err != nil {
 		return errors.WithStack(err)
 	}
@@ -264,9 +272,10 @@ func AccountFollowers(ctx Context, userID string,
 		body["untilId"] = maxID
 	}
 	resp, err := client.R().
+		SetBaseURL(ctx.ProxyServer()).
 		SetBody(body).
 		SetResult(&result).
-		Post(utils.JoinURL(ctx.ProxyServer(), "/api/users/followers"))
+		Post("/api/users/followers")
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
@@ -301,9 +310,10 @@ func AccountFollowing(ctx Context,
 		body["untilId"] = maxID
 	}
 	resp, err := client.R().
+		SetBaseURL(ctx.ProxyServer()).
 		SetBody(body).
 		SetResult(&result).
-		Post(utils.JoinURL(ctx.ProxyServer(), "/api/users/following"))
+		Post("/api/users/following")
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
@@ -325,9 +335,10 @@ func AccountRelationships(ctx Context,
 	data := utils.Map{"i": ctx.Token(), "userId": userIDs}
 	var result []models.MkRelation
 	resp, err := client.R().
+		SetBaseURL(ctx.ProxyServer()).
 		SetBody(data).
 		SetResult(&result).
-		Post(utils.JoinURL(ctx.ProxyServer(), "/api/users/relation"))
+		Post("/api/users/relation")
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
@@ -344,8 +355,9 @@ func AccountRelationships(ctx Context,
 func AccountFollow(ctx Context, userID string) error {
 	data := utils.Map{"i": ctx.Token(), "userId": userID}
 	resp, err := client.R().
+		SetBaseURL(ctx.ProxyServer()).
 		SetBody(data).
-		Post(utils.JoinURL(ctx.ProxyServer(), "/api/following/create"))
+		Post("/api/following/create")
 	if err != nil {
 		return errors.WithStack(err)
 	}
@@ -358,8 +370,9 @@ func AccountFollow(ctx Context, userID string) error {
 func AccountUnfollow(ctx Context, userID string) error {
 	data := makeBody(ctx, utils.Map{"userId": userID})
 	resp, err := client.R().
+		SetBaseURL(ctx.ProxyServer()).
 		SetBody(data).
-		Post(utils.JoinURL(ctx.ProxyServer(), "/api/following/delete"))
+		Post("/api/following/delete")
 	if err != nil {
 		return errors.WithStack(err)
 	}
@@ -375,8 +388,9 @@ func AccountMute(ctx Context, userID string, duration int64) error {
 		body["expiresAt"] = time.Now().Add(time.Second * time.Duration(duration)).UnixMilli()
 	}
 	resp, err := client.R().
+		SetBaseURL(ctx.ProxyServer()).
 		SetBody(body).
-		Post(utils.JoinURL(ctx.ProxyServer(), "/api/mute/create"))
+		Post("/api/mute/create")
 	if err != nil {
 		return errors.WithStack(err)
 	}
@@ -389,8 +403,9 @@ func AccountMute(ctx Context, userID string, duration int64) error {
 func AccountUnmute(ctx Context, userID string) error {
 	data := makeBody(ctx, utils.Map{"userId": userID})
 	resp, err := client.R().
+		SetBaseURL(ctx.ProxyServer()).
 		SetBody(data).
-		Post(utils.JoinURL(ctx.ProxyServer(), "/api/mute/delete"))
+		Post("/api/mute/delete")
 	if err != nil {
 		return errors.WithStack(err)
 	}
@@ -405,9 +420,10 @@ func AccountsGet(ctx Context, userID string) (models.Account, error) {
 	var result models.MkUser
 	body := makeBody(ctx, utils.Map{"userId": userID})
 	resp, err := client.R().
+		SetBaseURL(ctx.ProxyServer()).
 		SetBody(body).
 		SetResult(&result).
-		Post(utils.JoinURL(ctx.ProxyServer(), "/api/users/show"))
+		Post("/api/users/show")
 	if err != nil {
 		return info, errors.WithStack(err)
 	}
@@ -436,9 +452,10 @@ func AccountFavourites(ctx Context,
 		body["untilId"] = maxID
 	}
 	resp, err := client.R().
+		SetBaseURL(ctx.ProxyServer()).
 		SetBody(body).
 		SetResult(&result).
-		Post(utils.JoinURL(ctx.ProxyServer(), "/api/users/reactions"))
+		Post("/api/users/reactions")
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
