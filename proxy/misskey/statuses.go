@@ -14,13 +14,14 @@ func StatusSingle(ctx Context, statusID string) (models.Status, error) {
 	var note models.MkNote
 	body := makeBody(ctx, utils.Map{"noteId": statusID})
 	resp, err := client.R().
+		SetBaseURL(ctx.ProxyServer()).
 		SetBody(body).
 		SetResult(&note).
-		Post(utils.JoinURL(ctx.ProxyServer(), "/api/notes/show"))
+		Post("/api/notes/show")
 	if err != nil {
 		return status, errors.WithStack(err)
 	}
-	if err = isucceed(resp, 200); err != nil {
+	if err = isucceed(resp, http.StatusOK); err != nil {
 		return status, errors.WithStack(err)
 	}
 	status = note.ToStatus(ctx.ProxyServer())
@@ -43,13 +44,14 @@ type noteState struct {
 func getNoteState(server, token, noteId string) (noteState, error) {
 	var state noteState
 	resp, err := client.R().
+		SetBaseURL(server).
 		SetBody(utils.Map{"i": token, "noteId": noteId}).
 		SetResult(&state).
-		Post(utils.JoinURL(server, "/api/notes/state"))
+		Post("/api/notes/state")
 	if err != nil {
 		return state, errors.WithStack(err)
 	}
-	if err = isucceed(resp, 200); err != nil {
+	if err = isucceed(resp, http.StatusOK); err != nil {
 		return state, errors.WithStack(err)
 	}
 	return state, nil
@@ -61,11 +63,12 @@ func StatusFavourite(ctx Context, id string) (models.Status, error) {
 		return status, errors.WithStack(err)
 	}
 	resp, err := client.R().
+		SetBaseURL(ctx.ProxyServer()).
 		SetBody(makeBody(ctx, utils.Map{
 			"noteId":   id,
 			"reaction": "⭐",
 		})).
-		Post(utils.JoinURL(ctx.ProxyServer(), "/api/notes/reactions/create"))
+		Post("/api/notes/reactions/create")
 	if err != nil {
 		return status, errors.WithStack(err)
 	}
@@ -83,8 +86,9 @@ func StatusUnFavourite(ctx Context, id string) (models.Status, error) {
 		return status, errors.WithStack(err)
 	}
 	resp, err := client.R().
+		SetBaseURL(ctx.ProxyServer()).
 		SetBody(makeBody(ctx, utils.Map{"noteId": id})).
-		Post(utils.JoinURL(ctx.ProxyServer(), "/api/notes/reactions/delete"))
+		Post("/api/notes/reactions/delete")
 	if err != nil {
 		return status, errors.WithStack(err)
 	}
@@ -102,8 +106,9 @@ func StatusBookmark(ctx Context, id string) (models.Status, error) {
 		return status, errors.WithStack(err)
 	}
 	resp, err := client.R().
+		SetBaseURL(ctx.ProxyServer()).
 		SetBody(makeBody(ctx, utils.Map{"noteId": id})).
-		Post(utils.JoinURL(ctx.ProxyServer(), "/api/notes/favorites/create"))
+		Post("/api/notes/favorites/create")
 	if err != nil {
 		return status, errors.WithStack(err)
 	}
@@ -120,8 +125,9 @@ func StatusUnBookmark(ctx Context, id string) (models.Status, error) {
 		return status, errors.WithStack(err)
 	}
 	resp, err := client.R().
+		SetBaseURL(ctx.ProxyServer()).
 		SetBody(makeBody(ctx, utils.Map{"noteId": id})).
-		Post(utils.JoinURL(ctx.ProxyServer(), "/api/notes/favorites/delete"))
+		Post("/api/notes/favorites/delete")
 	if err != nil {
 		return status, errors.WithStack(err)
 	}
@@ -149,9 +155,10 @@ func StatusBookmarks(ctx Context,
 		body["untilId"] = maxID
 	}
 	resp, err := client.R().
+		SetBaseURL(ctx.ProxyServer()).
 		SetBody(body).
 		SetResult(&result).
-		Post(utils.JoinURL(ctx.ProxyServer(), "/api/i/favorites"))
+		Post("/api/i/favorites")
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
@@ -217,9 +224,10 @@ func PostNewStatus(ctx Context,
 		CreatedNote models.MkNote `json:"createdNote"`
 	}
 	resp, err := client.R().
+		SetBaseURL(ctx.ProxyServer()).
 		SetBody(body).
 		SetResult(&result).
-		Post(utils.JoinURL(ctx.ProxyServer(), "/api/notes/create"))
+		Post("/api/notes/create")
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
@@ -242,9 +250,10 @@ func SearchStatusByHashtag(ctx Context,
 	body["tag"] = hashtag
 	var result []models.MkNote
 	_, err := client.R().
+		SetBaseURL(ctx.ProxyServer()).
 		SetBody(body).
 		SetResult(&result).
-		Post(utils.JoinURL(ctx.ProxyServer(), "/api/notes/search-by-tag"))
+		Post("/api/notes/search-by-tag")
 	if err != nil {
 		return nil, err
 	}

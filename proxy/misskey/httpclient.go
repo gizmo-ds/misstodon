@@ -1,10 +1,10 @@
 package misskey
 
 import (
-	"github.com/go-resty/resty/v2"
+	"github.com/gizmo-ds/misstodon/pkg/httpclient"
 )
 
-var client = resty.New()
+var client = httpclient.NewRestyClient()
 
 func SetHeader(header, value string) {
 	client.SetHeader(header, value)

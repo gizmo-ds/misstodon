@@ -23,15 +23,16 @@ func TimelinePublic(ctx Context,
 	var u string
 	switch timelineType {
 	case models.TimelinePublicTypeLocal:
-		u = utils.JoinURL(ctx.ProxyServer(), "/api/notes/local-timeline")
+		u = "/api/notes/local-timeline"
 	case models.TimelinePublicTypeRemote:
-		u = utils.JoinURL(ctx.ProxyServer(), "/api/notes/global-timeline")
+		u = "/api/notes/global-timeline"
 	default:
 		err := errors.New("invalid timeline type")
 		return nil, err
 	}
 	var result []models.MkNote
 	_, err := client.R().
+		SetBaseURL(ctx.ProxyServer()).
 		SetBody(body).
 		SetResult(&result).
 		Post(u)
@@ -53,9 +54,10 @@ func TimelineHome(ctx Context,
 	}
 	var result []models.MkNote
 	_, err := client.R().
+		SetBaseURL(ctx.ProxyServer()).
 		SetBody(body).
 		SetResult(&result).
-		Post(utils.JoinURL(ctx.ProxyServer(), "/api/notes/timeline"))
+		Post("/api/notes/timeline")
 	if err != nil {
 		return nil, err
 	}

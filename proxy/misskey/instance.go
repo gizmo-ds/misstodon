@@ -43,15 +43,16 @@ var SupportedMimeTypes = []string{
 	"audio/vnd.wave",
 }
 
-func Instance(server, version string) (models.Instance, error) {
+func Instance(ctx Context, version string) (models.Instance, error) {
 	var info models.Instance
 	var serverInfo models.MkMeta
 	resp, err := client.R().
+		SetBaseURL(ctx.ProxyServer()).
 		SetBody(map[string]any{
 			"detail": false,
 		}).
 		SetResult(&serverInfo).
-		Post(utils.JoinURL(server, "/api/meta"))
+		Post("/api/meta")
 	if err != nil {
 		return info, err
 	}
@@ -89,9 +90,10 @@ func Instance(server, version string) (models.Instance, error) {
 
 	var serverStats models.MkStats
 	resp, err = client.R().
+		SetBaseURL(ctx.ProxyServer()).
 		SetBody(map[string]any{}).
 		SetResult(&serverStats).
-		Post(utils.JoinURL(server, "/api/stats"))
+		Post("/api/stats")
 	if err != nil {
 		return info, err
 	}
@@ -104,18 +106,17 @@ func Instance(server, version string) (models.Instance, error) {
 	return info, err
 }
 
-func InstancePeers(server string) ([]string, error) {
-	return nil, nil
-}
+func InstancePeers(ctx Context) ([]string, error) { return nil, nil }
 
-func InstanceCustomEmojis(server string) ([]models.CustomEmoji, error) {
+func InstanceCustomEmojis(ctx Context) ([]models.CustomEmoji, error) {
 	var emojis struct {
 		Emojis []models.MkEmoji `json:"emojis"`
 	}
 	resp, err := client.R().
+		SetBaseURL(ctx.ProxyServer()).
 		SetResult(&emojis).
 		SetBody(utils.Map{}).
-		Post(utils.JoinURL(server, "/api/emojis"))
+		Post("/api/emojis")
 	if err != nil {
 		return nil, err
 	}

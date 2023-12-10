@@ -15,9 +15,10 @@ func TrendsTags(ctx Context, limit, offset int) ([]models.Tag, error) {
 		UsersCount int    `json:"usersCount"`
 	}
 	_, err := client.R().
+		SetBaseURL(ctx.ProxyServer()).
 		SetBody(makeBody(ctx, nil)).
 		SetResult(&result).
-		Post(utils.JoinURL(ctx.ProxyServer(), "/api/hashtags/trend"))
+		Post("/api/hashtags/trend")
 	if err != nil {
 		return nil, err
 	}
@@ -47,9 +48,10 @@ func TrendsStatus(ctx Context, limit, offset int) ([]models.Status, error) {
 	var statuses []models.Status
 	var result []models.MkNote
 	_, err := client.R().
+		SetBaseURL(ctx.ProxyServer()).
 		SetBody(makeBody(ctx, utils.Map{"limit": limit})).
 		SetResult(&result).
-		Post(utils.JoinURL(ctx.ProxyServer(), "/api/notes/featured"))
+		Post("/api/notes/featured")
 	if err != nil {
 		return nil, err
 	}

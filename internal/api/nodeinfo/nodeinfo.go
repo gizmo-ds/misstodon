@@ -16,7 +16,7 @@ func Router(e *echo.Group) {
 }
 
 func InfoHandler(c echo.Context) error {
-	server := c.Get("proxy-server").(string)
+	server, _ := c.Get("proxy-server").(string)
 	var err error
 	info := models.NodeInfo{
 		Version: "2.0",

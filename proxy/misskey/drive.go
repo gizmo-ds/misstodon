@@ -2,6 +2,7 @@ package misskey
 
 import (
 	"io"
+	"net/http"
 
 	"github.com/gizmo-ds/misstodon/internal/utils"
 	"github.com/gizmo-ds/misstodon/models"
@@ -33,6 +34,7 @@ func driveFileCreate(ctx Context, filename string, content io.Reader) (models.Mk
 	}
 
 	resp, err := client.R().
+		SetBaseURL(ctx.ProxyServer()).
 		SetFormData(map[string]string{
 			"folderId":    saveFolder.Id,
 			"name":        filename,
@@ -42,11 +44,11 @@ func driveFileCreate(ctx Context, filename string, content io.Reader) (models.Mk
 		}).
 		SetMultipartField("file", filename, "application/octet-stream", content).
 		SetResult(&file).
-		Post(utils.JoinURL(ctx.ProxyServer(), "/api/drive/files/create"))
+		Post("/api/drive/files/create")
 	if err != nil {
 		return file, err
 	}
-	if resp.StatusCode() != 200 {
+	if resp.StatusCode() != http.StatusOK {
 		return file, errors.New("failed to verify credentials")
 	}
 	return file, nil
@@ -54,13 +56,14 @@ func driveFileCreate(ctx Context, filename string, content io.Reader) (models.Mk
 
 func driveFolders(ctx Context) (folders []models.MkFolder, err error) {
 	resp, err := client.R().
+		SetBaseURL(ctx.ProxyServer()).
 		SetBody(utils.Map{"i": ctx.Token(), "limit": 100}).
 		SetResult(&folders).
-		Post(utils.JoinURL(ctx.ProxyServer(), "/api/drive/folders"))
+		Post("/api/drive/folders")
 	if err != nil {
 		return
 	}
-	if resp.StatusCode() != 200 {
+	if resp.StatusCode() != http.StatusOK {
 		return folders, errors.New("failed to verify credentials")
 	}
 	return
@@ -69,13 +72,14 @@ func driveFolders(ctx Context) (folders []models.MkFolder, err error) {
 func driveFolderCreate(ctx Context, name string) (models.MkFolder, error) {
 	var folder models.MkFolder
 	resp, err := client.R().
+		SetBaseURL(ctx.ProxyServer()).
 		SetBody(utils.Map{"name": name, "i": ctx.Token()}).
 		SetResult(&folder).
-		Post(utils.JoinURL(ctx.ProxyServer(), "/api/drive/folders/create"))
+		Post("/api/drive/folders/create")
 	if err != nil {
 		return folder, err
 	}
-	if resp.StatusCode() != 200 {
+	if resp.StatusCode() != http.StatusOK {
 		return folder, errors.New("failed to verify credentials")
 	}
 	return folder, nil

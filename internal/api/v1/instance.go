@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gizmo-ds/misstodon/internal/global"
+	"github.com/gizmo-ds/misstodon/internal/misstodon"
 	"github.com/gizmo-ds/misstodon/internal/utils"
 	"github.com/gizmo-ds/misstodon/proxy/misskey"
 	"github.com/labstack/echo/v4"
@@ -17,9 +18,12 @@ func InstanceRouter(e *echo.Group) {
 }
 
 func InstanceHandler(c echo.Context) error {
-	info, err := misskey.Instance(
-		c.Get("proxy-server").(string),
-		global.AppVersion)
+	ctx, err := misstodon.ContextWithEchoContext(c, false)
+	if err != nil {
+		return err
+	}
+
+	info, err := misskey.Instance(ctx, global.AppVersion)
 	if err != nil {
 		return err
 	}
@@ -27,7 +31,12 @@ func InstanceHandler(c echo.Context) error {
 }
 
 func InstancePeersHandler(c echo.Context) error {
-	peers, err := misskey.InstancePeers(c.Get("proxy-server").(string))
+	ctx, err := misstodon.ContextWithEchoContext(c, false)
+	if err != nil {
+		return err
+	}
+
+	peers, err := misskey.InstancePeers(ctx)
 	if err != nil {
 		return err
 	}
@@ -35,8 +44,12 @@ func InstancePeersHandler(c echo.Context) error {
 }
 
 func InstanceCustomEmojis(c echo.Context) error {
-	server := c.Get("proxy-server").(string)
-	emojis, err := misskey.InstanceCustomEmojis(server)
+	ctx, err := misstodon.ContextWithEchoContext(c, false)
+	if err != nil {
+		return err
+	}
+
+	emojis, err := misskey.InstanceCustomEmojis(ctx)
 	if err != nil {
 		return err
 	}
