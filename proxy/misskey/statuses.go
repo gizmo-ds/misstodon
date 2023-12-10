@@ -214,7 +214,7 @@ func PostNewStatus(ctx Context,
 			body["visibleUserIds"] = visibleUserIds
 		}
 	}
-	if MediaIDs != nil {
+	if len(MediaIDs) > 0 {
 		body["mediaIds"] = MediaIDs
 	}
 	if InReplyToID != "" {
