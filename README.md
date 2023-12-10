@@ -105,9 +105,11 @@ docker-compose up -d
   - [x] `POST` /api/v1/accounts/:user_id/unmute
   - [x] `GET` /api/v1/bookmarks
   - [x] `GET` /api/v1/favourites
+  - [ ] `GET` /api/v1/preferences
 - [ ] Statuses
   - [x] `POST` /api/v1/statuses
   - [x] `GET` /api/v1/statuses/:status_id
+  - [ ] `DELETE` /api/v1/statuses/:status_id
   - [ ] `GET` /api/v1/statuses/:status_id/context
   - [x] `POST` /api/v1/statuses/:status_id/favourite
   - [x] `POST` /api/v1/statuses/:status_id/unfavourite
@@ -119,14 +121,19 @@ docker-compose up -d
   - [x] `GET` /api/v1/timelines/home
   - [x] `GET` /api/v1/timelines/public
   - [x] `GET` /api/v1/timelines/tag/:hashtag
+  - [ ] `WS` /api/v1/streaming
 - [ ] Notifications
   - [x] `GET` /api/v1/notifications
-- [ ] Streaming
-  - [ ] `WS` /api/v1/streaming
+  - [ ] `POST` /api/v1/push/subscription
+  - [ ] `GET` /api/v1/push/subscription
+  - [ ] `PUT` /api/v1/push/subscription
+  - [ ] `DELETE` /api/v1/push/subscription
 - [ ] Search
   - [ ] `GET` /api/v2/search
 - [ ] Conversations
   - [ ] `GET` /api/v1/conversations
+  - [ ] `DELETE` /api/v1/conversations/:id
+  - [ ] `POST` /api/v1/conversations/:id/read
 - [x] Trends
   - [x] `GET` /api/v1/trends/statuses
   - [x] `GET` /api/v1/trends/tags
