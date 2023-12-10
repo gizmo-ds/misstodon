@@ -14,6 +14,8 @@ func Router(e *echo.Group) {
 	group := e.Group("/.well-known", middleware.CORS())
 	group.GET("/nodeinfo", NodeInfoHandler)
 	group.GET("/webfinger", WebFingerHandler)
+	group.GET("/host-meta", HostMetaHandler)
+	group.GET("/change-password", ChangePasswordHandler)
 }
 
 func NodeInfoHandler(c echo.Context) error {
@@ -40,4 +42,13 @@ func WebFingerHandler(c echo.Context) error {
 		})
 	}
 	return misskey.WebFinger(c.Get("proxy-server").(string), resource, c.Response().Writer)
+}
+
+func HostMetaHandler(c echo.Context) error {
+	return misskey.HostMeta(c.Get("proxy-server").(string), c.Response().Writer)
+}
+
+func ChangePasswordHandler(c echo.Context) error {
+	server := c.Get("proxy-server").(string)
+	return c.Redirect(http.StatusMovedPermanently, utils.JoinURL(server, "/settings/security"))
 }

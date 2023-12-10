@@ -37,3 +37,18 @@ func WebFinger(server, resource string, writer http.ResponseWriter) error {
 	_, err = io.Copy(writer, resp.RawBody())
 	return err
 }
+
+func HostMeta(server string, writer http.ResponseWriter) error {
+	resp, err := client.R().
+		SetBaseURL(server).
+		SetDoNotParseResponse(true).
+		Get("/.well-known/host-meta")
+	if err != nil {
+		return err
+	}
+	defer resp.RawBody().Close()
+	writer.Header().Set("Content-Type", resp.Header().Get("Content-Type"))
+	writer.WriteHeader(resp.StatusCode())
+	_, err = io.Copy(writer, resp.RawBody())
+	return err
+}

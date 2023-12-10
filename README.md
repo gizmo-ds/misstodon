@@ -75,8 +75,10 @@ docker-compose up -d
 <details>
 
 - [x] .well-known
+  - [x] `GET` /.well-known/host-meta
   - [x] `GET` /.well-known/webfinger
   - [x] `GET` /.well-known/nodeinfo
+  - [x] `GET` /.well-known/change-password
 - [x] Nodeinfo
   - [x] `GET` /nodeinfo/2.0
 - [ ] Auth
