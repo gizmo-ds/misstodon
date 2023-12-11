@@ -3,10 +3,10 @@ package misskey
 import (
 	"net/http"
 
+	"github.com/duke-git/lancet/v2/slice"
 	"github.com/gizmo-ds/misstodon/internal/utils"
 	"github.com/gizmo-ds/misstodon/models"
 	"github.com/pkg/errors"
-	"github.com/samber/lo"
 )
 
 func NotificationsGet(ctx Context,
@@ -22,20 +22,20 @@ func NotificationsGet(ctx Context,
 	if maxId != "" {
 		body["untilId"] = maxId
 	}
-	_excludeTypes := lo.Map(excludeTypes,
-		func(item models.NotificationType, _ int) models.MkNotificationType {
+	_excludeTypes := slice.Map(excludeTypes,
+		func(_ int, item models.NotificationType) models.MkNotificationType {
 			return item.ToMkNotificationType()
 		})
 	_excludeTypes = append(_excludeTypes, models.MkNotificationTypeAchievementEarned)
-	if lo.Contains(_excludeTypes, models.MkNotificationTypeMention) {
+	if slice.Contain(_excludeTypes, models.MkNotificationTypeMention) {
 		_excludeTypes = append(_excludeTypes, models.MkNotificationTypeReply)
 	}
 	body["excludeTypes"] = _excludeTypes
-	_includeTypes := lo.Map(types,
-		func(item models.NotificationType, _ int) models.MkNotificationType {
+	_includeTypes := slice.Map(types,
+		func(_ int, item models.NotificationType) models.MkNotificationType {
 			return item.ToMkNotificationType()
 		})
-	if lo.Contains(_includeTypes, models.MkNotificationTypeMention) {
+	if slice.Contain(_includeTypes, models.MkNotificationTypeMention) {
 		_includeTypes = append(_includeTypes, models.MkNotificationTypeReply)
 	}
 	if len(_includeTypes) > 0 {
@@ -54,14 +54,14 @@ func NotificationsGet(ctx Context,
 	if err = isucceed(resp, http.StatusOK); err != nil {
 		return nil, errors.WithStack(err)
 	}
-	notifications := lo.Map(result, func(item models.MkNotification, _ int) models.Notification {
+	notifications := slice.Map(result, func(_ int, item models.MkNotification) models.Notification {
 		n, err := item.ToNotification(ctx.ProxyServer())
 		if err == nil {
 			return n
 		}
 		return models.Notification{Type: models.NotificationTypeUnknown}
 	})
-	notifications = lo.Filter(notifications, func(item models.Notification, _ int) bool {
+	notifications = slice.Filter(notifications, func(_ int, item models.Notification) bool {
 		return item.Type != models.NotificationTypeUnknown
 	})
 	return notifications, nil

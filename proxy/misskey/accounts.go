@@ -5,10 +5,10 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/duke-git/lancet/v2/slice"
 	"github.com/gizmo-ds/misstodon/internal/utils"
 	"github.com/gizmo-ds/misstodon/models"
 	"github.com/pkg/errors"
-	"github.com/samber/lo"
 )
 
 func AccountsLookup(ctx Context, acct string) (models.Account, error) {
@@ -66,7 +66,7 @@ func AccountsStatuses(
 	if resp.StatusCode() != http.StatusOK {
 		return nil, errors.New("failed to get statuses")
 	}
-	statuses := lo.Map(notes, func(note models.MkNote, _i int) models.Status { return note.ToStatus(ctx.ProxyServer()) })
+	statuses := slice.Map(notes, func(_i int, note models.MkNote) models.Status { return note.ToStatus(ctx.ProxyServer()) })
 	return statuses, nil
 }
 
@@ -462,5 +462,5 @@ func AccountFavourites(ctx Context,
 	if err = isucceed(resp, http.StatusOK); err != nil {
 		return nil, errors.WithStack(err)
 	}
-	return lo.Map(result, func(r reactionsResult, i int) models.Status { return r.Note.ToStatus(ctx.ProxyServer()) }), nil
+	return slice.Map(result, func(_ int, r reactionsResult) models.Status { return r.Note.ToStatus(ctx.ProxyServer()) }), nil
 }

@@ -4,10 +4,10 @@ import (
 	"net/http"
 	"net/url"
 
+	"github.com/duke-git/lancet/v2/slice"
 	"github.com/gizmo-ds/misstodon/internal/utils"
 	"github.com/gizmo-ds/misstodon/models"
 	"github.com/pkg/errors"
-	"github.com/samber/lo"
 )
 
 // SupportedMimeTypes is a list of supported mime types
@@ -126,7 +126,7 @@ func InstanceCustomEmojis(ctx Context) ([]models.CustomEmoji, error) {
 	if err = isucceed(resp, http.StatusOK); err != nil {
 		return nil, errors.WithStack(err)
 	}
-	return lo.Map(emojis.Emojis, func(e models.MkEmoji, _ int) models.CustomEmoji {
+	return slice.Map(emojis.Emojis, func(_ int, e models.MkEmoji) models.CustomEmoji {
 		return e.ToCustomEmoji()
 	}), nil
 }

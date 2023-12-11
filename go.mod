@@ -4,6 +4,7 @@ go 1.20
 
 require (
 	github.com/dop251/goja v0.0.0-20231027120936-b396bb4c349d
+	github.com/duke-git/lancet/v2 v2.2.7
 	github.com/go-resty/resty/v2 v2.10.0
 	github.com/gorilla/websocket v1.5.1
 	github.com/jinzhu/configor v1.2.2
@@ -12,7 +13,6 @@ require (
 	github.com/pkg/errors v0.9.1
 	github.com/rs/xid v1.5.0
 	github.com/rs/zerolog v1.31.0
-	github.com/samber/lo v1.39.0
 	github.com/stretchr/testify v1.8.4
 	github.com/tidwall/buntdb v1.3.0
 	github.com/urfave/cli/v2 v2.26.0

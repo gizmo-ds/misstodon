@@ -1,10 +1,10 @@
 package misskey
 
 import (
+	"github.com/duke-git/lancet/v2/slice"
 	"github.com/gizmo-ds/misstodon/internal/utils"
 	"github.com/gizmo-ds/misstodon/models"
 	"github.com/pkg/errors"
-	"github.com/samber/lo"
 )
 
 func TimelinePublic(ctx Context,
@@ -39,7 +39,7 @@ func TimelinePublic(ctx Context,
 	if err != nil {
 		return nil, err
 	}
-	list := lo.Map(result, func(n models.MkNote, _ int) models.Status { return n.ToStatus(ctx.ProxyServer()) })
+	list := slice.Map(result, func(_ int, n models.MkNote) models.Status { return n.ToStatus(ctx.ProxyServer()) })
 	return list, nil
 }
 
@@ -61,6 +61,6 @@ func TimelineHome(ctx Context,
 	if err != nil {
 		return nil, err
 	}
-	list := lo.Map(result, func(n models.MkNote, _ int) models.Status { return n.ToStatus(ctx.ProxyServer()) })
+	list := slice.Map(result, func(_ int, n models.MkNote) models.Status { return n.ToStatus(ctx.ProxyServer()) })
 	return list, nil
 }

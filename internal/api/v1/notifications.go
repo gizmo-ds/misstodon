@@ -3,12 +3,12 @@ package v1
 import (
 	"net/http"
 
+	"github.com/duke-git/lancet/v2/slice"
 	"github.com/gizmo-ds/misstodon/internal/api/httperror"
 	"github.com/gizmo-ds/misstodon/internal/misstodon"
 	"github.com/gizmo-ds/misstodon/models"
 	"github.com/gizmo-ds/misstodon/proxy/misskey"
 	"github.com/labstack/echo/v4"
-	"github.com/samber/lo"
 )
 
 func NotificationsRouter(e *echo.Group) {
@@ -33,8 +33,8 @@ func NotificationsHandler(c echo.Context) error {
 	}
 
 	getTypes := func(name string) []models.NotificationType {
-		types := lo.Map(c.QueryParams()[name], func(item string, _ int) models.NotificationType { return models.NotificationType(item) })
-		types = lo.Filter(types, func(item models.NotificationType, _ int) bool {
+		types := slice.Map(c.QueryParams()[name], func(_ int, item string) models.NotificationType { return models.NotificationType(item) })
+		types = slice.Filter(types, func(_ int, item models.NotificationType) bool {
 			return item != "" && item.ToMkNotificationType() != models.MkNotificationTypeUnknown
 		})
 		return types
