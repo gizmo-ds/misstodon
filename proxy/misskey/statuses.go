@@ -144,11 +144,12 @@ func StatusUnBookmark(ctx misstodon.Context, id string) (models.Status, error) {
 // NOTE: 为了减少请求数量, 不支持 Bookmarked
 func StatusBookmarks(ctx misstodon.Context,
 	limit int, sinceId, minId, maxId string) ([]models.Status, error) {
-	var result []struct {
+	type favorite struct {
 		ID        string        `json:"id"`
 		CreatedAt string        `json:"createdAt"`
 		Note      models.MkNote `json:"note"`
 	}
+	var result []favorite
 	body := makeBody(ctx, utils.Map{"limit": limit})
 	if v, ok := utils.StrEvaluation(sinceId, minId); ok {
 		body["sinceId"] = v
@@ -167,10 +168,11 @@ func StatusBookmarks(ctx misstodon.Context,
 	if err = isucceed(resp, http.StatusOK); err != nil {
 		return nil, errors.WithStack(err)
 	}
-	var status []models.Status
-	for _, s := range result {
-		status = append(status, s.Note.ToStatus(ctx))
-	}
+	status := slice.Map(result, func(_ int, item favorite) models.Status {
+		s := item.Note.ToStatus(ctx)
+		s.Bookmarked = true
+		return s
+	})
 	return status, nil
 }
 
