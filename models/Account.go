@@ -1,18 +1,5 @@
 package models
 
-type PostPrivacy = string
-
-const (
-	// PostPrivacyPublic Public post
-	PostPrivacyPublic PostPrivacy = "public"
-	// PostPrivacyUnlisted Unlisted post
-	PostPrivacyUnlisted PostPrivacy = "unlisted"
-	// PostPrivacyPrivate Followers-only post
-	PostPrivacyPrivate PostPrivacy = "private"
-	// PostPrivacyDirect Direct post
-	PostPrivacyDirect PostPrivacy = "direct"
-)
-
 type Account struct {
 	ID             string         `json:"id"`
 	Username       string         `json:"username"`
@@ -49,12 +36,12 @@ type AccountField struct {
 type CredentialAccount struct {
 	Account
 	Source struct {
-		Privacy             PostPrivacy    `json:"privacy"`
-		Sensitive           bool           `json:"sensitive"`
-		Language            string         `json:"language"`
-		Note                string         `json:"note"`
-		Fields              []AccountField `json:"fields"`
-		FollowRequestsCount int            `json:"follow_requests_count"`
+		Privacy             StatusVisibility `json:"privacy"`
+		Sensitive           bool             `json:"sensitive"`
+		Language            string           `json:"language"`
+		Note                string           `json:"note"`
+		Fields              []AccountField   `json:"fields"`
+		FollowRequestsCount int              `json:"follow_requests_count"`
 	} `json:"source"`
 	Role *struct {
 		Id          string `json:"id"`

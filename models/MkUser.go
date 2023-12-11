@@ -10,29 +10,30 @@ import (
 )
 
 type MkUser struct {
-	ID             string         `json:"id"`
-	Username       string         `json:"username"`
-	Name           string         `json:"name"`
-	Host           *string        `json:"host,omitempty"`
-	Location       *string        `json:"location"`
-	Description    *string        `json:"description"`
-	IsBot          bool           `json:"isBot"`
-	IsLocked       bool           `json:"isLocked"`
-	CreatedAt      string         `json:"createdAt,omitempty"`
-	UpdatedAt      *string        `json:"updatedAt"`
-	FollowersCount int            `json:"followersCount"`
-	FollowingCount int            `json:"followingCount"`
-	NotesCount     int            `json:"notesCount"`
-	AvatarUrl      string         `json:"avatarUrl"`
-	BannerUrl      string         `json:"bannerUrl"`
-	Fields         []AccountField `json:"fields"`
-	Instance       MkInstance     `json:"instance"`
-	Mentions       []string       `json:"mentions"`
-	IsMuted        bool           `json:"isMuted"`
-	IsBlocked      bool           `json:"isBlocked"`
-	IsBlocking     bool           `json:"isBlocking"`
-	IsFollowing    bool           `json:"isFollowing"`
-	IsFollowed     bool           `json:"isFollowed"`
+	ID             string           `json:"id"`
+	Username       string           `json:"username"`
+	Name           string           `json:"name"`
+	Host           *string          `json:"host,omitempty"`
+	Location       *string          `json:"location"`
+	Description    *string          `json:"description"`
+	IsBot          bool             `json:"isBot"`
+	IsLocked       bool             `json:"isLocked"`
+	CreatedAt      string           `json:"createdAt,omitempty"`
+	UpdatedAt      *string          `json:"updatedAt"`
+	FollowersCount int              `json:"followersCount"`
+	FollowingCount int              `json:"followingCount"`
+	NotesCount     int              `json:"notesCount"`
+	AvatarUrl      string           `json:"avatarUrl"`
+	BannerUrl      string           `json:"bannerUrl"`
+	Fields         []AccountField   `json:"fields"`
+	Instance       MkInstance       `json:"instance"`
+	Mentions       []string         `json:"mentions"`
+	IsMuted        bool             `json:"isMuted"`
+	IsBlocked      bool             `json:"isBlocked"`
+	IsBlocking     bool             `json:"isBlocking"`
+	IsFollowing    bool             `json:"isFollowing"`
+	IsFollowed     bool             `json:"isFollowed"`
+	FfVisibility   MkNoteVisibility `json:"ffVisibility,omitempty"`
 }
 
 type MkInstance struct {

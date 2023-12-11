@@ -104,6 +104,7 @@ func VerifyCredentials(ctx misstodon.Context) (models.CredentialAccount, error) 
 		info.Source.Note = *result.Description
 	}
 	info.Source.Fields = info.Account.Fields
+	info.Source.Privacy = result.FfVisibility.ToStatusVisibility()
 	return info, nil
 }
 

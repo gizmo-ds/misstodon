@@ -29,7 +29,7 @@ type (
 				SupportedMimeTypes []string `json:"supported_mime_types"`
 			} `json:"media_attachments"`
 		} `json:"configuration"`
-		ContactAccount Account        `json:"contact_account"`
+		ContactAccount *Account       `json:"contact_account,omitempty"`
 		Rules          []InstanceRule `json:"rules"`
 	}
 	InstanceUrls struct {
