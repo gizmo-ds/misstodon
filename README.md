@@ -109,8 +109,9 @@ docker-compose up -d
 - [ ] Statuses
   - [x] `POST` /api/v1/statuses
   - [x] `GET` /api/v1/statuses/:status_id
-  - [ ] `DELETE` /api/v1/statuses/:status_id
-  - [ ] `GET` /api/v1/statuses/:status_id/context
+  - [x] `DELETE` /api/v1/statuses/:status_id
+  - [x] `GET` /api/v1/statuses/:status_id/context
+  - [x] `POST` /api/v1/statuses/:status_id/reblog
   - [x] `POST` /api/v1/statuses/:status_id/favourite
   - [x] `POST` /api/v1/statuses/:status_id/unfavourite
   - [x] `POST` /api/v1/statuses/:status_id/bookmark

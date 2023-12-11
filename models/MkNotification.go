@@ -1,5 +1,9 @@
 package models
 
+import (
+	"github.com/gizmo-ds/misstodon/internal/misstodon"
+)
+
 type MkNotificationType string
 
 const (
@@ -32,7 +36,7 @@ type MkNotification struct {
 	Achievement string             `json:"achievement"`
 }
 
-func (n MkNotification) ToNotification(server string) (Notification, error) {
+func (n MkNotification) ToNotification(ctx misstodon.Context) (Notification, error) {
 	r := Notification{
 		Id:        n.Id,
 		Type:      n.Type.ToNotificationType(),
@@ -40,13 +44,13 @@ func (n MkNotification) ToNotification(server string) (Notification, error) {
 	}
 	var err error
 	if n.User != nil {
-		r.Account, err = n.User.ToAccount(server)
+		r.Account, err = n.User.ToAccount(ctx)
 		if err != nil {
 			return r, err
 		}
 	}
 	if n.Note != nil {
-		status := n.Note.ToStatus(server)
+		status := n.Note.ToStatus(ctx)
 		r.Status = &status
 	}
 	return r, err

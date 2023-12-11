@@ -346,7 +346,7 @@ func AccountUnmute(c echo.Context) error {
 
 func AccountsGetHandler(c echo.Context) error {
 	ctx, _ := misstodon.ContextWithEchoContext(c)
-	info, err := misskey.AccountsGet(ctx, c.Param("id"))
+	info, err := misskey.AccountGet(ctx, c.Param("id"))
 	if err != nil {
 		return err
 	}

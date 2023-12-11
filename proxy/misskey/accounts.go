@@ -1,17 +1,21 @@
 package misskey
 
 import (
+	"encoding/json"
+	"fmt"
 	"mime/multipart"
 	"net/http"
 	"time"
 
 	"github.com/duke-git/lancet/v2/slice"
+	"github.com/gizmo-ds/misstodon/internal/global"
+	"github.com/gizmo-ds/misstodon/internal/misstodon"
 	"github.com/gizmo-ds/misstodon/internal/utils"
 	"github.com/gizmo-ds/misstodon/models"
 	"github.com/pkg/errors"
 )
 
-func AccountsLookup(ctx Context, acct string) (models.Account, error) {
+func AccountsLookup(ctx misstodon.Context, acct string) (models.Account, error) {
 	var host *string
 	var info models.Account
 	username, _host := utils.AcctInfo(acct)
@@ -39,21 +43,27 @@ func AccountsLookup(ctx Context, acct string) (models.Account, error) {
 	if resp.StatusCode() != http.StatusOK {
 		return info, ErrNotFound
 	}
-	return result.ToAccount(ctx.ProxyServer())
+	return result.ToAccount(ctx)
 }
 
 func AccountsStatuses(
-	ctx Context, uid string, limit int,
+	ctx misstodon.Context, uid string, limit int,
 	pinnedOnly, onlyMedia, onlyPublic, excludeReplies, excludeReblogs bool,
-	maxID, minID string) ([]models.Status, error) {
+	maxId, minId string) ([]models.Status, error) {
 	var notes []models.MkNote
 	body := makeBody(ctx, utils.Map{
 		"userId":         uid,
-		"limit":          limit,
+		"limit":          utils.NumRangeLimit(limit, 1, 100),
 		"includeReplies": !excludeReplies,
 	})
 	if onlyMedia {
 		body["fileType"] = SupportedMimeTypes
+	}
+	if minId != "" {
+		body["sinceId"] = minId
+	}
+	if maxId != "" {
+		body["untilId"] = maxId
 	}
 	resp, err := client.R().
 		SetBaseURL(ctx.ProxyServer()).
@@ -66,11 +76,11 @@ func AccountsStatuses(
 	if resp.StatusCode() != http.StatusOK {
 		return nil, errors.New("failed to get statuses")
 	}
-	statuses := slice.Map(notes, func(_i int, note models.MkNote) models.Status { return note.ToStatus(ctx.ProxyServer()) })
+	statuses := slice.Map(notes, func(_i int, note models.MkNote) models.Status { return note.ToStatus(ctx) })
 	return statuses, nil
 }
 
-func VerifyCredentials(ctx Context) (models.CredentialAccount, error) {
+func VerifyCredentials(ctx misstodon.Context) (models.CredentialAccount, error) {
 	var account models.Account
 	var result models.MkUser
 	var info models.CredentialAccount
@@ -85,7 +95,7 @@ func VerifyCredentials(ctx Context) (models.CredentialAccount, error) {
 	if resp.StatusCode() != http.StatusOK {
 		return info, errors.New("failed to verify credentials")
 	}
-	account, err = result.ToAccount(ctx.ProxyServer())
+	account, err = result.ToAccount(ctx)
 	if err != nil {
 		return info, err
 	}
@@ -98,7 +108,7 @@ func VerifyCredentials(ctx Context) (models.CredentialAccount, error) {
 }
 
 // UpdateCredentials updates the credentials of the user.
-func UpdateCredentials(ctx Context,
+func UpdateCredentials(ctx misstodon.Context,
 	displayName, note *string,
 	locked, bot, discoverable *bool,
 	sourcePrivacy *string, sourceSensitive *bool, sourceLanguage *string,
@@ -164,7 +174,7 @@ func UpdateCredentials(ctx Context,
 	if resp.StatusCode() != http.StatusOK {
 		return info, errors.New("failed to verify credentials")
 	}
-	account, err := result.ToAccount(ctx.ProxyServer())
+	account, err := result.ToAccount(ctx)
 	if err != nil {
 		return info, err
 	}
@@ -176,7 +186,7 @@ func UpdateCredentials(ctx Context,
 	return info, err
 }
 
-func AccountFollowRequests(ctx Context,
+func AccountFollowRequests(ctx misstodon.Context,
 	limit int, sinceID, maxID string) ([]models.Account, error) {
 	var result []struct {
 		ID       string        `json:"id"`
@@ -203,14 +213,14 @@ func AccountFollowRequests(ctx Context,
 	}
 	var accounts []models.Account
 	for _, r := range result {
-		if a, err := r.Follower.ToAccount(ctx.ProxyServer()); err == nil {
+		if a, err := r.Follower.ToAccount(ctx); err == nil {
 			accounts = append(accounts, a)
 		}
 	}
 	return accounts, nil
 }
 
-func AccountFollowRequestsCancel(ctx Context, userID string) error {
+func AccountFollowRequestsCancel(ctx misstodon.Context, userID string) error {
 	data := utils.Map{"i": ctx.Token(), "userId": userID}
 	resp, err := client.R().
 		SetBaseURL(ctx.ProxyServer()).
@@ -225,7 +235,7 @@ func AccountFollowRequestsCancel(ctx Context, userID string) error {
 	return nil
 }
 
-func AccountFollowRequestsAccept(ctx Context, userID string) error {
+func AccountFollowRequestsAccept(ctx misstodon.Context, userID string) error {
 	data := utils.Map{"i": ctx.Token(), "userId": userID}
 	resp, err := client.R().
 		SetBaseURL(ctx.ProxyServer()).
@@ -240,7 +250,7 @@ func AccountFollowRequestsAccept(ctx Context, userID string) error {
 	return nil
 }
 
-func AccountFollowRequestsReject(ctx Context, userID string) error {
+func AccountFollowRequestsReject(ctx misstodon.Context, userID string) error {
 	data := utils.Map{"i": ctx.Token(), "userId": userID}
 	resp, err := client.R().
 		SetBaseURL(ctx.ProxyServer()).
@@ -255,7 +265,7 @@ func AccountFollowRequestsReject(ctx Context, userID string) error {
 	return nil
 }
 
-func AccountFollowers(ctx Context, userID string,
+func AccountFollowers(ctx misstodon.Context, userID string,
 	limit int, sinceID, minID, maxID string) ([]models.Account, error) {
 	var result []struct {
 		ID         string        `json:"id"`
@@ -285,14 +295,14 @@ func AccountFollowers(ctx Context, userID string,
 
 	var accounts []models.Account
 	for _, r := range result {
-		if a, err := r.Follower.ToAccount(ctx.ProxyServer()); err == nil {
+		if a, err := r.Follower.ToAccount(ctx); err == nil {
 			accounts = append(accounts, a)
 		}
 	}
 	return accounts, nil
 }
 
-func AccountFollowing(ctx Context,
+func AccountFollowing(ctx misstodon.Context,
 	userID string,
 	limit int, sinceID, minID, maxID string) ([]models.Account, error) {
 	var result []struct {
@@ -323,14 +333,14 @@ func AccountFollowing(ctx Context,
 
 	var accounts []models.Account
 	for _, r := range result {
-		if a, err := r.Followee.ToAccount(ctx.ProxyServer()); err == nil {
+		if a, err := r.Followee.ToAccount(ctx); err == nil {
 			accounts = append(accounts, a)
 		}
 	}
 	return accounts, nil
 }
 
-func AccountRelationships(ctx Context,
+func AccountRelationships(ctx misstodon.Context,
 	userIDs []string) ([]models.Relationship, error) {
 	data := utils.Map{"i": ctx.Token(), "userId": userIDs}
 	var result []models.MkRelation
@@ -352,7 +362,7 @@ func AccountRelationships(ctx Context,
 	return relationships, nil
 }
 
-func AccountFollow(ctx Context, userID string) error {
+func AccountFollow(ctx misstodon.Context, userID string) error {
 	data := utils.Map{"i": ctx.Token(), "userId": userID}
 	resp, err := client.R().
 		SetBaseURL(ctx.ProxyServer()).
@@ -367,7 +377,7 @@ func AccountFollow(ctx Context, userID string) error {
 	return nil
 }
 
-func AccountUnfollow(ctx Context, userID string) error {
+func AccountUnfollow(ctx misstodon.Context, userID string) error {
 	data := makeBody(ctx, utils.Map{"userId": userID})
 	resp, err := client.R().
 		SetBaseURL(ctx.ProxyServer()).
@@ -382,7 +392,7 @@ func AccountUnfollow(ctx Context, userID string) error {
 	return nil
 }
 
-func AccountMute(ctx Context, userID string, duration int64) error {
+func AccountMute(ctx misstodon.Context, userID string, duration int64) error {
 	body := makeBody(ctx, utils.Map{"userId": userID})
 	if duration > 0 {
 		body["expiresAt"] = time.Now().Add(time.Second * time.Duration(duration)).UnixMilli()
@@ -400,7 +410,7 @@ func AccountMute(ctx Context, userID string, duration int64) error {
 	return nil
 }
 
-func AccountUnmute(ctx Context, userID string) error {
+func AccountUnmute(ctx misstodon.Context, userID string) error {
 	data := makeBody(ctx, utils.Map{"userId": userID})
 	resp, err := client.R().
 		SetBaseURL(ctx.ProxyServer()).
@@ -415,7 +425,7 @@ func AccountUnmute(ctx Context, userID string) error {
 	return nil
 }
 
-func AccountsGet(ctx Context, userID string) (models.Account, error) {
+func AccountGet(ctx misstodon.Context, userID string) (models.Account, error) {
 	var info models.Account
 	var result models.MkUser
 	body := makeBody(ctx, utils.Map{"userId": userID})
@@ -430,10 +440,14 @@ func AccountsGet(ctx Context, userID string) (models.Account, error) {
 	if resp.StatusCode() != http.StatusOK {
 		return info, ErrNotFound
 	}
-	return result.ToAccount(ctx.ProxyServer())
+	account, err := result.ToAccount(ctx)
+	if err == nil {
+		_ = setCacheAccount(ctx, account)
+	}
+	return account, err
 }
 
-func AccountFavourites(ctx Context,
+func AccountFavourites(ctx misstodon.Context,
 	limit int, sinceID, minID, maxID string,
 ) ([]models.Status, error) {
 	type reactionsResult struct {
@@ -462,5 +476,37 @@ func AccountFavourites(ctx Context,
 	if err = isucceed(resp, http.StatusOK); err != nil {
 		return nil, errors.WithStack(err)
 	}
-	return slice.Map(result, func(_ int, r reactionsResult) models.Status { return r.Note.ToStatus(ctx.ProxyServer()) }), nil
+	return slice.Map(result, func(_ int, r reactionsResult) models.Status { return r.Note.ToStatus(ctx) }), nil
+}
+
+func setCacheAccount(ctx misstodon.Context, account models.Account) error {
+	jsonData, err := json.Marshal(account)
+	if err != nil {
+		return err
+	}
+	err = global.DB.Set(fmt.Sprintf("account:%s", ctx.ProxyServer()),
+		account.ID, string(jsonData), 86400*7)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func getCacheAccount(ctx misstodon.Context, userId string) (*models.Account, error) {
+	var account models.Account
+	var err error
+	dbKey := fmt.Sprintf("account:%s", ctx.ProxyServer())
+	cacheData, exist := global.DB.Get(dbKey, userId)
+	if exist {
+		err = json.Unmarshal([]byte(cacheData), &account)
+		if err == nil {
+			return &account, nil
+		}
+	}
+	account, err = AccountGet(ctx, userId)
+	if err != nil {
+		return nil, err
+	}
+	_ = setCacheAccount(ctx, account)
+	return &account, nil
 }

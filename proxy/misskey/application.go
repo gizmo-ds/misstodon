@@ -4,12 +4,13 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/gizmo-ds/misstodon/internal/misstodon"
 	"github.com/gizmo-ds/misstodon/internal/utils"
 	"github.com/gizmo-ds/misstodon/models"
 	"github.com/pkg/errors"
 )
 
-func ApplicationCreate(ctx Context, clientName, redirectUris, scopes, website string) (models.Application, error) {
+func ApplicationCreate(ctx misstodon.Context, clientName, redirectUris, scopes, website string) (models.Application, error) {
 	var permissions []string
 	var app models.Application
 	arr := strings.Split(scopes, " ")

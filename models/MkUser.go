@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/gizmo-ds/misstodon/internal/mfm"
+	"github.com/gizmo-ds/misstodon/internal/misstodon"
 	"github.com/gizmo-ds/misstodon/internal/utils"
 	"github.com/pkg/errors"
 )
@@ -43,10 +44,10 @@ type MkInstance struct {
 	FaviconUrl      string `json:"faviconUrl"`
 }
 
-func (u *MkUser) ToAccount(server string) (Account, error) {
+func (u *MkUser) ToAccount(ctx misstodon.Context) (Account, error) {
 	var info Account
 	var err error
-	host := server
+	host := ctx.ProxyServer()
 	if u.Host != nil {
 		host = *u.Host
 	}
@@ -84,7 +85,7 @@ func (u *MkUser) ToAccount(server string) (Account, error) {
 	}
 	if u.Description != nil {
 		info.Note, err = mfm.ToHtml(*u.Description, mfm.Option{
-			Url:            utils.JoinURL(server),
+			Url:            utils.JoinURL(ctx.ProxyServer()),
 			HashtagHandler: mfm.MastodonHashtagHandler,
 		})
 		if err != nil {

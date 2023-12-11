@@ -4,12 +4,13 @@ import (
 	"net/http"
 
 	"github.com/duke-git/lancet/v2/slice"
+	"github.com/gizmo-ds/misstodon/internal/misstodon"
 	"github.com/gizmo-ds/misstodon/internal/utils"
 	"github.com/gizmo-ds/misstodon/models"
 	"github.com/pkg/errors"
 )
 
-func NotificationsGet(ctx Context,
+func NotificationsGet(ctx misstodon.Context,
 	limit int, sinceId, minId, maxId string,
 	types, excludeTypes []models.NotificationType, accountId string,
 ) ([]models.Notification, error) {
@@ -55,7 +56,7 @@ func NotificationsGet(ctx Context,
 		return nil, errors.WithStack(err)
 	}
 	notifications := slice.Map(result, func(_ int, item models.MkNotification) models.Notification {
-		n, err := item.ToNotification(ctx.ProxyServer())
+		n, err := item.ToNotification(ctx)
 		if err == nil {
 			return n
 		}

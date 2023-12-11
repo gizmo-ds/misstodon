@@ -87,3 +87,11 @@ func (r RestyRequest) Patch(url string) (Response, error) {
 	}
 	return r.req.Patch(u)
 }
+
+func (r RestyRequest) Delete(url string) (Response, error) {
+	u := url
+	if r.baseURL != "" {
+		u = utils.JoinURL(r.baseURL, url)
+	}
+	return r.req.Delete(u)
+}

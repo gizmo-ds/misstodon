@@ -2,15 +2,17 @@ package models
 
 import (
 	"github.com/gizmo-ds/misstodon/internal/mfm"
+	"github.com/gizmo-ds/misstodon/internal/misstodon"
 	"github.com/gizmo-ds/misstodon/internal/utils"
 )
 
-type MkNoteVisibility = string
+type MkNoteVisibility string
 
 const (
 	MkNoteVisibilityPublic MkNoteVisibility = "public"
 	MkNoteVisibilityHome   MkNoteVisibility = "home"
-	MkNoteVisibilityFollow MkNoteVisibility = "follow"
+	// MkNoteVisibilityFollow MkNoteVisibility = "follow"
+	MkNoteVisibilityFollow MkNoteVisibility = "followers"
 	MkNoteVisibilitySpecif MkNoteVisibility = "specified"
 )
 
@@ -41,16 +43,18 @@ type MkNote struct {
 	MyReaction   string           `json:"myReaction"`
 }
 
-func (n *MkNote) ToStatus(server string) Status {
+func (n *MkNote) ToStatus(ctx misstodon.Context) Status {
+	uid := ctx.UserID()
 	s := Status{
 		ID:               n.ID,
-		Url:              utils.JoinURL(server, "/notes/", n.ID),
-		Uri:              utils.JoinURL(server, "/notes/", n.ID),
+		Url:              utils.JoinURL(ctx.ProxyServer(), "/notes/", n.ID),
+		Uri:              utils.JoinURL(ctx.ProxyServer(), "/notes/", n.ID),
 		CreatedAt:        n.CreatedAt,
 		Emojis:           []struct{}{},
 		MediaAttachments: []MediaAttachment{},
 		Mentions:         []StatusMention{},
 		ReBlogsCount:     n.ReNoteCount,
+		RepliesCount:     n.RepliesCount,
 		Favourited:       n.MyReaction != "",
 	}
 	s.FavouritesCount = func() int {
@@ -63,32 +67,25 @@ func (n *MkNote) ToStatus(server string) Status {
 	for _, tag := range n.Tags {
 		s.Tags = append(s.Tags, StatusTag{
 			Name: tag,
-			Url:  utils.JoinURL(server, "/tags/", tag),
+			Url:  utils.JoinURL(ctx.ProxyServer(), "/tags/", tag),
 		})
 	}
 	if n.Text != nil {
 		s.Content = *n.Text
 		if content, err := mfm.ToHtml(*n.Text, mfm.Option{
-			Url:            utils.JoinURL(server),
+			Url:            utils.JoinURL(ctx.ProxyServer()),
 			HashtagHandler: mfm.MastodonHashtagHandler,
 		}); err == nil {
 			s.Content = content
 		}
 	}
 	if n.User != nil {
-		a, err := n.User.ToAccount(server)
+		a, err := n.User.ToAccount(ctx)
 		if err == nil {
 			s.Account = a
 		}
 	}
-	switch n.Visibility {
-	case MkNoteVisibilityPublic, MkNoteVisibilityHome, MkNoteVisibilitySpecif:
-		s.Visibility = StatusVisibilityPublic
-	case MkNoteVisibilityFollow:
-		s.Visibility = StatusVisibilityPrivate
-	default:
-		s.Visibility = StatusVisibilityPrivate
-	}
+	s.Visibility = n.Visibility.ToStatusVisibility()
 	for _, file := range n.Files {
 		if file.IsSensitive {
 			s.Sensitive = true
@@ -104,8 +101,24 @@ func (n *MkNote) ToStatus(server string) Status {
 		s.SpoilerText = *n.Cw
 	}
 	if n.ReNote != nil {
-		re := n.ReNote.ToStatus(server)
+		re := n.ReNote.ToStatus(ctx)
 		s.ReBlog = &re
 	}
+	if uid != nil {
+		s.ReBlogged = n.ReNote != nil && n.UserId == *uid
+	}
 	return s
+}
+
+func (v MkNoteVisibility) ToStatusVisibility() StatusVisibility {
+	switch v {
+	case MkNoteVisibilityPublic:
+		return StatusVisibilityPublic
+	case MkNoteVisibilityHome:
+		return StatusVisibilityUnlisted
+	case MkNoteVisibilityFollow:
+		return StatusVisibilityPrivate
+	default:
+		return StatusVisibilityDirect
+	}
 }

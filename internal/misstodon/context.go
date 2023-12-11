@@ -10,62 +10,71 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-type Context struct {
+type Ctx struct {
 	m sync.Map
 }
 
-func ContextWithEchoContext(eCtx echo.Context, tokenRequired ...bool) (*Context, error) {
-	c := &Context{}
+type Context interface {
+	ProxyServer() string
+	Token() *string
+	UserID() *string
+	HOST() *string
+}
+
+func ContextWithEchoContext(eCtx echo.Context, tokenRequired ...bool) (*Ctx, error) {
+	c := &Ctx{}
 	if server, ok := eCtx.Get("proxy-server").(string); ok {
 		c.SetProxyServer(server)
 	}
+	token, _ := utils.GetHeaderToken(eCtx.Request().Header)
+	tokenArr := strings.Split(token, ".")
+	if len(tokenArr) >= 2 {
+		c.SetUserID(tokenArr[0])
+		c.SetToken(tokenArr[1])
+	}
 	if len(tokenRequired) > 0 && tokenRequired[0] {
-		token, err := utils.GetHeaderToken(eCtx.Request().Header)
-		if err != nil && (len(tokenRequired) > 0 && tokenRequired[0]) {
+		if token == "" {
 			return nil, echo.NewHTTPError(http.StatusUnauthorized, "the access token is invalid")
 		}
-		arr := strings.Split(token, ".")
-		if len(arr) < 2 {
+		if len(tokenArr) < 2 {
 			return nil, echo.NewHTTPError(http.StatusUnauthorized, "the access token is invalid")
 		}
-		c.SetUserID(arr[0])
-		c.SetToken(arr[1])
 	}
 	c.SetHOST(eCtx.Request().Host)
 	return c, nil
 }
 
-func ContextWithValues(proxyServer, token string) *Context {
-	c := &Context{}
+func ContextWithValues(proxyServer, token string) *Ctx {
+	c := &Ctx{}
 	c.SetProxyServer(proxyServer)
 	c.SetToken(token)
 	return c
 }
 
-func (*Context) Deadline() (deadline time.Time, ok bool) {
+func (*Ctx) Deadline() (deadline time.Time, ok bool) {
 	return
 }
 
-func (*Context) Done() <-chan struct{} {
+func (*Ctx) Done() <-chan struct{} {
 	return nil
 }
 
-func (*Context) Err() error {
+func (*Ctx) Err() error {
 	return nil
 }
 
-func (c *Context) Value(key any) any {
+func (c *Ctx) Value(key any) any {
 	if val, ok := c.m.Load(key); ok {
 		return val
 	}
 	return nil
 }
 
-func (c *Context) SetValue(key any, val any) {
+func (c *Ctx) SetValue(key any, val any) {
 	c.m.Store(key, val)
 }
 
-func (c *Context) String(key string) *string {
+func (c *Ctx) String(key string) *string {
 	if val, ok := c.m.Load(key); ok {
 		valStr := val.(string)
 		return &valStr
@@ -73,34 +82,34 @@ func (c *Context) String(key string) *string {
 	return nil
 }
 
-func (c *Context) ProxyServer() string {
+func (c *Ctx) ProxyServer() string {
 	return *c.String("proxy-server")
 }
 
-func (c *Context) SetProxyServer(val string) {
+func (c *Ctx) SetProxyServer(val string) {
 	c.SetValue("proxy-server", val)
 }
 
-func (c *Context) Token() *string {
+func (c *Ctx) Token() *string {
 	return c.String("token")
 }
 
-func (c *Context) SetToken(val string) {
+func (c *Ctx) SetToken(val string) {
 	c.SetValue("token", val)
 }
 
-func (c *Context) UserID() *string {
+func (c *Ctx) UserID() *string {
 	return c.String("user_id")
 }
 
-func (c *Context) SetUserID(val string) {
+func (c *Ctx) SetUserID(val string) {
 	c.SetValue("user_id", val)
 }
 
-func (c *Context) HOST() *string {
+func (c *Ctx) HOST() *string {
 	return c.String("host")
 }
 
-func (c *Context) SetHOST(val string) {
+func (c *Ctx) SetHOST(val string) {
 	c.SetValue("host", val)
 }

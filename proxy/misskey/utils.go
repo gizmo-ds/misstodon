@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/gizmo-ds/misstodon/internal/misstodon"
 	"github.com/gizmo-ds/misstodon/internal/utils"
 	"github.com/gizmo-ds/misstodon/pkg/httpclient"
 )
@@ -56,7 +57,7 @@ func isucceed(resp httpclient.Response, statusCode int, codes ...string) error {
 	return errors.New(result.Error.Msg)
 }
 
-func makeBody(ctx Context, m utils.Map) utils.Map {
+func makeBody(ctx misstodon.Context, m utils.Map) utils.Map {
 	r := utils.Map{}
 	token := ctx.Token()
 	if token != nil && *token != "" {

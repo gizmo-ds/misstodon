@@ -27,7 +27,7 @@ func TestAccountMute(t *testing.T) {
 	err := misskey.AccountMute(ctx, testUserID, 10*60)
 	assert.NoError(t, err)
 
-	account, err := misskey.AccountsGet(ctx, testUserID)
+	account, err := misskey.AccountGet(ctx, testUserID)
 	assert.NoError(t, err)
 	assert.Equal(t, true, *account.Limited)
 }
@@ -41,7 +41,7 @@ func TestAccountUnmute(t *testing.T) {
 	err := misskey.AccountUnmute(ctx, testUserID)
 	assert.NoError(t, err)
 
-	account, err := misskey.AccountsGet(ctx, testUserID)
+	account, err := misskey.AccountGet(ctx, testUserID)
 	assert.NoError(t, err)
 	assert.Equal(t, false, *account.Limited)
 }

@@ -15,13 +15,15 @@ import (
 
 func StatusesRouter(e *echo.Group) {
 	group := e.Group("/statuses")
-	group.POST("", PostNewStatus)
+	group.POST("", PostNewStatusHandler)
 	group.GET("/:id", StatusHandler)
+	group.DELETE("/:id", StatusDeleteHandler)
 	group.GET("/:id/context", StatusContextHandler)
-	group.POST("/:id/bookmark", StatusBookmark)
-	group.POST("/:id/unbookmark", StatusUnBookmark)
-	group.POST("/:id/favourite", StatusFavourite)
-	group.POST("/:id/unfavourite", StatusUnFavourite)
+	group.POST("/:id/reblog", StatusReblogHandler)
+	group.POST("/:id/bookmark", StatusBookmarkHandler)
+	group.POST("/:id/unbookmark", StatusUnBookmarkHandler)
+	group.POST("/:id/favourite", StatusFavouriteHandler)
+	group.POST("/:id/unfavourite", StatusUnFavouriteHandler)
 }
 
 func StatusHandler(c echo.Context) error {
@@ -35,13 +37,19 @@ func StatusHandler(c echo.Context) error {
 }
 
 func StatusContextHandler(c echo.Context) error {
-	return c.JSON(http.StatusOK, echo.Map{
-		"ancestors":   []any{},
-		"descendants": []any{},
-	})
+	id := c.Param("id")
+	ctx, err := misstodon.ContextWithEchoContext(c, false)
+	if err != nil {
+		return err
+	}
+	result, err := misskey.StatusContext(ctx, id)
+	if err != nil {
+		return err
+	}
+	return c.JSON(http.StatusOK, result)
 }
 
-func StatusFavourite(c echo.Context) error {
+func StatusFavouriteHandler(c echo.Context) error {
 	id := c.Param("id")
 	ctx, err := misstodon.ContextWithEchoContext(c, true)
 	if err != nil {
@@ -60,7 +68,7 @@ func StatusFavourite(c echo.Context) error {
 	return c.JSON(http.StatusOK, status)
 }
 
-func StatusUnFavourite(c echo.Context) error {
+func StatusUnFavouriteHandler(c echo.Context) error {
 	id := c.Param("id")
 	ctx, err := misstodon.ContextWithEchoContext(c, true)
 	if err != nil {
@@ -79,7 +87,7 @@ func StatusUnFavourite(c echo.Context) error {
 	return c.JSON(http.StatusOK, status)
 }
 
-func StatusBookmark(c echo.Context) error {
+func StatusBookmarkHandler(c echo.Context) error {
 	id := c.Param("id")
 	ctx, err := misstodon.ContextWithEchoContext(c, true)
 	if err != nil {
@@ -98,7 +106,7 @@ func StatusBookmark(c echo.Context) error {
 	return c.JSON(http.StatusOK, status)
 }
 
-func StatusUnBookmark(c echo.Context) error {
+func StatusUnBookmarkHandler(c echo.Context) error {
 	id := c.Param("id")
 	ctx, err := misstodon.ContextWithEchoContext(c, true)
 	if err != nil {
@@ -157,7 +165,7 @@ type postNewStatusForm struct {
 	ScheduledAt time.Time               `json:"scheduled_at"`
 }
 
-func PostNewStatus(c echo.Context) error {
+func PostNewStatusHandler(c echo.Context) error {
 	ctx, err := misstodon.ContextWithEchoContext(c, true)
 	if err != nil {
 		return err
@@ -172,6 +180,32 @@ func PostNewStatus(c echo.Context) error {
 		form.Sensitive, form.SpoilerText,
 		form.Visibility, form.Language,
 		form.ScheduledAt)
+	if err != nil {
+		return err
+	}
+	return c.JSON(http.StatusOK, status)
+}
+
+func StatusReblogHandler(c echo.Context) error {
+	id := c.Param("id")
+	ctx, err := misstodon.ContextWithEchoContext(c, true)
+	if err != nil {
+		return err
+	}
+	status, err := misskey.StatusReblog(ctx, id, models.StatusVisibilityPublic)
+	if err != nil {
+		return err
+	}
+	return c.JSON(http.StatusOK, status)
+}
+
+func StatusDeleteHandler(c echo.Context) error {
+	id := c.Param("id")
+	ctx, err := misstodon.ContextWithEchoContext(c, true)
+	if err != nil {
+		return err
+	}
+	status, err := misskey.StatusDelete(ctx, id)
 	if err != nil {
 		return err
 	}

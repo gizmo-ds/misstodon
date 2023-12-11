@@ -2,12 +2,13 @@ package misskey
 
 import (
 	"github.com/duke-git/lancet/v2/slice"
+	"github.com/gizmo-ds/misstodon/internal/misstodon"
 	"github.com/gizmo-ds/misstodon/internal/utils"
 	"github.com/gizmo-ds/misstodon/models"
 	"github.com/pkg/errors"
 )
 
-func TimelinePublic(ctx Context,
+func TimelinePublic(ctx misstodon.Context,
 	timelineType models.TimelinePublicType, onlyMedia bool,
 	limit int, maxId, minId string) ([]models.Status, error) {
 	body := makeBody(ctx, utils.Map{
@@ -39,11 +40,11 @@ func TimelinePublic(ctx Context,
 	if err != nil {
 		return nil, err
 	}
-	list := slice.Map(result, func(_ int, n models.MkNote) models.Status { return n.ToStatus(ctx.ProxyServer()) })
+	list := slice.Map(result, func(_ int, n models.MkNote) models.Status { return n.ToStatus(ctx) })
 	return list, nil
 }
 
-func TimelineHome(ctx Context,
+func TimelineHome(ctx misstodon.Context,
 	limit int, maxId, minId string) ([]models.Status, error) {
 	body := makeBody(ctx, utils.Map{"limit": limit})
 	if minId != "" {
@@ -61,6 +62,6 @@ func TimelineHome(ctx Context,
 	if err != nil {
 		return nil, err
 	}
-	list := slice.Map(result, func(_ int, n models.MkNote) models.Status { return n.ToStatus(ctx.ProxyServer()) })
+	list := slice.Map(result, func(_ int, n models.MkNote) models.Status { return n.ToStatus(ctx) })
 	return list, nil
 }

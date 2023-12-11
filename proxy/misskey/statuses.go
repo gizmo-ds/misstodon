@@ -4,12 +4,14 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/duke-git/lancet/v2/slice"
+	"github.com/gizmo-ds/misstodon/internal/misstodon"
 	"github.com/gizmo-ds/misstodon/internal/utils"
 	"github.com/gizmo-ds/misstodon/models"
 	"github.com/pkg/errors"
 )
 
-func StatusSingle(ctx Context, statusID string) (models.Status, error) {
+func StatusSingle(ctx misstodon.Context, statusID string) (models.Status, error) {
 	var status models.Status
 	var note models.MkNote
 	body := makeBody(ctx, utils.Map{"noteId": statusID})
@@ -24,7 +26,7 @@ func StatusSingle(ctx Context, statusID string) (models.Status, error) {
 	if err = isucceed(resp, http.StatusOK); err != nil {
 		return status, errors.WithStack(err)
 	}
-	status = note.ToStatus(ctx.ProxyServer())
+	status = note.ToStatus(ctx)
 	if ctx.Token() != nil {
 		state, err := getNoteState(ctx.ProxyServer(), *ctx.Token(), status.ID)
 		if err != nil {
@@ -57,7 +59,7 @@ func getNoteState(server, token, noteId string) (noteState, error) {
 	return state, nil
 }
 
-func StatusFavourite(ctx Context, id string) (models.Status, error) {
+func StatusFavourite(ctx misstodon.Context, id string) (models.Status, error) {
 	status, err := StatusSingle(ctx, id)
 	if err != nil {
 		return status, errors.WithStack(err)
@@ -80,7 +82,7 @@ func StatusFavourite(ctx Context, id string) (models.Status, error) {
 	return status, nil
 }
 
-func StatusUnFavourite(ctx Context, id string) (models.Status, error) {
+func StatusUnFavourite(ctx misstodon.Context, id string) (models.Status, error) {
 	status, err := StatusSingle(ctx, id)
 	if err != nil {
 		return status, errors.WithStack(err)
@@ -100,7 +102,7 @@ func StatusUnFavourite(ctx Context, id string) (models.Status, error) {
 	return status, nil
 }
 
-func StatusBookmark(ctx Context, id string) (models.Status, error) {
+func StatusBookmark(ctx misstodon.Context, id string) (models.Status, error) {
 	status, err := StatusSingle(ctx, id)
 	if err != nil {
 		return status, errors.WithStack(err)
@@ -119,7 +121,7 @@ func StatusBookmark(ctx Context, id string) (models.Status, error) {
 	return status, nil
 }
 
-func StatusUnBookmark(ctx Context, id string) (models.Status, error) {
+func StatusUnBookmark(ctx misstodon.Context, id string) (models.Status, error) {
 	status, err := StatusSingle(ctx, id)
 	if err != nil {
 		return status, errors.WithStack(err)
@@ -140,19 +142,19 @@ func StatusUnBookmark(ctx Context, id string) (models.Status, error) {
 
 // StatusBookmarks
 // NOTE: 为了减少请求数量, 不支持 Bookmarked
-func StatusBookmarks(ctx Context,
-	limit int, sinceID, minID, maxID string) ([]models.Status, error) {
+func StatusBookmarks(ctx misstodon.Context,
+	limit int, sinceId, minId, maxId string) ([]models.Status, error) {
 	var result []struct {
 		ID        string        `json:"id"`
 		CreatedAt string        `json:"createdAt"`
 		Note      models.MkNote `json:"note"`
 	}
 	body := makeBody(ctx, utils.Map{"limit": limit})
-	if v, ok := utils.StrEvaluation(sinceID, minID); ok {
+	if v, ok := utils.StrEvaluation(sinceId, minId); ok {
 		body["sinceId"] = v
 	}
-	if maxID != "" {
-		body["untilId"] = maxID
+	if maxId != "" {
+		body["untilId"] = maxId
 	}
 	resp, err := client.R().
 		SetBaseURL(ctx.ProxyServer()).
@@ -167,46 +169,39 @@ func StatusBookmarks(ctx Context,
 	}
 	var status []models.Status
 	for _, s := range result {
-		status = append(status, s.Note.ToStatus(ctx.ProxyServer()))
+		status = append(status, s.Note.ToStatus(ctx))
 	}
 	return status, nil
 }
 
 // PostNewStatus 发送新的 Status
 // FIXME: Poll 未实现
-func PostNewStatus(ctx Context,
-	status *string, Poll any, MediaIDs []string, InReplyToID string,
-	Sensitive bool, SpoilerText string,
-	Visibility models.StatusVisibility, Language string,
-	ScheduledAt time.Time,
-) (any, error) {
+func PostNewStatus(ctx misstodon.Context,
+	status *string, poll any, mediaIds []string, inReplyToId string,
+	sensitive bool, spoilerText string,
+	visibility models.StatusVisibility, language string,
+	scheduledAt time.Time,
+) (models.Status, error) {
 	body := makeBody(ctx, utils.Map{"localOnly": false})
 	var noteMentions []string
 	if status != nil && *status != "" {
 		body["text"] = *status
 		noteMentions = append(noteMentions, utils.GetMentions(*status)...)
 	}
-	if Sensitive {
-		if SpoilerText != "" {
-			body["cw"] = SpoilerText
+	if sensitive {
+		if spoilerText != "" {
+			body["cw"] = spoilerText
 		} else {
 			body["cw"] = "Sensitive"
 		}
 	}
-	switch Visibility {
-	case models.StatusVisibilityPublic:
-		body["visibility"] = "public"
-	case models.StatusVisibilityUnlisted:
-		body["visibility"] = "home"
-	case models.StatusVisibilityPrivate:
-		body["visibility"] = "followers"
-	case models.StatusVisibilityDirect:
-		body["visibility"] = "specified"
+	body["visibility"] = visibility.ToMkNoteVisibility()
+	if visibility == models.StatusVisibilityDirect {
 		var visibleUserIds []string
 		for _, m := range noteMentions {
 			a, err := AccountsLookup(ctx, m)
 			if err != nil {
-				return nil, err
+				return models.Status{}, err
 			}
 			visibleUserIds = append(visibleUserIds, a.ID)
 		}
@@ -214,11 +209,11 @@ func PostNewStatus(ctx Context,
 			body["visibleUserIds"] = visibleUserIds
 		}
 	}
-	if len(MediaIDs) > 0 {
-		body["mediaIds"] = MediaIDs
+	if len(mediaIds) > 0 {
+		body["mediaIds"] = mediaIds
 	}
-	if InReplyToID != "" {
-		body["replyId"] = InReplyToID
+	if inReplyToId != "" {
+		body["replyId"] = inReplyToId
 	}
 	var result struct {
 		CreatedNote models.MkNote `json:"createdNote"`
@@ -229,15 +224,15 @@ func PostNewStatus(ctx Context,
 		SetResult(&result).
 		Post("/api/notes/create")
 	if err != nil {
-		return nil, errors.WithStack(err)
+		return models.Status{}, errors.WithStack(err)
 	}
 	if err = isucceed(resp, http.StatusOK); err != nil {
-		return nil, errors.WithStack(err)
+		return models.Status{}, errors.WithStack(err)
 	}
-	return result.CreatedNote.ToStatus(ctx.ProxyServer()), nil
+	return result.CreatedNote.ToStatus(ctx), nil
 }
 
-func SearchStatusByHashtag(ctx Context,
+func SearchStatusByHashtag(ctx misstodon.Context,
 	hashtag string,
 	limit int, maxId, sinceId, minId string) ([]models.Status, error) {
 	body := makeBody(ctx, utils.Map{"limit": limit})
@@ -259,7 +254,135 @@ func SearchStatusByHashtag(ctx Context,
 	}
 	var list []models.Status
 	for _, note := range result {
-		list = append(list, note.ToStatus(ctx.ProxyServer()))
+		list = append(list, note.ToStatus(ctx))
 	}
 	return list, nil
+}
+
+func StatusContext(ctx misstodon.Context, id string) (models.Context, error) {
+	result := models.Context{
+		Ancestors:   make([]models.Status, 0),
+		Descendants: make([]models.Status, 0),
+	}
+	s, err := StatusSingle(ctx, id)
+	if err != nil {
+		return result, err
+	}
+	result, err = statusContext(ctx, s)
+	return result, err
+}
+
+func statusContext(ctx misstodon.Context, status models.Status) (models.Context, error) {
+	result := models.Context{
+		Ancestors:   make([]models.Status, 0),
+		Descendants: make([]models.Status, 0),
+	}
+	if status.RepliesCount > 0 {
+		notes, err := noteChildren(ctx, status.ID, 30, "", "")
+		if err == nil {
+			result.Descendants = slice.Map(notes, func(_ int, item models.MkNote) models.Status {
+				return item.ToStatus(ctx)
+			})
+		}
+		lc := status.RepliesCount / 100
+		if status.RepliesCount%100 > 0 {
+			lc++
+		}
+		for i := 0; i < lc; i++ {
+			notes, err = noteConversation(ctx, status.ID, 100, i*100)
+			if err == nil {
+				arr := slice.Map(notes, func(_ int, item models.MkNote) models.Status {
+					return item.ToStatus(ctx)
+				})
+				result.Ancestors = append(result.Ancestors, arr...)
+			}
+		}
+	}
+	return result, nil
+}
+
+func noteConversation(ctx misstodon.Context, id string, limit, offset int) ([]models.MkNote, error) {
+	body := makeBody(ctx, utils.Map{
+		"limit":  limit,
+		"offset": offset,
+		"noteId": id,
+	})
+	var result []models.MkNote
+	resp, err := client.R().
+		SetBaseURL(ctx.ProxyServer()).
+		SetBody(body).
+		SetResult(&result).
+		Post("/api/notes/conversation")
+	if err != nil {
+		return nil, err
+	}
+	if err = isucceed(resp, http.StatusOK); err != nil {
+		return nil, errors.WithStack(err)
+	}
+	return result, nil
+}
+
+func noteChildren(ctx misstodon.Context, id string, limit int, sinceId, untilId string) ([]models.MkNote, error) {
+	body := makeBody(ctx, utils.Map{
+		"limit":  limit,
+		"noteId": id,
+	})
+	if sinceId != "" {
+		body["sinceId"] = sinceId
+	}
+	if untilId != "" {
+		body["untilId"] = untilId
+	}
+	var result []models.MkNote
+	resp, err := client.R().
+		SetBaseURL(ctx.ProxyServer()).
+		SetBody(body).
+		SetResult(&result).
+		Post("/api/notes/children")
+	if err != nil {
+		return nil, err
+	}
+	if err = isucceed(resp, http.StatusOK); err != nil {
+		return nil, errors.WithStack(err)
+	}
+	return result, nil
+}
+
+func StatusReblog(ctx misstodon.Context, reNoteId string, visibility models.StatusVisibility) (models.Status, error) {
+	body := makeBody(ctx, utils.Map{"renoteId": reNoteId})
+	body["visibility"] = visibility.ToMkNoteVisibility()
+	var result struct {
+		CreatedNote models.MkNote `json:"createdNote"`
+	}
+	resp, err := client.R().
+		SetBaseURL(ctx.ProxyServer()).
+		SetBody(body).
+		SetResult(&result).
+		Post("/api/notes/create")
+	if err != nil {
+		return models.Status{}, errors.WithStack(err)
+	}
+	if err = isucceed(resp, http.StatusOK); err != nil {
+		return models.Status{}, errors.WithStack(err)
+	}
+	return result.CreatedNote.ToStatus(ctx), nil
+}
+
+func StatusDelete(ctx misstodon.Context, id string) (models.Status, error) {
+	status, err := StatusSingle(ctx, id)
+	if err != nil {
+		return status, err
+	}
+	body := makeBody(ctx, utils.Map{"noteId": id})
+	resp, err := client.R().
+		SetBaseURL(ctx.ProxyServer()).
+		SetBody(body).
+		Post("/api/notes/delete")
+	if err != nil {
+		return status, errors.WithStack(err)
+	}
+	if err = isucceed(resp, http.StatusNoContent); err != nil {
+		return status, errors.WithStack(err)
+	}
+	return status, nil
 }

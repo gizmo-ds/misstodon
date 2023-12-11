@@ -75,3 +75,16 @@ type (
 		MediaAttachments []MediaAttachment `json:"media_attachments"`
 	}
 )
+
+func (v StatusVisibility) ToMkNoteVisibility() MkNoteVisibility {
+	switch v {
+	case StatusVisibilityPublic:
+		return MkNoteVisibilityPublic
+	case StatusVisibilityUnlisted:
+		return MkNoteVisibilityHome
+	case StatusVisibilityPrivate:
+		return MkNoteVisibilityFollow
+	default:
+		return MkNoteVisibilitySpecif
+	}
+}

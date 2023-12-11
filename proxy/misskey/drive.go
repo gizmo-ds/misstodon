@@ -4,12 +4,13 @@ import (
 	"io"
 	"net/http"
 
+	"github.com/gizmo-ds/misstodon/internal/misstodon"
 	"github.com/gizmo-ds/misstodon/internal/utils"
 	"github.com/gizmo-ds/misstodon/models"
 	"github.com/pkg/errors"
 )
 
-func driveFileCreate(ctx Context, filename string, content io.Reader) (models.MkFile, error) {
+func driveFileCreate(ctx misstodon.Context, filename string, content io.Reader) (models.MkFile, error) {
 	var file models.MkFile
 	// find folder
 	folders, err := driveFolders(ctx)
@@ -54,7 +55,7 @@ func driveFileCreate(ctx Context, filename string, content io.Reader) (models.Mk
 	return file, nil
 }
 
-func driveFolders(ctx Context) (folders []models.MkFolder, err error) {
+func driveFolders(ctx misstodon.Context) (folders []models.MkFolder, err error) {
 	resp, err := client.R().
 		SetBaseURL(ctx.ProxyServer()).
 		SetBody(utils.Map{"i": ctx.Token(), "limit": 100}).
@@ -69,7 +70,7 @@ func driveFolders(ctx Context) (folders []models.MkFolder, err error) {
 	return
 }
 
-func driveFolderCreate(ctx Context, name string) (models.MkFolder, error) {
+func driveFolderCreate(ctx misstodon.Context, name string) (models.MkFolder, error) {
 	var folder models.MkFolder
 	resp, err := client.R().
 		SetBaseURL(ctx.ProxyServer()).

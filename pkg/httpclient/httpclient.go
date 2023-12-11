@@ -21,6 +21,7 @@ type (
 		Get(url string) (Response, error)
 		Post(url string) (Response, error)
 		Patch(url string) (Response, error)
+		Delete(url string) (Response, error)
 	}
 	Response interface {
 		RawBody() io.ReadCloser

@@ -5,14 +5,14 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/gizmo-ds/misstodon/internal/misstodon"
 	"github.com/gizmo-ds/misstodon/internal/utils"
 	"github.com/gizmo-ds/misstodon/models"
-	"github.com/gizmo-ds/misstodon/proxy/misskey"
 	"github.com/gorilla/websocket"
 	"github.com/rs/xid"
 )
 
-func Streaming(ctx context.Context, mCtx misskey.Context, token string, ch chan<- models.StreamEvent) error {
+func Streaming(ctx context.Context, mCtx misstodon.Context, token string, ch chan<- models.StreamEvent) error {
 	u := fmt.Sprintf("wss://%s/streaming?i=%s&_t=%d", mCtx.ProxyServer(), token, time.Now().Unix())
 	conn, _, err := websocket.DefaultDialer.Dial(u, nil)
 	if err != nil {

@@ -5,6 +5,7 @@ import (
 	"net/url"
 
 	"github.com/duke-git/lancet/v2/slice"
+	"github.com/gizmo-ds/misstodon/internal/misstodon"
 	"github.com/gizmo-ds/misstodon/internal/utils"
 	"github.com/gizmo-ds/misstodon/models"
 	"github.com/pkg/errors"
@@ -43,7 +44,7 @@ var SupportedMimeTypes = []string{
 	"audio/vnd.wave",
 }
 
-func Instance(ctx Context, version string) (models.Instance, error) {
+func Instance(ctx misstodon.Context, version string) (models.Instance, error) {
 	var info models.Instance
 	var serverInfo models.MkMeta
 	resp, err := client.R().
@@ -106,9 +107,9 @@ func Instance(ctx Context, version string) (models.Instance, error) {
 	return info, err
 }
 
-func InstancePeers(ctx Context) ([]string, error) { return nil, nil }
+func InstancePeers(ctx misstodon.Context) ([]string, error) { return nil, nil }
 
-func InstanceCustomEmojis(ctx Context) ([]models.CustomEmoji, error) {
+func InstanceCustomEmojis(ctx misstodon.Context) ([]models.CustomEmoji, error) {
 	var emojis struct {
 		Emojis []models.MkEmoji `json:"emojis"`
 	}

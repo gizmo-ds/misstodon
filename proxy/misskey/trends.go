@@ -5,11 +5,12 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/gizmo-ds/misstodon/internal/misstodon"
 	"github.com/gizmo-ds/misstodon/internal/utils"
 	"github.com/gizmo-ds/misstodon/models"
 )
 
-func TrendsTags(ctx Context, limit, offset int) ([]models.Tag, error) {
+func TrendsTags(ctx misstodon.Context, limit, offset int) ([]models.Tag, error) {
 	var result []struct {
 		Tag        string `json:"tag"`
 		UsersCount int    `json:"usersCount"`
@@ -44,7 +45,7 @@ func TrendsTags(ctx Context, limit, offset int) ([]models.Tag, error) {
 	return tags, nil
 }
 
-func TrendsStatus(ctx Context, limit, offset int) ([]models.Status, error) {
+func TrendsStatus(ctx misstodon.Context, limit, offset int) ([]models.Status, error) {
 	var statuses []models.Status
 	var result []models.MkNote
 	_, err := client.R().
@@ -56,7 +57,7 @@ func TrendsStatus(ctx Context, limit, offset int) ([]models.Status, error) {
 		return nil, err
 	}
 	for _, note := range result {
-		statuses = append(statuses, note.ToStatus(ctx.ProxyServer()))
+		statuses = append(statuses, note.ToStatus(ctx))
 	}
 	return statuses, nil
 }
