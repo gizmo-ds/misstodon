@@ -4,6 +4,7 @@
 ![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/gizmo-ds/misstodon?style=flat-square)
 [![Build images](https://img.shields.io/github/actions/workflow/status/gizmo-ds/misstodon/images.yaml?branch=main&label=docker%20image&style=flat-square)](https://github.com/gizmo-ds/misstodon/actions/workflows/images.yaml)
 [![License](https://img.shields.io/github/license/gizmo-ds/misstodon?style=flat-square)](./LICENSE)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fgizmo-ds%2Fmisstodon.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fgizmo-ds%2Fmisstodon?ref=badge_shield)
 
 Misskey Mastodon-compatible APIs, Getting my [Misskey](https://github.com/misskey-dev/misskey/tree/13.2.0) instance to work in [Elk](https://github.com/elk-zone/elk)
 
@@ -155,3 +156,7 @@ docker-compose up -d
 ## Contributors
 
 ![Contributors](https://contributors.liuli.lol/gizmo-ds/misstodon/contributors.svg?align=left)
+
+
+## License
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fgizmo-ds%2Fmisstodon.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fgizmo-ds%2Fmisstodon?ref=badge_large)
