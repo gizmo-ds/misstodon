@@ -12,14 +12,14 @@ Misskey Mastodon-compatible APIs, Getting my [Misskey](https://github.com/misske
 
 ## Demo
 
-Elk: [https://elk.zone/misstodon.liuli.lol/public](https://elk.zone/misstodon.liuli.lol/public)  
-Elk: [https://elk.zone/mt_misskey_moe.liuli.lol/explore](https://elk.zone/mt_misskey_moe.liuli.lol/explore)  
-Phanpy: [https://phanpy.social/#/mt_misskey_io.liuli.lol/p](https://phanpy.social/#/mt_misskey_io.liuli.lol/p)
+Elk: [https://elk.zone/misstodon.aika.dev/public](https://elk.zone/misstodon.aika.dev/public)  
+Elk: [https://elk.zone/mt_misskey_moe.aika.dev/explore](https://elk.zone/mt_misskey_moe.aika.dev/explore)  
+Phanpy: [https://phanpy.social/#/mt_misskey_io.aika.dev/p](https://phanpy.social/#/mt_misskey_io.aika.dev/p)
 
 ## How to Use
 
 > **Warning**  
-> `liuli.lol` is a demonstration site and may not guarantee high availability. We recommend [self-hosting](#running-your-own-instance) for greater control.
+> `aika.dev` is a demonstration site and may not guarantee high availability. We recommend [self-hosting](#running-your-own-instance) for greater control.
 
 ### Domain Name Prefixing Scheme (Recommended)
 
@@ -28,12 +28,12 @@ The simplest usage method is to specify the instance address using a domain name
 1. Replace underscores ("\_") in the domain name with double underscores ("\_\_").
 2. Replace dots (".") in the domain name with underscores ("\_").
 3. Prepend "mt\_" to the modified string.
-4. Append ".liuli.lol" to the modified string.
+4. Append ".aika.dev" to the modified string.
 
-When processing `misskey.io` according to the described steps, it will be transformed into the result: `mt_misskey_io.liuli.lol`.
+When processing `misskey.io` according to the described steps, it will be transformed into the result: `mt_misskey_io.aika.dev`.
 
 ```bash
-curl --request GET --url 'https://mt_misskey_io.liuli.lol/nodeinfo/2.0' | jq .
+curl --request GET --url 'https://mt_misskey_io.aika.dev/nodeinfo/2.0' | jq .
 ```
 
 ### Self-Hosting with Default Instance Configuration
@@ -50,13 +50,13 @@ If you are [deploying using Docker Compose](#running-your-own-instance), you can
 ### Instance Specification via Query Parameter
 
 ```bash
-curl --request GET --url 'https://misstodon.liuli.lol/nodeinfo/2.0?server=misskey.io' | jq .
+curl --request GET --url 'https://misstodon.aika.dev/nodeinfo/2.0?server=misskey.io' | jq .
 ```
 
 ### Instance Specification via Header
 
 ```bash
-curl --request GET --url https://misstodon.liuli.lol/nodeinfo/2.0 --header 'x-proxy-server: misskey.io' | jq .
+curl --request GET --url https://misstodon.aika.dev/nodeinfo/2.0 --header 'x-proxy-server: misskey.io' | jq .
 ```
 
 ## Running your own instance
@@ -154,4 +154,4 @@ docker-compose up -d
 
 ## Contributors
 
-![Contributors](https://contributors.liuli.lol/gizmo-ds/misstodon/contributors.svg?align=left)
+![Contributors](https://contributors.aika.dev/gizmo-ds/misstodon/contributors.svg?align=left)

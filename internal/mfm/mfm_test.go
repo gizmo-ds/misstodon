@@ -196,10 +196,10 @@ func TestToHtml(t *testing.T) {
 		assert.Equal(t,
 			"<p><a href=\"https://misskey.io/@user\" class=\"u-url mention\">@user</a></p>", s)
 
-		s, err = mfm.ToHtml("@gizmo_ds@liuli.lol")
+		s, err = mfm.ToHtml("@gizmo_ds@misskey.moe")
 		assert.NoError(t, err)
 		assert.Equal(t,
-			"<p><a href=\"https://liuli.lol/@gizmo_ds\" class=\"u-url mention\">@gizmo_ds@liuli.lol</a></p>", s)
+			"<p><a href=\"https://misskey.moe/@gizmo_ds\" class=\"u-url mention\">@gizmo_ds@misskey.moe</a></p>", s)
 	})
 	t.Run("URL", func(t *testing.T) {
 		s, err := mfm.ToHtml("https://misskey.io/@ai")

@@ -6,7 +6,7 @@ services:
     container_name: misstodon
     restart: always
     environment:
-      MISSTODON_FALLBACK_SERVER: misskey.liuli.lol
+      MISSTODON_FALLBACK_SERVER: misskey.moe
       # MISSTODON_SERVER_AUTO_TLS: true
       # MISSTODON_SERVER_DOMAIN: example.com # required if MISSTODON_SERVER_AUTO_TLS is true
       # MISSTODON_SERVER_TLS_CERT_FILE: /app/cert/fullchain.pem

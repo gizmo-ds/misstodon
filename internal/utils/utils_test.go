@@ -8,9 +8,9 @@ import (
 )
 
 func TestAcctInfo(t *testing.T) {
-	username, host := utils.AcctInfo("@gizmo_ds@liuli.lol")
+	username, host := utils.AcctInfo("@gizmo_ds@misskey.moe")
 	assert.Equal(t, username, "gizmo_ds")
-	assert.Equal(t, host, "liuli.lol")
+	assert.Equal(t, host, "misskey.moe")
 
 	username, host = utils.AcctInfo("@banana")
 	assert.Equal(t, username, "banana")
@@ -22,9 +22,9 @@ func TestAcctInfo(t *testing.T) {
 }
 
 func TestGetMentions(t *testing.T) {
-	mentions := utils.GetMentions("Hello @gizmo_ds@liuli.lol")
+	mentions := utils.GetMentions("Hello @gizmo_ds@misskey.moe")
 	assert.Equal(t, len(mentions), 1)
-	assert.Equal(t, mentions[0], "@gizmo_ds@liuli.lol")
+	assert.Equal(t, mentions[0], "@gizmo_ds@misskey.moe")
 
 	mentions = utils.GetMentions("@user@misskey.io")
 	assert.Equal(t, len(mentions), 1)
