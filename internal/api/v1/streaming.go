@@ -5,8 +5,8 @@ import (
 	"net/http"
 
 	"github.com/gizmo-ds/misstodon/internal/misstodon"
-	"github.com/gizmo-ds/misstodon/models"
-	"github.com/gizmo-ds/misstodon/proxy/misskey/streaming"
+	"github.com/gizmo-ds/misstodon/pkg/misstodon/models"
+	"github.com/gizmo-ds/misstodon/pkg/misstodon/provider/misskey/streaming"
 	"github.com/gorilla/websocket"
 	"github.com/labstack/echo/v4"
 	"github.com/pkg/errors"

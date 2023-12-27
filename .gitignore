@@ -7,7 +7,5 @@ build/
 /data/
 node_modules/
 
-/config.toml
-/.env
-proxy/misskey/.env
-/internal/mfm/out.js
+config.toml
+.env

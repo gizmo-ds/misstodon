@@ -4,7 +4,7 @@ import (
 	"github.com/duke-git/lancet/v2/slice"
 	"github.com/gizmo-ds/misstodon/internal/misstodon"
 	"github.com/gizmo-ds/misstodon/internal/utils"
-	"github.com/gizmo-ds/misstodon/models"
+	"github.com/gizmo-ds/misstodon/pkg/misstodon/models"
 	"github.com/pkg/errors"
 )
 

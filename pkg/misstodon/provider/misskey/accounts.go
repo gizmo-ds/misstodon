@@ -11,7 +11,7 @@ import (
 	"github.com/gizmo-ds/misstodon/internal/global"
 	"github.com/gizmo-ds/misstodon/internal/misstodon"
 	"github.com/gizmo-ds/misstodon/internal/utils"
-	"github.com/gizmo-ds/misstodon/models"
+	"github.com/gizmo-ds/misstodon/pkg/misstodon/models"
 	"github.com/pkg/errors"
 )
 

@@ -3,9 +3,9 @@ package models
 import (
 	"time"
 
-	"github.com/gizmo-ds/misstodon/internal/mfm"
 	"github.com/gizmo-ds/misstodon/internal/misstodon"
 	"github.com/gizmo-ds/misstodon/internal/utils"
+	"github.com/gizmo-ds/misstodon/pkg/mfm"
 	"github.com/pkg/errors"
 )
 

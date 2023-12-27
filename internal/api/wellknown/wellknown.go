@@ -6,7 +6,7 @@ import (
 	"github.com/gizmo-ds/misstodon/internal/api/httperror"
 	"github.com/gizmo-ds/misstodon/internal/api/middleware"
 	"github.com/gizmo-ds/misstodon/internal/utils"
-	"github.com/gizmo-ds/misstodon/proxy/misskey"
+	"github.com/gizmo-ds/misstodon/pkg/misstodon/provider/misskey"
 	"github.com/labstack/echo/v4"
 )
 

@@ -6,8 +6,8 @@ import (
 	"github.com/duke-git/lancet/v2/slice"
 	"github.com/gizmo-ds/misstodon/internal/api/httperror"
 	"github.com/gizmo-ds/misstodon/internal/misstodon"
-	"github.com/gizmo-ds/misstodon/models"
-	"github.com/gizmo-ds/misstodon/proxy/misskey"
+	"github.com/gizmo-ds/misstodon/pkg/misstodon/models"
+	"github.com/gizmo-ds/misstodon/pkg/misstodon/provider/misskey"
 	"github.com/labstack/echo/v4"
 )
 

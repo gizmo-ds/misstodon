@@ -1,9 +1,9 @@
 package models
 
 import (
-	"github.com/gizmo-ds/misstodon/internal/mfm"
 	"github.com/gizmo-ds/misstodon/internal/misstodon"
 	"github.com/gizmo-ds/misstodon/internal/utils"
+	"github.com/gizmo-ds/misstodon/pkg/mfm"
 )
 
 type MkNoteVisibility string

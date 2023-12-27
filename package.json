@@ -1,7 +1,7 @@
 {
   "name": "misstodon",
   "scripts": {
-    "build": "esbuild internal/mfm/parse.ts --bundle --format=esm --platform=node --target=es2017 --minify --outfile=internal/mfm/out.js"
+    "build": "esbuild pkg/mfm/parse.ts --bundle --format=esm --platform=node --target=es2017 --minify --outfile=pkg/mfm/out.js"
   },
   "private": true,
   "author": "Gizmo",

@@ -7,7 +7,7 @@ import (
 
 	"github.com/gizmo-ds/misstodon/internal/misstodon"
 	"github.com/gizmo-ds/misstodon/internal/utils"
-	"github.com/gizmo-ds/misstodon/models"
+	"github.com/gizmo-ds/misstodon/pkg/misstodon/models"
 	"github.com/gorilla/websocket"
 	"github.com/rs/xid"
 )

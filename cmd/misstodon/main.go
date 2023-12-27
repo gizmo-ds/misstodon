@@ -7,7 +7,7 @@ import (
 	"github.com/gizmo-ds/misstodon/cmd/misstodon/commands"
 	"github.com/gizmo-ds/misstodon/cmd/misstodon/logger"
 	"github.com/gizmo-ds/misstodon/internal/global"
-	"github.com/gizmo-ds/misstodon/proxy/misskey"
+	"github.com/gizmo-ds/misstodon/pkg/misstodon/provider/misskey"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"

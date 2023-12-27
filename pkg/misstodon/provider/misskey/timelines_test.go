@@ -4,8 +4,8 @@ import (
 	"testing"
 
 	"github.com/gizmo-ds/misstodon/internal/misstodon"
-	"github.com/gizmo-ds/misstodon/models"
-	"github.com/gizmo-ds/misstodon/proxy/misskey"
+	"github.com/gizmo-ds/misstodon/pkg/misstodon/models"
+	"github.com/gizmo-ds/misstodon/pkg/misstodon/provider/misskey"
 	"github.com/stretchr/testify/assert"
 )
 

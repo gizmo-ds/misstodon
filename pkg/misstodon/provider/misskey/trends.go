@@ -7,7 +7,7 @@ import (
 
 	"github.com/gizmo-ds/misstodon/internal/misstodon"
 	"github.com/gizmo-ds/misstodon/internal/utils"
-	"github.com/gizmo-ds/misstodon/models"
+	"github.com/gizmo-ds/misstodon/pkg/misstodon/models"
 )
 
 func TrendsTags(ctx misstodon.Context, limit, offset int) ([]models.Tag, error) {

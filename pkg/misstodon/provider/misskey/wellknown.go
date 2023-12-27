@@ -4,7 +4,7 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/gizmo-ds/misstodon/models"
+	"github.com/gizmo-ds/misstodon/pkg/misstodon/models"
 )
 
 func NodeInfo(server string, ni models.NodeInfo) (models.NodeInfo, error) {

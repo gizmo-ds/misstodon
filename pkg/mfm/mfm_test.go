@@ -4,7 +4,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/gizmo-ds/misstodon/internal/mfm"
+	"github.com/gizmo-ds/misstodon/pkg/mfm"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"github.com/stretchr/testify/assert"

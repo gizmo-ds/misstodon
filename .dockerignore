@@ -8,4 +8,4 @@ node_modules/
 
 Dockerfile
 docker-compose.yml
-/internal/mfm/out.js
+/pkg/mfm/out.js
