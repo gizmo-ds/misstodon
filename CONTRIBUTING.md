@@ -54,10 +54,10 @@ pnpm run build
 
 ## Test your change
 
-Currently, misstodon lacks proper unit tests. You can create test cases in the `proxy/misskey` directory.
+Currently, misstodon lacks proper unit tests. You can create test cases in the `pkg/misstodon/provider/misskey` directory.
 
 ```shell
-go test github.com/gizmo-ds/misstodon/proxy/misskey -v -run ^TestTimelinePublic$
+go test github.com/gizmo-ds/misstodon/pkg/misstodon/provider/misskey -v -run TestTimelinePublic
 ```
 
 Another simple approach is to run the misstodon server and use tools like [Insomnia](https://insomnia.rest/) to test the API.
