@@ -13,7 +13,7 @@ Misskey Mastodon-compatible APIs, Getting my [Misskey](https://github.com/misske
 ## Demo
 
 Elk: [https://elk.zone/misstodon.aika.dev/public](https://elk.zone/misstodon.aika.dev/public)  
-Elk: [https://elk.zone/mt_misskey_moe.aika.dev/explore](https://elk.zone/mt_misskey_moe.aika.dev/explore)  
+Elk: [https://elk.zone/mt_misskey_moe.aika.dev/public](https://elk.zone/mt_misskey_moe.aika.dev/public)  
 Phanpy: [https://phanpy.social/#/mt_misskey_io.aika.dev/p](https://phanpy.social/#/mt_misskey_io.aika.dev/p)
 
 ## How to Use
