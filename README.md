@@ -7,8 +7,12 @@
 
 Misskey Mastodon-compatible APIs, Getting my [Misskey](https://github.com/misskey-dev/misskey/tree/13.2.0) instance to work in [Elk](https://github.com/elk-zone/elk)
 
-> **Warning**  
-> This project is still in the early stage of development, and is not ready for production use.
+> [!IMPORTANT]  
+> Thank you for your interest and support for this project, which aims to make the Misskey API compatible with Mastodon clients. However, I have recently lost interest in Misskey and have decided to no longer actively maintain this project. In a twist of fate, my misskey.moe account has also been deleted recently—talk about a sign!
+>
+> If the community is interested in continuing this project, feel free to fork it and take it to new heights!
+>
+> Please be aware that due to the lack of maintenance, there may be unresolved issues or compatibility problems in the project.
 
 ## Demo
 
@@ -18,7 +22,7 @@ Phanpy: [https://phanpy.social/#/mt_misskey_io.aika.dev/p](https://phanpy.social
 
 ## How to Use
 
-> **Warning**  
+> [!WARNING]  
 > `aika.dev` is a demonstration site and may not guarantee high availability. We recommend [self-hosting](#running-your-own-instance) for greater control.
 
 ### Domain Name Prefixing Scheme (Recommended)
@@ -67,7 +71,7 @@ The simplest way is to use Docker Compose. Download the [docker-compose.yml](htt
 docker-compose up -d
 ```
 
-> **Important**  
+> [!IMPORTANT]  
 > For security and privacy, we strongly discourage using HTTP directly. Instead, consider configuring a TLS certificate or utilizing Misstodon's AutoTLS feature for enhanced security.
 
 ## Roadmap
