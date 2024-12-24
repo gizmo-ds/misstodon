@@ -17,7 +17,7 @@ require (
 	github.com/tidwall/buntdb v1.3.0
 	github.com/urfave/cli/v2 v2.27.0
 	golang.org/x/crypto v0.31.0
-	golang.org/x/net v0.23.0
+	golang.org/x/net v0.33.0
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1
 )
 
