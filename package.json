@@ -7,7 +7,7 @@
   "author": "Gizmo",
   "license": "AGPL-3.0",
   "devDependencies": {
-    "esbuild": "^0.17.3"
+    "esbuild": "^0.25.0"
   },
   "dependencies": {
     "mfm-js": "^0.23.3"
