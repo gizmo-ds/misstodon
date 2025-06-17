@@ -1,6 +1,7 @@
 module github.com/gizmo-ds/misstodon
 
-go 1.20
+go 1.23.0
+
 toolchain go1.24.1
 
 require (
@@ -17,8 +18,8 @@ require (
 	github.com/stretchr/testify v1.8.4
 	github.com/tidwall/buntdb v1.3.0
 	github.com/urfave/cli/v2 v2.27.0
-	golang.org/x/crypto v0.35.0
-	golang.org/x/net v0.36.0
+	golang.org/x/crypto v0.36.0
+	golang.org/x/net v0.38.0
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1
 )
 
@@ -46,8 +47,8 @@ require (
 	github.com/valyala/fasttemplate v1.2.2 // indirect
 	github.com/xrash/smetrics v0.0.0-20201216005158-039620a65673 // indirect
 	golang.org/x/exp v0.0.0-20221208152030-732eee02a75a // indirect
-	golang.org/x/sys v0.30.0 // indirect
-	golang.org/x/text v0.22.0 // indirect
+	golang.org/x/sys v0.31.0 // indirect
+	golang.org/x/text v0.23.0 // indirect
 	golang.org/x/time v0.5.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
