@@ -48,6 +48,7 @@ If you are using [Node.js](https://nodejs.org/):
 
 ```shell
 corepack prepare pnpm@latest --activate
+corepack enable
 pnpm install
 pnpm run build
 ```
