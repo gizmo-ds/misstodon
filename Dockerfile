@@ -5,7 +5,7 @@ COPY ./package.json /app/package.json
 COPY ./bun.lockb /app/bun.lockb
 RUN bun install && bun run build
 
-FROM docker.io/library/golang:1.20-alpine AS builder
+FROM docker.io/library/golang:1.24-alpine AS builder
 WORKDIR /app
 COPY . /app
 ENV CGO_ENABLED=0

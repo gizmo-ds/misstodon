@@ -1,38 +1,35 @@
 module github.com/gizmo-ds/misstodon
 
-go 1.23.0
-
-toolchain go1.24.1
+go 1.24.0
 
 require (
-	github.com/dop251/goja v0.0.0-20231027120936-b396bb4c349d
-	github.com/duke-git/lancet/v2 v2.2.8
-	github.com/go-resty/resty/v2 v2.11.0
+	github.com/dop251/goja v0.0.0-20251201205617-2bb4c724c0f9
+	github.com/duke-git/lancet/v2 v2.3.8
+	github.com/go-resty/resty/v2 v2.17.0
 	github.com/gorilla/websocket v1.5.1
 	github.com/jinzhu/configor v1.2.2
 	github.com/joho/godotenv v1.5.1
-	github.com/labstack/echo/v4 v4.11.4
+	github.com/labstack/echo/v4 v4.13.4
 	github.com/pkg/errors v0.9.1
-	github.com/rs/xid v1.5.0
-	github.com/rs/zerolog v1.31.0
-	github.com/stretchr/testify v1.8.4
-	github.com/tidwall/buntdb v1.3.0
-	github.com/urfave/cli/v2 v2.27.0
-	golang.org/x/crypto v0.36.0
-	golang.org/x/net v0.38.0
+	github.com/rs/xid v1.6.0
+	github.com/rs/zerolog v1.34.0
+	github.com/stretchr/testify v1.10.0
+	github.com/tidwall/buntdb v1.3.2
+	github.com/urfave/cli/v2 v2.27.7
+	golang.org/x/crypto v0.46.0
+	golang.org/x/net v0.48.0
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1
 )
 
 require (
-	github.com/BurntSushi/toml v1.3.2 // indirect
-	github.com/cpuguy83/go-md2man/v2 v2.0.2 // indirect
+	github.com/BurntSushi/toml v1.5.0 // indirect
+	github.com/cpuguy83/go-md2man/v2 v2.0.7 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
-	github.com/dlclark/regexp2 v1.7.0 // indirect
+	github.com/dlclark/regexp2 v1.11.4 // indirect
 	github.com/go-sourcemap/sourcemap v2.1.3+incompatible // indirect
-	github.com/golang-jwt/jwt v3.2.2+incompatible // indirect
 	github.com/google/pprof v0.0.0-20230207041349-798e818bf904 // indirect
 	github.com/labstack/gommon v0.4.2 // indirect
-	github.com/mattn/go-colorable v0.1.13 // indirect
+	github.com/mattn/go-colorable v0.1.14 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
@@ -45,11 +42,11 @@ require (
 	github.com/tidwall/tinyqueue v0.1.1 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasttemplate v1.2.2 // indirect
-	github.com/xrash/smetrics v0.0.0-20201216005158-039620a65673 // indirect
+	github.com/xrash/smetrics v0.0.0-20240521201337-686a1a2994c1 // indirect
 	golang.org/x/exp v0.0.0-20221208152030-732eee02a75a // indirect
-	golang.org/x/sys v0.31.0 // indirect
-	golang.org/x/text v0.23.0 // indirect
-	golang.org/x/time v0.5.0 // indirect
+	golang.org/x/sys v0.39.0 // indirect
+	golang.org/x/text v0.32.0 // indirect
+	golang.org/x/time v0.12.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
 
